@@ -5,23 +5,38 @@
 
 using namespace std;
 
+void print(const vector<pair<string, int>>& v)
+{
+    for(int i = 0; i < v.size(); i++) {
+        cout << "[" << v[i].first << " | " << v[i].second << "]" << endl;
+    }
+}
+
 void copyDirectory(const string& source, const string& destination)
 {
     if(pathExists(source) && isDirectory(source)) {
-        for(const auto& i : filesystem::directory_iterator(source)) {
-            string source_path = i.path().string();
-            string new_path = joinPath(destination, i.path().filename().string());
-            if(isDirectory(source_path)) {
-                filesystem::create_directories(new_path);
-                copyDirectory(source_path, new_path);
-            } else {
-                ifstream src(source_path, ios::binary);
-                ofstream dst(new_path, ios::binary);
-                dst << src.rdbuf();
-            }
+        vector<pair<string, int>> paths;
+        filesystem::recursive_directory_iterator lvl(source);
+        for(const auto& i : filesystem::recursive_directory_iterator(source)) {
+            paths.push_back(make_pair(i.path().filename().string(), lvl.depth()));
+            lvl++;
         } 
+        for(int i = 0; i < paths.size(); i++) {
+            
+        }
     } else {
         cerr << "[Error] Path does not exist" << endl;
+    }
+}
+
+void test(const string& path)
+{
+    filesystem::recursive_directory_iterator iter(path);
+    for(const auto& i : filesystem::recursive_directory_iterator(path)) {
+        cout << "Depth: " << iter.depth() << endl;
+        cout << i.path().string() << endl;
+        cout << endl;
+        iter++;
     }
 }
 
@@ -39,5 +54,6 @@ int main(int argc, char** argv)
     cout << joinPath(getSourcePath(), "Templates/" + template_name) << endl;
     cout << getCurrentPath() << endl;
     copyDirectory(joinPath(getSourcePath(), "Templates/" + template_name), getCurrentPath());
+    //test(joinPath(getCurrentPath(), args[0]));
     return 0;
 }
