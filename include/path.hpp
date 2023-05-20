@@ -95,3 +95,8 @@ std::string joinPath(const std::string& path, const std::string& child_path)
     std::filesystem::path p2(child_path);
     return std::filesystem::weakly_canonical(p1 / p2).string();
 }
+
+std::string joinPath(const std::filesystem::path& path, const std::filesystem::path& child_path)
+{
+    return std::filesystem::weakly_canonical(path / child_path).string();
+}
