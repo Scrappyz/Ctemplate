@@ -95,6 +95,7 @@ void copyDirectory(const string& source, const string& destination, bool recurse
                 }
             }
         }
+        cout << "[Success] Template has been succussfully initialized" << endl;
     } else {
         cerr << "[Error] Could not find template \"" << getFilename(source) << "\"" << endl;
     }
