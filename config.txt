@@ -1,1 +1,2 @@
+# The directory is relative to the executable
 TemplateDirectory = "Templates"
