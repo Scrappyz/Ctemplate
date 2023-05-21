@@ -16,26 +16,43 @@ void copyDirectory(const string& source, const string& destination)
 {
     if(pathExists(source) && isDirectory(source)) {
         vector<string> paths;
-        int prev_lvl = 0;
         filesystem::recursive_directory_iterator iter(source);
+        int prev_lvl = iter.depth();
+        string current;
         for(const auto& i : iter) {
-            string current = i.path().filename().string();
+            current = i.path().filename().string();
             if(prev_lvl < iter.depth()) {
-                paths.push_back(i.path().filename().string());
+                paths.push_back(joinPath(paths.back(), i.path().filename().string()));
             } else if(prev_lvl > iter.depth()) {
-                for(int j = prev_lvl - iter.depth(); j >= 0; j--) {
+                for(int j = prev_lvl - iter.depth(); j > 0; j--) {
                     paths.pop_back();
                 }
-                paths.push_back(i.path().filename().string());
+                if(paths.empty()) {
+                    paths.push_back(i.path().filename().string());
+                } else if(paths.size() < 2) {
+                    paths.back() = i.path().filename().string();
+                } else {
+                    paths.back() = joinPath(paths[paths.size()-2], i.path().filename().string());
+                }
             } else {
                 if(paths.empty()) {
-                    paths.push_back(current);
+                    paths.push_back(i.path().filename().string());
+                } else if(paths.size() < 2) {
+                    paths.back() = i.path().filename().string();
                 } else {
-                    paths.back() = current;
+                    paths.back() = joinPath(paths[paths.size()-2], i.path().filename().string());
                 }
             }
+            current = joinPath(destination, paths.back());
+            cout << current << endl;
+            if(filesystem::is_directory(i.path())) {
+                filesystem::create_directories(current);
+            } else {
+                std::ifstream src(i.path(), std::ios::binary);
+                std::ofstream dst(current, std::ios::binary);
+                dst << src.rdbuf();
+            }
             prev_lvl = iter.depth();
-            //iter++;
         }
     } else {
         cerr << "[Error] Path does not exist" << endl;
@@ -56,7 +73,7 @@ void test(const string& path)
 int main(int argc, char** argv)
 {
     vector<string> args = {"template1"};
-    //args.assign(argv+1, argv+argc);
+    args.assign(argv+1, argv+argc);
     string program_name = argv[0];
 
     if(args.empty()) {
