@@ -1,89 +1,117 @@
 #include <iostream>
 #include <vector>
 #include <fstream>
+#include <unordered_map>
 #include "path.hpp"
 
 using namespace std;
 
-void print(const vector<pair<string, int>>& v)
+template<typename K, typename V>
+void print(const unordered_map<K, V>& m)
 {
-    for(int i = 0; i < v.size(); i++) {
-        cout << "[" << v[i].first << " | " << v[i].second << "]" << endl;
+    for(const auto& i : m) {
+        cout << i.first << " | " << i.second << endl;
     }
 }
 
-void copyDirectory(const string& source, const string& destination)
+string getConfigPath()
 {
-    if(pathExists(source) && isDirectory(source)) {
-        vector<string> paths;
-        filesystem::recursive_directory_iterator iter(source);
-        int prev_lvl = iter.depth();
-        string current;
-        for(const auto& i : iter) {
-            current = i.path().filename().string();
-            if(prev_lvl < iter.depth()) {
-                paths.push_back(joinPath(paths.back(), i.path().filename().string()));
-            } else if(prev_lvl > iter.depth()) {
-                for(int j = prev_lvl - iter.depth(); j > 0; j--) {
-                    paths.pop_back();
-                }
-                if(paths.empty()) {
-                    paths.push_back(i.path().filename().string());
-                } else if(paths.size() < 2) {
-                    paths.back() = i.path().filename().string();
-                } else {
-                    paths.back() = joinPath(paths[paths.size()-2], i.path().filename().string());
+    #ifdef NDEBUG
+        return joinPath(getSourcePath(), "config.txt");
+    #else
+        return joinPath(getSourcePath(), "../../config.txt");
+    #endif
+}
+
+unordered_map<string, string> parseConfigFile(const string& config_file)
+{
+    unordered_map<string, string> m;
+    ifstream config(config_file);
+    if(config.is_open()) {
+        string temp;
+        while(getline(config, temp)) {
+            if(temp[0] == '#' || temp[0] == ' ') {
+                continue;
+            }
+            string key, value;
+            int i = 0;
+            while(i < temp.size() && (temp[i] != '=' && temp[i] != ':')) { // move forward until we reach a separator
+                key.push_back(temp[i]);
+                i++;
+            }
+            while(key.back() == ' ') { // remove trailing whitespace
+                key.pop_back();
+            }
+            i++; // move forward
+            while(i < temp.size() && temp[i] == ' ') { // ignore whitespaces
+                i++;
+            }
+            if(temp[i] == '"') {
+                i++; // move forward
+                while(i < temp.size() && temp[i] != '"') {
+                    value.push_back(temp[i]);
+                    i++;
                 }
             } else {
-                if(paths.empty()) {
-                    paths.push_back(i.path().filename().string());
-                } else if(paths.size() < 2) {
-                    paths.back() = i.path().filename().string();
-                } else {
-                    paths.back() = joinPath(paths[paths.size()-2], i.path().filename().string());
+                while(i < temp.size() && temp[i] != ' ') {
+                    value.push_back(temp[i]);
+                    i++;
                 }
             }
-            current = joinPath(destination, paths.back());
-            cout << current << endl;
-            if(filesystem::is_directory(i.path())) {
-                filesystem::create_directories(current);
-            } else {
-                std::ifstream src(i.path(), std::ios::binary);
-                std::ofstream dst(current, std::ios::binary);
-                dst << src.rdbuf();
+            while(value.back() == ' ') {
+                value.pop_back();
             }
-            prev_lvl = iter.depth();
+            m.insert({key, value});
         }
     } else {
-        cerr << "[Error] Path does not exist" << endl;
+        cerr << "[Error] Could not open configuration file" << endl;
     }
+    return m;
 }
 
-void test(const string& path)
+void copyDirectory(const string& source, const string& destination, bool recurse = true)
 {
-    filesystem::recursive_directory_iterator iter(path);
-    for(const auto& i : filesystem::recursive_directory_iterator(path)) {
-        cout << "Depth: " << iter.depth() << endl;
-        cout << i.path().string() << endl;
-        cout << endl;
-        iter++;
+    if(filesystem::exists(source) && filesystem::is_directory(source)) {
+        if(recurse) {
+            for(const auto& entry : filesystem::recursive_directory_iterator(source)) {
+                const string copy_to = joinPath(destination, relativePath(entry.path(), source));
+                if(filesystem::is_directory(entry.path())) {
+                    filesystem::create_directories(copy_to);
+                } else {
+                    std::ifstream src(entry.path(), std::ios::binary);
+                    std::ofstream dst(copy_to, std::ios::binary);
+                    dst << src.rdbuf();
+                }
+            }
+        } else {
+            for(const auto& entry : filesystem::directory_iterator(source)) {
+                const string copy_to = joinPath(destination, relativePath(entry.path(), source));
+                if(filesystem::is_directory(entry.path())) {
+                    filesystem::create_directories(copy_to);
+                } else {
+                    std::ifstream src(entry.path(), std::ios::binary);
+                    std::ofstream dst(copy_to, std::ios::binary);
+                    dst << src.rdbuf();
+                }
+            }
+        }
+    } else {
+        cerr << "[Error] Could not find template \"" << getFilename(source) << "\"" << endl;
     }
 }
 
 int main(int argc, char** argv)
 {
-    vector<string> args = {"template1"};
+    vector<string> args;
     args.assign(argv+1, argv+argc);
+    unordered_map<string, string> config = parseConfigFile(getConfigPath());
     string program_name = argv[0];
 
-    if(args.empty()) {
+    if(args.empty() || config.empty()) {
         return 0;
     }
     
-    string template_name = args[0];
-    cout << joinPath(getSourcePath(), "Templates/" + template_name) << endl;
-    cout << getCurrentPath() << endl;
-    copyDirectory(joinPath(getSourcePath(), "Templates/" + template_name), getCurrentPath());
-    //test(joinPath(getCurrentPath(), args[0]));
+    string template_dir = config.empty() ? joinPath("Templates", args[0]) : joinPath(config.at("TemplateDirectory"), args[0]);
+    copyDirectory(joinPath(getSourcePath(), template_dir), getCurrentPath());
     return 0;
 }
