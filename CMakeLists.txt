@@ -16,3 +16,5 @@ target_include_directories(${PROJECT_NAME} PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/i
 if(LINK_STATIC)
   target_link_libraries(${PROJECT_NAME} PRIVATE -static-libgcc -static-libstdc++)
 endif()
+
+set_target_properties(${PROJECT_NAME} PROPERTIES OUTPUT_NAME "template")
