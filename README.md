@@ -20,3 +20,12 @@ When this command is executed, the files from `<template-name>` will be copied t
 
 ### Saving Templates
 Templates can be saved by adding them to the `Templates` folder inside `Project-Template`. Once this folder has been added, you can now initialize that template to the current directory with the `template` command.
+
+## Future Features
+- Save template
+- Delete template
+- List templates
+    - Choose template from selection
+    - Template aliases
+- Exclude files/folders from template initialization
+- Display template contents
