@@ -3,7 +3,7 @@ A lightweight C++ program that initialize projects from saved templates.
 
 ## Getting Started
 ### Installation
-1. Download latest release from `url`
+1. Download latest release from `https://github.com/Scrappyz/Template/releases`
 2. Extract the `Project-Template` folder to your designated location
 3. Copy the path to the `Project-Template` folder
 4. Go to environmental variables
