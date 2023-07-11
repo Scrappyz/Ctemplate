@@ -1,118 +1,103 @@
-#include <iostream>
-#include <vector>
-#include <fstream>
-#include <unordered_map>
+#include "cli.hpp"
 #include "path.hpp"
 
-using namespace std;
-
-template<typename K, typename V>
-void print(const unordered_map<K, V>& m)
+void printHelp(const std::string& program, const std::string& subcmd)
 {
-    for(const auto& i : m) {
-        cout << i.first << " | " << i.second << endl;
-    }
-}
-
-string getConfigPath()
-{
-    #ifdef NDEBUG
-        return joinPath(getSourcePath(), "config.txt");
-    #else
-        return joinPath(getSourcePath(), "../../config.txt");
-    #endif
-}
-
-unordered_map<string, string> parseConfigFile(const string& config_file)
-{
-    unordered_map<string, string> m;
-    ifstream config(config_file);
-    if(config.is_open()) {
-        string temp;
-        while(getline(config, temp)) {
-            if(temp[0] == '#' || temp[0] == ' ') {
-                continue;
-            }
-            string key, value;
-            int i = 0;
-            while(i < temp.size() && (temp[i] != '=' && temp[i] != ':')) { // move forward until we reach a separator
-                key.push_back(temp[i]);
-                i++;
-            }
-            while(key.back() == ' ') { // remove trailing whitespace
-                key.pop_back();
-            }
-            i++; // move forward
-            while(i < temp.size() && temp[i] == ' ') { // ignore whitespaces
-                i++;
-            }
-            if(temp[i] == '"') {
-                i++; // move forward
-                while(i < temp.size() && temp[i] != '"') {
-                    value.push_back(temp[i]);
-                    i++;
-                }
-            } else {
-                while(i < temp.size() && temp[i] != ' ') {
-                    value.push_back(temp[i]);
-                    i++;
-                }
-            }
-            while(value.back() == ' ') {
-                value.pop_back();
-            }
-            m.insert({key, value});
-        }
+    if(subcmd.empty()) {
+        std::cout << "Usage:" << std::endl;
+        std::cout << program << "<options> <values>" << std::endl;
+        std::cout << program << " <subcommand> <options>" << std::endl;
+        std::cout << std::endl;
+        std::cout << "Subcommands: " << std::endl;
+        std::cout << "init                             Initializes a template project" << std::endl;
+        std::cout << "remove                           Remove an existing template" << std::endl;
+        std::cout << "rename                           Rename an existing template" << std::endl;
+        std::cout << "edit                             Edit an existing template" << std::endl;
+        std::cout << std::endl;
+        std::cout << "Options: " << std::endl;
+        std::cout << "-h, --help                       Print help menu" << std::endl;
+        std::cout << "--version                        Print program version" << std::endl;
+        std::cout << "--set-template-directory         Set the directory to look for templates" << std::endl; 
+        std::cout << "--set-default-editor             Set the default editor" << std::endl;
+        std::cout << "--config                         Open config file" << std::endl;
+    } else if(subcmd == "init") {
+        std::cout << "Usage:" << std::endl;
+        std::cout << program << " " << subcmd << " <template-name> <options> [-p <path>]" << std::endl;
+        std::cout << program << " " << subcmd << " <options>" << std::endl;
+        std::cout << std::endl;
+        std::cout << "Options:" << std::endl;
+        std::cout << "-h, --help                       Print help menu" << std::endl;
+        std::cout << "-l, --list                       Print all existing templates" << std::endl;
+        std::cout << "-p, --path                       The path the template will be initialized on (default is the current path)" << std::endl;
+        std::cout << "-s, --skip-existing              Skip all existing files" << std::endl; 
+        std::cout << "-o, --overwrite-existing         Overwrites all existing files" << std::endl;
+        std::cout << "-f, --force                      Overwrites the whole directory" << std::endl;
+    } else if(subcmd == "add") {
+        std::cout << "Usage:" << std::endl;
+        std::cout << program << " " << subcmd << " <new-template-name> [-p <path>]" << std::endl;
+        std::cout << program << " " << subcmd << " <options>" << std::endl;
+        std::cout << std::endl;
+        std::cout << "Options:" << std::endl;
+        std::cout << "-h, --help                       Print help menu" << std::endl;
+        std::cout << "-p, --path                       The directory to add as a template (default is the current directory)" << std::endl;
+    } else if(subcmd == "remove") {
+        std::cout << "Usage:" << std::endl;
+        std::cout << program << " " << subcmd << " <existing-template-name>" << std::endl;
+        std::cout << program << " " << subcmd << " <options>" << std::endl;
+        std::cout << std::endl;
+        std::cout << "Options:" << std::endl;
+        std::cout << "-h, --help                       Print help menu" << std::endl;
+        std::cout << "-l, --list                       Print all existing templates" << std::endl;
+    } else if(subcmd == "rename") {
+        std::cout << "Usage:" << std::endl;
+        std::cout << program << " " << subcmd << " <existing-template-name> <new-template-name>" << std::endl;
+        std::cout << program << " " << subcmd << " <options>" << std::endl;
+        std::cout << std::endl;
+        std::cout << "Options:" << std::endl;
+        std::cout << "-h, --help                       Print help menu" << std::endl;
+        std::cout << "-l, --list                       Print all existing templates" << std::endl;
+    } else if(subcmd == "edit") {
+        std::cout << "Usage:" << std::endl;
+        std::cout << program << " " << subcmd << " <existing-template-name>" << std::endl;
+        std::cout << program << " " << subcmd << " <options>" << std::endl;
+        std::cout << std::endl;
+        std::cout << "Options:" << std::endl;
+        std::cout << "-h, --help                       Print help menu" << std::endl;
+        std::cout << "-l, --list                       Print all existing templates" << std::endl;
     } else {
-        cerr << "[Error] Could not open configuration file" << endl;
+        throw CLIException("[Error] " + subcmd + " is not a valid subcommand");
     }
-    return m;
 }
 
-void copyDirectory(const string& source, const string& destination, bool recurse = true)
+void initTemplate()
 {
-    if(filesystem::exists(source) && filesystem::is_directory(source)) {
-        if(recurse) {
-            for(const auto& entry : filesystem::recursive_directory_iterator(source)) {
-                const string copy_to = joinPath(destination, relativePath(entry.path(), source));
-                if(filesystem::is_directory(entry.path())) {
-                    filesystem::create_directories(copy_to);
-                } else {
-                    std::ifstream src(entry.path(), std::ios::binary);
-                    std::ofstream dst(copy_to, std::ios::binary);
-                    dst << src.rdbuf();
-                }
-            }
-        } else {
-            for(const auto& entry : filesystem::directory_iterator(source)) {
-                const string copy_to = joinPath(destination, relativePath(entry.path(), source));
-                if(filesystem::is_directory(entry.path())) {
-                    filesystem::create_directories(copy_to);
-                } else {
-                    std::ifstream src(entry.path(), std::ios::binary);
-                    std::ofstream dst(copy_to, std::ios::binary);
-                    dst << src.rdbuf();
-                }
-            }
+
+}
+
+int main(int argc, char* argv[])
+{
+    CLI cli(argc, argv);
+    std::string program_name = cli.getProgramName();
+    try {
+        cli.setValidSubcommands({"init", "add", "remove", "rename", "edit"});
+        cli.setValidFlags({"-h", "--help", "--version", "--set-template-directory", "--set-default-editor", "--config"});
+        cli.setValidFlags("init", {"-h", "--help", "-l", "--list", "-s", "--skip-existing", 
+        "-o", "--overwrite-existing", "-f", "--force", "-p", "--path"});
+        cli.setValidFlags("add", {"-h", "--help", "-p", "--path"});
+        cli.setValidFlags("remove", {"-h", "--help", "-l", "--list"});
+        cli.setValidFlags("rename", {"-h", "--help", "-l", "--list"});
+        cli.setValidFlags("edit", {"-h", "--help", "-l", "--list"});
+
+        std::string subcmd = cli.getActiveSubcommand();
+
+        if(argc == 1 || cli.isFlagActive({"-h", "--help"})) {
+            printHelp(program_name, subcmd);
         }
-        cout << "[Success] Template has been succussfully initialized" << endl;
-    } else {
-        cerr << "[Error] Could not find template \"" << getFilename(source) << "\"" << endl;
-    }
-}
 
-int main(int argc, char** argv)
-{
-    vector<string> args;
-    args.assign(argv+1, argv+argc);
-    unordered_map<string, string> config = parseConfigFile(getConfigPath());
-    string program_name = argv[0];
-
-    if(args.empty() || config.empty()) {
-        return 0;
+    } catch(const CLIException& e) {
+        std::cout << e.what() << std::endl;
+        return 1;
     }
-    
-    string template_dir = config.empty() ? joinPath("Templates", args[0]) : joinPath(config.at("TemplateDirectory"), args[0]);
-    copyDirectory(joinPath(getSourcePath(), template_dir), getCurrentPath());
+
     return 0;
 }
