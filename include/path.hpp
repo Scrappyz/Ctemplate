@@ -483,16 +483,24 @@ namespace path {
                         path::remove(entry.path());
                     }
                 } 
-                
+
+                // store the paths first before copying to prevent endless recursion
+                std::vector<std::filesystem::path> paths;
+                for(const auto& entry : std::filesystem::recursive_directory_iterator(from)) {
+                    paths.push_back(path::relativePath(entry.path(), from));
+                }
+
                 if(!from.filename().empty()) {
                     to = std::filesystem::weakly_canonical(to / from.filename());
                     std::filesystem::create_directories(to);
                 }
 
-                for(const auto& entry : std::filesystem::recursive_directory_iterator(from)) {
-                    std::filesystem::path copy_to = to / std::filesystem::relative(entry.path(), from);
-                    bool is_source_dir = std::filesystem::is_directory(entry.path());
+                for(int i = 0; i < paths.size(); i++) {
+                    std::filesystem::path source = from / paths[i];
+                    std::filesystem::path copy_to = to / paths[i];
+                    bool is_source_dir = std::filesystem::is_directory(source);
                     bool destination_exists = std::filesystem::exists(copy_to);
+                    
                     if(op == CopyOption::None && destination_exists && ch != 'a' && ch != 'A') {
                         ch = _private::copyWarning(path::relativePath(copy_to));
                     }
@@ -504,7 +512,7 @@ namespace path {
                     if(is_source_dir) { 
                         std::filesystem::create_directories(copy_to);
                     } else if(!destination_exists || op == CopyOption::OverwriteExisting || ch == 'y' || ch == 'Y' || ch == 'a' || ch == 'A') {
-                        _private::copyFile(entry.path(), copy_to);
+                        _private::copyFile(source, copy_to);
                     } 
                 }
             } else {

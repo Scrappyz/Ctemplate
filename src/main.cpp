@@ -11,7 +11,32 @@ std::string getSpaces(int spaces, const std::string& str)
     return std::string(actual_spaces, ' ');
 }
 
-void printHelp(const CLI& cli)
+std::string trim(const std::string& str)
+{
+    std::string trimmed;
+    trimmed.reserve(str.size());
+    int i = 0;
+    while(i < str.size() && str[i] == ' ') {
+        i++;
+    }
+    while(i < str.size()) {
+        if(str[i] == ' ') {
+            while(i < str.size() && str[i] == ' ') {
+                i++;
+            }
+            if(i >= str.size()) {
+                break;
+            } else {
+                trimmed.push_back(' ');
+            }
+        }
+        trimmed.push_back(str[i]);
+        i++;
+    }
+    return trimmed;
+}
+
+void printHelp(const CLI& cli, const Config& config)
 {
     std::string program = cli.getProgramName();
     std::string subcmd = cli.getActiveSubcommand();
@@ -29,9 +54,13 @@ void printHelp(const CLI& cli)
         std::cout << "Options: " << std::endl;
         std::cout << "  -h, --help                       Print help menu" << std::endl;
         std::cout << "  --version                        Print program version" << std::endl;
-        std::cout << "  --set-template-directory         Set the directory to look for templates" << std::endl; 
+        std::cout << "  --set-template-dir               Set the directory to look for templates" << std::endl; 
         std::cout << "  --set-template-editor            Set the editor to use when editing templates" << std::endl;
         std::cout << "  --setup                          Setup the program" << std::endl;
+        std::cout << std::endl;
+        std::cout << "Configuration:" << std::endl;
+        std::cout << "  Template Directory: \"" + config.getValue("template_directory") + "\"" << std::endl;
+        std::cout << "  Template Editor: \"" + config.getValue("template_editor") + "\"" << std::endl;
     } else if(subcmd == "init") {
         std::cout << "Usage:" << std::endl;
         std::cout << "  " << program << " " << subcmd << " <template> <options> [-p <path>]" << std::endl;
@@ -89,14 +118,21 @@ void setup()
 
     std::cout << "=====SETUP MENU=====" << std::endl;
     std::cout << "The template directory is where the templates will be saved (eg: D:/Documents/My Templates)" << std::endl;
-    std::cout << "Enter template directory: ";
+    std::cout << "Set template directory: ";
     getline(std::cin, temp);
+    temp = trim(temp);
+    if(temp.empty()) {
+        temp = path::joinPath(path::sourcePath(), "Templates");
+    } else {
+        temp = path::joinPath(path::currentPath(), temp);
+    }
     config.addKeyValue("template_directory", temp);
 
     std::cout << std::endl;
-    std::cout << "The template editor is the program to be used when editing templates (eg: D:/Programs/VS Code)" << std::endl;
-    std::cout << "Enter path to template editor: ";
+    std::cout << "The template editor is the program to be used when editing templates (eg: D:/Programs/VS Code/Code.exe)" << std::endl;
+    std::cout << "Set template editor: ";
     getline(std::cin, temp);
+    temp = trim(temp);
     config.addKeyValue("template_editor", temp);
 
     config.saveConfigToFile(path::joinPath(path::sourcePath(), "config.txt"));
@@ -206,7 +242,7 @@ void setAll(CLI& cli)
     cli.addSubcommands({"init", "add", "remove", "edit"});
     cli.addGlobalFlags({"-h", "--help"});
     cli.addGlobalFlags({"-l", "--list"}, {"add"});
-    cli.addFlags({"--version", "--setup", "--set-template-directory", "--set-template-editor"});
+    cli.addFlags({"--version", "--setup", "--set-template-dir", "--set-template-editor"});
     cli.addFlags("init", {"-l", "--list", "-s", "--skip-existing", 
     "-o", "--overwrite-existing", "-f", "--force", "-p", "--path"});
     cli.addFlags("add", {"-p", "--path", "-d", "--desc"});
@@ -220,14 +256,10 @@ int main(int argc, char* argv[])
     CLI cli(argc, argv);
     //cli.setArguments({"template", "init", "-f", "cpp", "-p", "D:\\Documents\\Codes\\VS Code\\C++\\Tools\\Project-Template\\bin\\Debug\\sub"});
     std::string program_name = cli.getProgramName();
+    Config config;
     try {
         setAll(cli);
         std::string subcmd = cli.getActiveSubcommand();
-
-        if(cli.isFlagActive({"-h", "--help"})) {
-            printHelp(cli);
-            return 0;
-        }
 
         if(subcmd.empty() && cli.isFlagActive("--setup")) {
             setup();
@@ -235,7 +267,12 @@ int main(int argc, char* argv[])
         }
 
         std::string config_path = path::joinPath(path::sourcePath(), "config.txt");
-        Config config(config_path);
+        config.setConfigFromFile(config_path);
+
+        if(cli.isFlagActive({"-h", "--help"})) {
+            printHelp(cli, config);
+            return 0;
+        }
 
         if(subcmd != "add" && cli.isFlagActive({"-l", "--list"})) {
             listTemplates(config);
@@ -243,8 +280,12 @@ int main(int argc, char* argv[])
         }
 
         if(subcmd.empty()) {
-            if(cli.isFlagActive("--set-template-directory")) {
-                config.modifyKeyValue("template_directory", cli.getValueOf("--set-template-directory"));
+            if(cli.isFlagActive("--set-template-dir")) {
+                std::string value = cli.getValueOf("--set-template-dir");
+                if(!path::isAbsolutePath(value)) {
+                    value = path::joinPath(path::currentPath(), value);
+                }
+                config.modifyKeyValue("template_directory", value);
                 config.saveConfigToFile(config_path);
             }
 
@@ -259,11 +300,11 @@ int main(int argc, char* argv[])
         }
     } catch(const CLIException& e) {
         std::cout << e.what() << std::endl;
-        printHelp(cli);
+        printHelp(cli, config);
         return 1;
     } catch(const std::runtime_error& e) {
         std::cout << e.what() << std::endl;
-        printHelp(cli);
+        printHelp(cli, config);
         return 1;
     }
 
