@@ -2,6 +2,15 @@
 #include "path.hpp"
 #include "config.hpp"
 
+std::string getSpaces(int spaces, const std::string& str)
+{
+    int actual_spaces = spaces - str.size();
+    if(actual_spaces < 5) {
+        actual_spaces = 5;
+    }
+    return std::string(actual_spaces, ' ');
+}
+
 void printHelp(const CLI& cli)
 {
     std::string program = cli.getProgramName();
@@ -100,7 +109,19 @@ void listTemplates(const Config& config)
 
     std::cout << "Templates:" << std::endl;
     for(const auto& entry : std::filesystem::directory_iterator(template_path)) {
-        std::cout << "  " << entry.path().filename().string() << std::endl;
+        std::string template_name = entry.path().filename().string();
+        std::string info_file = path::joinPath(entry.path(), ".template");
+        Config info;
+
+        if(path::exists(info_file)) {
+            info.setConfigFromFile(info_file);
+        }
+
+        std::cout << "  " << template_name;
+        if(info.doesKeyExist("description")) {
+            std::cout << getSpaces(35, template_name) << info.getValue("description");
+        }
+        std::cout << std::endl;
     }
 }
 
@@ -122,8 +143,6 @@ void initTemplate(const CLI& cli, const Config& config)
         option = path::CopyOption::SkipExisting;
     } else if(cli.isFlagActive({"-o", "--overwrite-existing"})) {
         option = path::CopyOption::OverwriteExisting;
-    } else if(cli.isFlagActive({"-f", "--force"})) {
-        option = path::CopyOption::OverwriteAll;
     }
 
     std::string to = path::currentPath();
@@ -131,11 +150,9 @@ void initTemplate(const CLI& cli, const Config& config)
         to = cli.getValueOf({"-p", "--path"});
     }
 
-    // if(cli.isFlagActive({"-f", "--force"})) {
-    //     for(const auto& entry : std::filesystem::directory_iterator(to)) {
-    //         path::remove(entry.path());
-    //     }
-    // }
+    if(cli.isFlagActive({"-f", "--force"})) {
+        path::remove(to + '/');
+    }
     
     for(const auto& entry : std::filesystem::directory_iterator(template_path)) {
         if(entry.path().filename() == ".template") {
@@ -144,7 +161,7 @@ void initTemplate(const CLI& cli, const Config& config)
         path::copy(entry.path(), to, option);
     }
 
-    std::cout << "[Success] Template " + template_name + " has been initialized" << std::endl;
+    std::cout << "[Success] Template \"" + template_name + "\" has been initialized" << std::endl;
 }
 
 void addTemplate(const CLI& cli, const Config& config)
@@ -163,16 +180,25 @@ void addTemplate(const CLI& cli, const Config& config)
     std::string template_name = cli.getValueOf();
     std::string template_path = path::joinPath(getTemplateDirectory(config), template_name);
 
+    if(path::exists(template_path)) {
+        char ch;
+        std::cout << "[Warning] \"" + template_name + "\" already exists. Would you like to overwrite? [y/n]: ";
+        std::cin >> ch;
+        if(ch != 'y' && ch != 'Y') {
+            return;
+        }
+    }
+
     path::createDirectory(template_path);
     path::copy(path_to_add, template_path, path::CopyOption::OverwriteAll);
 
+    Config template_info;
     if(cli.isFlagActive({"-d", "--desc"})) {
-        Config template_info;
         template_info.addKeyValue("description", cli.getValueOf({"-d", "--desc"}));
         template_info.saveConfigToFile(path::joinPath(template_path, ".template"));
     }
 
-    std::cout << "[Success] Template " + template_name + " has been added" << std::endl;
+    std::cout << "[Success] Template \"" + template_name + "\" has been added" << std::endl;
 }
 
 void setAll(CLI& cli)
@@ -192,7 +218,7 @@ void setAll(CLI& cli)
 int main(int argc, char* argv[])
 {
     CLI cli(argc, argv);
-    cli.setArguments({"template", "init", "-f", "cpp"});
+    //cli.setArguments({"template", "init", "-f", "cpp", "-p", "D:\\Documents\\Codes\\VS Code\\C++\\Tools\\Project-Template\\bin\\Debug\\sub"});
     std::string program_name = cli.getProgramName();
     try {
         setAll(cli);

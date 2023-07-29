@@ -516,8 +516,9 @@ namespace path {
                 bool is_destination_dir = std::filesystem::is_directory(to);
 
                 if(is_destination_dir && op == CopyOption::OverwriteAll) {
-                    path::remove(to);
-                    std::filesystem::create_directories(to);
+                    for(const auto& entry : std::filesystem::directory_iterator(to)) {
+                        path::remove(entry.path());
+                    }
                 } 
 
                 std::filesystem::path copy_to = std::filesystem::is_directory(to) ? std::filesystem::weakly_canonical(to / path::filename(from)) : to;
