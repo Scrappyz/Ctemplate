@@ -474,6 +474,10 @@ namespace path {
 
             char ch;
             if(std::filesystem::is_directory(from)) {
+                if(!std::filesystem::exists(to)) {
+                    std::filesystem::create_directories(to);
+                }
+
                 if(!std::filesystem::is_directory(to)) {
                     throw std::runtime_error("[Error][copy] \"" + to.filename().string() + "\" is a file");
                 }
@@ -496,8 +500,8 @@ namespace path {
                 }
 
                 for(int i = 0; i < paths.size(); i++) {
-                    std::filesystem::path source = from / paths[i];
-                    std::filesystem::path copy_to = to / paths[i];
+                    std::filesystem::path source = std::filesystem::weakly_canonical(from / paths[i]);
+                    std::filesystem::path copy_to = std::filesystem::weakly_canonical(to / paths[i]);
                     bool is_source_dir = std::filesystem::is_directory(source);
                     bool destination_exists = std::filesystem::exists(copy_to);
                     

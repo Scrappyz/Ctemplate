@@ -36,6 +36,12 @@ std::string trim(const std::string& str)
     return trimmed;
 }
 
+std::string getTemplateDirectory(const Config& config)
+{
+    std::string config_template_dir = config.getValue("template_directory");
+    return path::isAbsolutePath(config_template_dir) ? config_template_dir : path::joinPath(path::sourcePath(), config_template_dir);
+}
+
 void printHelp(const CLI& cli, const Config& config)
 {
     std::string program = cli.getProgramName();
@@ -47,12 +53,13 @@ void printHelp(const CLI& cli, const Config& config)
         std::cout << std::endl;
         std::cout << "Subcommands: " << std::endl;
         std::cout << "  init                             Initializes a template project" << std::endl;
+        std::cout << "  add                              Add a new template" << std::endl;
         std::cout << "  remove                           Remove an existing template" << std::endl;
-        std::cout << "  rename                           Rename an existing template" << std::endl;
         std::cout << "  edit                             Edit an existing template" << std::endl;
         std::cout << std::endl;
         std::cout << "Options: " << std::endl;
         std::cout << "  -h, --help                       Print help menu" << std::endl;
+        std::cout << "  -l, --list                       Print existing templates" << std::endl;
         std::cout << "  --version                        Print program version" << std::endl;
         std::cout << "  --set-template-dir               Set the directory to look for templates" << std::endl; 
         std::cout << "  --set-template-editor            Set the editor to use when editing templates" << std::endl;
@@ -68,7 +75,7 @@ void printHelp(const CLI& cli, const Config& config)
         std::cout << std::endl;
         std::cout << "Options:" << std::endl;
         std::cout << "  -h, --help                       Print help menu" << std::endl;
-        std::cout << "  -l, --list                       Print all existing templates" << std::endl;
+        std::cout << "  -l, --list                       Print existing templates" << std::endl;
         std::cout << "  -p, --path                       The path the template will be initialized on (default is the current path)" << std::endl;
         std::cout << "  -s, --skip-existing              Skip all existing files" << std::endl; 
         std::cout << "  -o, --overwrite-existing         Overwrites all existing files" << std::endl;
@@ -89,7 +96,7 @@ void printHelp(const CLI& cli, const Config& config)
         std::cout << std::endl;
         std::cout << "Options:" << std::endl;
         std::cout << "  -h, --help                       Print help menu" << std::endl;
-        std::cout << "  -l, --list                       Print all existing templates" << std::endl;
+        std::cout << "  -l, --list                       Print existing templates" << std::endl;
     } else if(subcmd == "edit") {
         std::cout << "Usage:" << std::endl;
         std::cout << "  " << program << " " << subcmd << " <options>" << std::endl;
@@ -97,7 +104,7 @@ void printHelp(const CLI& cli, const Config& config)
         std::cout << std::endl;
         std::cout << "Options:" << std::endl;
         std::cout << "  -h, --help                       Print help menu" << std::endl;
-        std::cout << "  -l, --list                       Print all existing templates" << std::endl;
+        std::cout << "  -l, --list                       Print existing templates" << std::endl;
         std::cout << "  -d, --desc                       Edit the description of a template" << std::endl;
         std::cout << "  -r, --rename                     Rename the template" << std::endl;
     } else {
@@ -105,10 +112,9 @@ void printHelp(const CLI& cli, const Config& config)
     }
 }
 
-std::string getTemplateDirectory(const Config& config)
+void printVersion(const std::string& program)
 {
-    std::string config_template_dir = config.getValue("template_directory");
-    return path::isAbsolutePath(config_template_dir) ? config_template_dir : path::joinPath(path::sourcePath(), config_template_dir);
+    std::cout << program << " v1.0.0" << std::endl;
 }
 
 void setup()
@@ -225,7 +231,6 @@ void addTemplate(const CLI& cli, const Config& config)
         }
     }
 
-    path::createDirectory(template_path);
     path::copy(path_to_add, template_path, path::CopyOption::OverwriteAll);
 
     Config template_info;
@@ -235,6 +240,77 @@ void addTemplate(const CLI& cli, const Config& config)
     }
 
     std::cout << "[Success] Template \"" + template_name + "\" has been added" << std::endl;
+}
+
+void removeTemplate(const CLI& cli, const Config& config)
+{
+    std::vector<std::string> template_names = cli.getAllValuesOf();
+
+    if(template_names.empty()) {
+        throw std::runtime_error("[Error] No template provided");
+    }
+
+    std::string template_dir = getTemplateDirectory(config);
+    std::vector<std::string> removed_templates;
+    for(int i = 0; i < template_names.size(); i++) {
+        std::string template_path = path::joinPath(template_dir, template_names[i]);
+
+        if(!path::exists(template_path)) {
+            continue;
+        }
+
+        path::remove(template_path);
+        removed_templates.push_back(template_names[i]);
+    }
+
+    if(!removed_templates.empty()) {
+        std::cout << "[Success] Template";
+        if(removed_templates.size() > 1) {
+            std::cout << "s";
+        }
+        std::cout << " ";
+        for(int i = 0; i < removed_templates.size(); i++) {
+            std::cout << "\"" << removed_templates[i] << "\"";
+            if(i < removed_templates.size()-1) {
+                std::cout << ", ";
+            }
+        }
+        std::cout << " has been removed";
+    }
+}
+
+void editTemplate(const CLI& cli, const Config& config)
+{
+    std::string template_name = cli.getValueOf();
+
+    if(template_name.empty()) {
+        throw std::runtime_error("[Error] No template provided");
+    }
+
+    std::string template_path = path::joinPath(getTemplateDirectory(config), template_name);
+    if(!path::exists(template_path)) {
+        throw std::runtime_error("[Error] Template \"" + template_name + "\" does not exist");
+    }
+
+    bool is_description = cli.isFlagActive({"-d", "--desc"});
+    bool is_rename = cli.isFlagActive({"-r", "--rename"});
+
+    if(is_description) {
+        Config info;
+        info.addKeyValue("description", cli.getValueOf({"-d", "--desc"}));
+        info.saveConfigToFile(path::joinPath(template_path, ".template"));
+        std::cout << "[Success] Description of \"" << template_name << "\" has been updated" << std::endl;
+    }
+
+    if(is_rename) {
+        std::string new_name = cli.getValueOf({"-r", "--rename"});
+        path::rename(template_path, new_name);
+        std::cout << "[Success] Template \"" << template_name << "\" has been renamed to " << new_name << std::endl;
+    }
+
+    if(!is_rename && !is_description) {
+        path::open(template_path, config.getValue("template_editor"));
+    }
 }
 
 void setAll(CLI& cli)
@@ -254,7 +330,7 @@ void setAll(CLI& cli)
 int main(int argc, char* argv[])
 {
     CLI cli(argc, argv);
-    //cli.setArguments({"template", "init", "-f", "cpp", "-p", "D:\\Documents\\Codes\\VS Code\\C++\\Tools\\Project-Template\\bin\\Debug\\sub"});
+    //cli.setArguments({"template", "edit", "cpp", "-r", "cpr"});
     std::string program_name = cli.getProgramName();
     Config config;
     try {
@@ -280,6 +356,11 @@ int main(int argc, char* argv[])
         }
 
         if(subcmd.empty()) {
+            if(cli.isFlagActive({"-v", "--version"})) {
+                printVersion(program_name);
+                return 0;
+            }
+
             if(cli.isFlagActive("--set-template-dir")) {
                 std::string value = cli.getValueOf("--set-template-dir");
                 if(!path::isAbsolutePath(value)) {
@@ -297,6 +378,10 @@ int main(int argc, char* argv[])
             initTemplate(cli, config);
         } else if(subcmd == "add") {
             addTemplate(cli, config);
+        } else if(subcmd == "remove") {
+            removeTemplate(cli, config);
+        } else if(subcmd == "edit") {
+            editTemplate(cli, config);
         }
     } catch(const CLIException& e) {
         std::cout << e.what() << std::endl;
