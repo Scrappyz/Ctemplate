@@ -325,13 +325,12 @@ void setAll(CLI& cli)
 int main(int argc, char* argv[])
 {
     CLI cli(argc, argv);
-    //cli.setArguments({"template", "-i"});
     std::string program_name = cli.getProgramName();
     std::string config_path = path::joinPath(path::sourcePath(), "config.txt");
     Config config;
     try {
         config.addKey("template_directory");
-        
+
         setAll(cli);
         std::string subcmd = cli.getActiveSubcommand();
 
