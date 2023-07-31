@@ -1,5 +1,8 @@
 #pragma once
 
+#include "cli.hpp"
+#include "config.hpp"
+
 void printHelp(const CLI& cli, const Config& config);
 void printVersion(const std::string& program);
 void setup();

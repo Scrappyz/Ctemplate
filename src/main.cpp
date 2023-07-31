@@ -1,8 +1,6 @@
 #include "main.hpp"
 #include "util.hpp"
-#include "cli.hpp"
 #include "path.hpp"
-#include "config.hpp"
 
 void printHelp(const CLI& cli, const Config& config)
 {
