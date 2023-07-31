@@ -100,11 +100,13 @@ void listTemplates(const Config& config)
 {
     std::filesystem::path template_dir = getTemplateDirectory(config);
 
+    std::cout << "Templates:" << std::endl;
     if(!path::exists(template_dir)) {
-        throw std::runtime_error("[Error] The template directory does not exist");
+        std::cout << "  [NO TEMPLATES FOUND]" << std::endl;
+        return;
     }
 
-    std::cout << "Templates:" << std::endl;
+    int template_count = 0;
     for(const auto& entry : std::filesystem::directory_iterator(template_dir)) {
         std::string template_name = entry.path().filename().string();
         std::string info_file = path::joinPath(entry.path(), ".template");
@@ -119,6 +121,11 @@ void listTemplates(const Config& config)
             std::cout << getSpaces(35, template_name) << info.getValue("description");
         }
         std::cout << std::endl;
+        template_count++;
+    }
+
+    if(template_count == 0) {
+        std::cout << "  [NO TEMPLATES FOUND]" << std::endl;
     }
 }
 
@@ -144,7 +151,7 @@ void initTemplate(const CLI& cli, const Config& config)
 
     std::string to = path::currentPath();
     if(cli.isFlagActive({"-p", "--path"})) {
-        to = cli.getValueOf({"-p", "--path"});
+        to = path::absolutePath(cli.getValueOf({"-p", "--path"}));
     }
 
     if(cli.isFlagActive({"-f", "--force"})) {
@@ -165,7 +172,7 @@ void addTemplate(const CLI& cli, const Config& config)
 {
     std::string path_to_add;
     if(cli.isFlagActive({"-p", "--path"})) {
-        path_to_add = cli.getValueOf({"-p", "--path"});
+        path_to_add = path::absolutePath(cli.getValueOf({"-p", "--path"}));
     }
 
     if(path_to_add.empty() || path_to_add == ".") {

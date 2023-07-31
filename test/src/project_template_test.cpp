@@ -1,8 +1,11 @@
 #include "gtest/gtest.h"
+#include "main.hpp"
+#include "path.hpp"
 
-using namespace std;
+std::string test_path = path::joinPath(path::sourcePath(), "../test_path");
 
-TEST(MyTest, play)
+// TO BE ADDED
+TEST(initTemplate, stuff)
 {
-    EXPECT_EQ(true, true);
+    
 }
