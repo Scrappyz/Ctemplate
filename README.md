@@ -1,26 +1,20 @@
 ## Project Template
 A lightweight C++ program that initialize projects from saved templates.
 
-<!-- omit in toc-->
 ## Table Of Contents
 - [Project Template](#project-template)
-- [Table Of Contents](#table-of-contents)
 - [Getting Started](#getting-started)
   - [Installation](#installation)
   - [Setup](#setup)
 - [Usage](#usage)
   - [Initializing Templates](#initializing-templates)
-    - [Examples](#examples)
   - [Adding Templates](#adding-templates)
-    - [Examples](#examples-1)
   - [Deleting Templates](#deleting-templates)
-    - [Examples](#examples-2)
   - [Editing Templates](#editing-templates)
-    - [Examples](#examples-3)
 
 ## Getting Started
 ### Installation
-1. Download latest release from `url`
+1. Download latest release from `https://github.com/Scrappyz/Template/releases`
 2. Extract the `Project-Template` folder to your designated location
 3. Copy the path to the `Project-Template` folder
 4. Go to environmental variables
