@@ -14,16 +14,14 @@ A lightweight C++ program that initialize projects from saved templates.
 
 ## Getting Started
 ### Installation
-1. Download latest release from `https://github.com/Scrappyz/Template/releases`
-2. Extract the `Project-Template` folder to your designated location
-3. Copy the path to the `Project-Template` folder
-4. Go to environmental variables
-5. Add the copied path to the `Path`
+1. Download the executable in [releases](https://github.com/Scrappyz/Project-Template/releases)
+2. Place the executable in an empty folder
+3. Add the directory the executable is in to the `PATH`
 
 You can now use `template.exe` in the command-line.
 
 ### Setup
-1. Run `template.exe --setup`.
+1. Run `template.exe --setup`
 2. Enter the template directory
 
 ## Usage

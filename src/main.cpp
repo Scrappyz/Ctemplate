@@ -72,7 +72,7 @@ void printHelp(const CLI& cli, const Config& config)
 
 void printVersion(const std::string& program)
 {
-    std::cout << program << " v1.0.0" << std::endl;
+    std::cout << program << " v1.0.0-beta.1" << std::endl;
 }
 
 void setup()
