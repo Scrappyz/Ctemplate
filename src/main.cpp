@@ -20,7 +20,7 @@ void printHelp(const CLI& cli, const Config& config)
         std::cout << "Options: " << std::endl;
         std::cout << "  -h, --help                       Print help menu" << std::endl;
         std::cout << "  -l, --list                       Print existing templates" << std::endl;
-        std::cout << "  --version                        Print program version" << std::endl;
+        std::cout << "  -v, --version                    Print program version" << std::endl;
         std::cout << "  --set-template-dir               Set the directory to look for templates" << std::endl; 
         std::cout << "  --setup                          Setup the program" << std::endl;
         std::cout << std::endl;
@@ -35,12 +35,12 @@ void printHelp(const CLI& cli, const Config& config)
         std::cout << "  -h, --help                       Print help menu" << std::endl;
         std::cout << "  -l, --list                       Print existing templates" << std::endl;
         std::cout << "  -p, --path                       The path the template will be initialized on (default is the current path)" << std::endl;
-        std::cout << "  -s, --skip-existing              Skip all existing files" << std::endl; 
-        std::cout << "  -o, --overwrite-existing         Overwrites all existing files" << std::endl;
-        std::cout << "  -f, --force                      Overwrites the whole directory" << std::endl;
+        std::cout << "  -s, --skip-existing              Skip existing files" << std::endl; 
+        std::cout << "  -o, --overwrite-existing         Overwrite existing files" << std::endl;
+        std::cout << "  -f, --force                      Overwrite whole directory" << std::endl;
     } else if(subcmd == "add") {
         std::cout << "Usage:" << std::endl;
-        std::cout << "  " << program << " " << subcmd << " <new-template> [-p <path>]" << std::endl;
+        std::cout << "  " << program << " " << subcmd << " <new-template> [-d <description>] [-p <path>]" << std::endl;
         std::cout << "  " << program << " " << subcmd << " <options>" << std::endl;
         std::cout << std::endl;
         std::cout << "Options:" << std::endl;
@@ -57,8 +57,8 @@ void printHelp(const CLI& cli, const Config& config)
         std::cout << "  -l, --list                       Print existing templates" << std::endl;
     } else if(subcmd == "edit") {
         std::cout << "Usage:" << std::endl;
-        std::cout << "  " << program << " " << subcmd << " <options>" << std::endl;
         std::cout << "  " << program << " " << subcmd << " <existing-template> <options> <values>" << std::endl;
+        std::cout << "  " << program << " " << subcmd << " <options>" << std::endl;
         std::cout << std::endl;
         std::cout << "Options:" << std::endl;
         std::cout << "  -h, --help                       Print help menu" << std::endl;
@@ -82,7 +82,7 @@ void setup()
 
     std::cout << "=====SETUP MENU=====" << std::endl;
     std::cout << "The template directory is where the templates will be saved (eg: D:/Documents/My Templates)" << std::endl;
-    std::cout << "Set template directory: ";
+    std::cout << "Set template directory (Enter nothing for default): ";
     getline(std::cin, temp);
     temp = trim(temp);
     if(temp.empty()) {
@@ -90,7 +90,9 @@ void setup()
     } else {
         temp = path::joinPath(path::currentPath(), temp);
     }
+    std::cout << "Template directory has been set to \"" << temp << "\"" << std::endl;
     config.addKeyValue("template_directory", temp);
+    
     config.saveConfigToFile(path::joinPath(path::sourcePath(), "config.txt"));
 
     std::cout << "=====SETUP COMPLETE=====" << std::endl;
@@ -118,7 +120,8 @@ void listTemplates(const Config& config)
 
         std::cout << "  " << template_name;
         if(info.doesKeyExist("description")) {
-            std::cout << getSpaces(35, template_name) << info.getValue("description");
+            std::string desc = info.getValue("description");
+            std::cout << getSpaces(35, template_name) << desc;
         }
         std::cout << std::endl;
         template_count++;
@@ -244,12 +247,16 @@ void removeTemplate(const CLI& cli, const Config& config)
 void editTemplate(const CLI& cli, const Config& config)
 {
     std::string template_name = cli.getValueOf();
-
+    std::string template_dir = getTemplateDirectory(config);
     if(template_name.empty()) {
-        throw std::runtime_error("[Error] No template provided");
+        if(!path::exists(template_dir)) {
+            path::createDirectory(template_dir);
+        }
+        path::open(template_dir);
+        return;
     }
 
-    std::string template_path = path::joinPath(getTemplateDirectory(config), template_name);
+    std::string template_path = path::joinPath(template_dir, template_name);
     if(!path::exists(template_path)) {
         throw std::runtime_error("[Error] Template \"" + template_name + "\" does not exist");
     }
@@ -303,6 +310,12 @@ int main(int argc, char* argv[])
 
         if(subcmd.empty() && cli.isFlagActive("--setup")) {
             setup();
+            return 0;
+        }
+
+        if(!path::exists(config_path)) {
+            std::cout << "[Error] Config file is missing" << std::endl;
+            std::cout << "Try running \"" << program_name << " --setup\"" << std::endl;
             return 0;
         }
 
