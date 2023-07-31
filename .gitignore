@@ -1,4 +1,9 @@
-bin/
-build/
-.vscode/
-temp/
+*
+!include/
+!include/**
+!src/
+!src/**
+!test/
+!test/**
+test/bin
+test/bin/**
