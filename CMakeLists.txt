@@ -18,3 +18,8 @@ if(LINK_STATIC)
 endif()
 
 set_target_properties(${PROJECT_NAME} PROPERTIES OUTPUT_NAME "template")
+
+if(CMAKE_BUILD_TYPE STREQUAL "Debug")
+  include(CTest)
+  add_subdirectory(test)
+endif()
