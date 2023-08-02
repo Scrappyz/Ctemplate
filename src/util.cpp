@@ -40,3 +40,16 @@ std::string getTemplateDirectory(const Config& config)
     std::string config_template_dir = config.getValue("template_directory");
     return path::isAbsolutePath(config_template_dir) ? config_template_dir : path::joinPath(path::sourcePath(), config_template_dir);
 }
+
+std::string getConfigValue(const Config& config, const std::string& section, const std::string& key)
+{
+    if(config.doesSectionExist(section) && config.doesKeyExist(key)) {
+        return config.getValue(section, key);
+    }
+    return std::string();
+}
+
+std::string getConfigValue(const Config& config, const std::string& key)
+{
+    return getConfigValue(config, "", key);
+}

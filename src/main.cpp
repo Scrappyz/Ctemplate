@@ -25,7 +25,7 @@ void printHelp(const CLI& cli, const Config& config)
         std::cout << "  --setup                          Setup the program" << std::endl;
         std::cout << std::endl;
         std::cout << "Configuration:" << std::endl;
-        std::cout << "  Template Directory: \"" + config.getValue("template_directory") + "\"" << std::endl;
+        std::cout << "  Template Directory: \"" << getConfigValue(config, "template_directory") << "\"" << std::endl;
     } else if(subcmd == "init") {
         std::cout << "Usage:" << std::endl;
         std::cout << "  " << program << " " << subcmd << " <template> <options> [-p <path>]" << std::endl;
@@ -93,7 +93,7 @@ void setup()
     std::cout << "Template directory has been set to \"" << temp << "\"" << std::endl;
     config.addKeyValue("template_directory", temp);
     
-    config.saveConfigToFile(path::joinPath(path::sourcePath(), "config.txt"));
+    config.writeConfigToFile(path::joinPath(path::sourcePath(), "config.txt"));
 
     std::cout << "=====SETUP COMPLETE=====" << std::endl;
 }
@@ -115,7 +115,7 @@ void listTemplates(const Config& config)
         Config info;
 
         if(path::exists(info_file)) {
-            info.setConfigFromFile(info_file);
+            info.readConfigFromFile(info_file);
         }
 
         std::cout << "  " << template_name;
@@ -201,7 +201,7 @@ void addTemplate(const CLI& cli, const Config& config)
     Config template_info;
     if(cli.isFlagActive({"-d", "--desc"})) {
         template_info.addKeyValue("description", cli.getValueOf({"-d", "--desc"}));
-        template_info.saveConfigToFile(path::joinPath(template_path, ".template"));
+        template_info.writeConfigToFile(path::joinPath(template_path, ".template"));
     }
 
     std::cout << "[Success] Template \"" + template_name + "\" has been added" << std::endl;
@@ -267,7 +267,7 @@ void editTemplate(const CLI& cli, const Config& config)
     if(is_description) {
         Config info;
         info.addKeyValue("description", cli.getValueOf({"-d", "--desc"}));
-        info.saveConfigToFile(path::joinPath(template_path, ".template"));
+        info.writeConfigToFile(path::joinPath(template_path, ".template"));
         std::cout << "[Success] Description of \"" << template_name << "\" has been updated" << std::endl;
     }
 
@@ -303,10 +303,18 @@ int main(int argc, char* argv[])
     std::string config_path = path::joinPath(path::sourcePath(), "config.txt");
     Config config;
     try {
-        config.addKey("template_directory");
-
         setAll(cli);
         std::string subcmd = cli.getActiveSubcommand();
+
+        if(cli.isFlagActive({"-h", "--help"})) {
+            printHelp(cli, config);
+            return 0;
+        }
+
+        if(subcmd.empty() && cli.isFlagActive({"-v", "--version"})) {
+            printVersion(program_name);
+            return 0;
+        }
 
         if(subcmd.empty() && cli.isFlagActive("--setup")) {
             setup();
@@ -319,12 +327,7 @@ int main(int argc, char* argv[])
             return 0;
         }
 
-        config.setConfigFromFile(config_path);
-
-        if(cli.isFlagActive({"-h", "--help"})) {
-            printHelp(cli, config);
-            return 0;
-        }
+        config.readConfigFromFile(config_path);
 
         if(subcmd != "add" && cli.isFlagActive({"-l", "--list"})) {
             listTemplates(config);
@@ -332,18 +335,13 @@ int main(int argc, char* argv[])
         }
 
         if(subcmd.empty()) {
-            if(cli.isFlagActive({"-v", "--version"})) {
-                printVersion(program_name);
-                return 0;
-            }
-
             if(cli.isFlagActive("--set-template-dir")) {
                 std::string value = cli.getValueOf("--set-template-dir");
                 if(!path::isAbsolutePath(value)) {
                     value = path::joinPath(path::currentPath(), value);
                 }
                 config.modifyKeyValue("template_directory", value);
-                config.saveConfigToFile(config_path);
+                config.writeConfigToFile(config_path);
             }
         } else if(subcmd == "init") {
             initTemplate(cli, config);

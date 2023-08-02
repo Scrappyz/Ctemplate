@@ -1,3 +1,5 @@
+// Github Repo: https://github.com/Scrappyz/CLI
+// Version: 1.1.1
 #pragma once
 
 #include <string>
@@ -81,11 +83,12 @@ class CLI {
                     continue;
                 } 
 
-                for(int j = 0; j < flags.size(); j++) { // something wrong here
+                for(int j = 0; j < flags.size(); j++) {
                     if(isFlagValid(flags[j])) {
                         subcommands.at(active_subcommand)[flags[j]] = i;
                     } else {
-                        throw CLIException(__func__, "\"" + flags[j] + "\" is not a valid flag of the \"" + active_subcommand + "\" subcommand");
+                        std::string append = active_subcommand.empty() ? "" : " of the \"" + active_subcommand + "\" subcommand";
+                        throw CLIException(__func__, "\"" + flags[j] + "\" is not a valid flag" + append);
                     }
                 }
             }
@@ -637,7 +640,8 @@ class CLI {
         bool isFlagActive(const std::string& flag) const
         {
             if(subcommands.at(active_subcommand).count(flag) < 1) {
-                throw CLIException(__func__, "\"" + flag + "\" is not a valid flag of \"" + active_subcommand + "\"");
+                std::string append = active_subcommand.empty() ? "" : " of the \"" + active_subcommand + "\" subcommand";
+                throw CLIException(__func__, "\"" + flag + "\" is not a valid flag" + append);
             }
             return subcommands.at(active_subcommand).at(flag) >= 0;
         }
