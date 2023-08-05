@@ -1,0 +1,1 @@
+template_directory = "D:\Documents\Codes\VS Code\C++\Tools\Project-Template\test\test_path\templates"
