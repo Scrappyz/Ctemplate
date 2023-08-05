@@ -2,6 +2,7 @@
 
 #include "cli.hpp"
 #include "config.hpp"
+#include "path.hpp"
 
 void printHelp(const CLI& cli, const Config& config);
 void printVersion(const std::string& program);

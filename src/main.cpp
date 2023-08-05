@@ -25,7 +25,7 @@ void printHelp(const CLI& cli, const Config& config)
         std::cout << "  --setup                          Setup the program" << std::endl;
         std::cout << std::endl;
         std::cout << "Configuration:" << std::endl;
-        std::cout << "  Template Directory: \"" << getConfigValue(config, "template_directory") << "\"" << std::endl;
+        std::cout << "  Template Directory: \"" << config.getValue("template_directory", false) << "\"" << std::endl;
     } else if(subcmd == "init") {
         std::cout << "Usage:" << std::endl;
         std::cout << "  " << program << " " << subcmd << " <template> <options> [-p <path>]" << std::endl;
@@ -72,7 +72,7 @@ void printHelp(const CLI& cli, const Config& config)
 
 void printVersion(const std::string& program)
 {
-    std::cout << program << " v1.0.0-beta.1" << std::endl;
+    std::cout << program << " v1.0.0-beta.2" << std::endl;
 }
 
 void setup()
@@ -306,16 +306,6 @@ int main(int argc, char* argv[])
         setAll(cli);
         std::string subcmd = cli.getActiveSubcommand();
 
-        if(cli.isFlagActive({"-h", "--help"})) {
-            printHelp(cli, config);
-            return 0;
-        }
-
-        if(subcmd.empty() && cli.isFlagActive({"-v", "--version"})) {
-            printVersion(program_name);
-            return 0;
-        }
-
         if(subcmd.empty() && cli.isFlagActive("--setup")) {
             setup();
             return 0;
@@ -328,6 +318,16 @@ int main(int argc, char* argv[])
         }
 
         config.readConfigFromFile(config_path);
+
+        if(cli.isFlagActive({"-h", "--help"})) {
+            printHelp(cli, config);
+            return 0;
+        }
+
+        if(subcmd.empty() && cli.isFlagActive({"-v", "--version"})) {
+            printVersion(program_name);
+            return 0;
+        }
 
         if(subcmd != "add" && cli.isFlagActive({"-l", "--list"})) {
             listTemplates(config);
