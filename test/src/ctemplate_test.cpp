@@ -1,9 +1,8 @@
 #include "gtest/gtest.h"
-#include "main.hpp"
 #include "helper.hpp"
 
-TEST(splits, splitting)
+TEST(split, splitting)
 {
-    EXPECT_EQ(2,2);
-    EXPECT_EQ(add(2,2), 4);
+    std::vector<std::string> s = split("key=value", "=");
+    EXPECT_EQ(s, std::vector<std::string>({"key", "value"}));
 }

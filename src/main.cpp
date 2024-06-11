@@ -1,4 +1,6 @@
-#include "main.hpp"
+#include <iostream>
+#include <fstream>
+#include "os.hpp"
 #include "CLI11.hpp"
 #include "helper.hpp"
 
@@ -8,11 +10,6 @@ namespace path = os::path;
 void listTemplates()
 {
     std::cout << "list templates" << std::endl;
-}
-
-int add(int a, int b)
-{
-    return a+b;
 }
 
 int main(int argc, char** argv)
