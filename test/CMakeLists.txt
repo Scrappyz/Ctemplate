@@ -19,12 +19,12 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY_DEBUG ${CMAKE_CURRENT_SOURCE_DIR}/bin)
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY_RELEASE ${CMAKE_CURRENT_SOURCE_DIR}/bin)
 
 # Add the unit testing target executable
-add_executable(project_template_test ${CMAKE_CURRENT_SOURCE_DIR}/src/project_template_test.cpp)
-target_include_directories(project_template_test PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/../include)
-target_link_libraries(project_template_test PUBLIC gtest_main)
+add_executable(ctemplate_test ${CMAKE_CURRENT_SOURCE_DIR}/src/ctemplate_test.cpp)
+target_include_directories(ctemplate_test PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/../include)
+target_link_libraries(ctemplate_test PUBLIC gtest_main)
 
 # Add tests
 add_test(
-    NAME ProjectTemplateTest
-    COMMAND project_template_test
+    NAME CtemplateTest
+    COMMAND ctemplate_test
 )
