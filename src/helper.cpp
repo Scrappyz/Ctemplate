@@ -1,6 +1,8 @@
 #include "helper.hpp"
 #include <fstream>
 #include <unordered_set>
+#include <iomanip>
+#include <sstream>
 
 using json = nlohmann::json;
 
@@ -14,7 +16,7 @@ json readJsonFromFile(const std::string& file)
     return j;
 }
 
-void writeJsonToFile(const nlohmann::json& j, const std::string& file, int indent)
+void writeJsonToFile(const json& j, const std::string& file, int indent)
 {
     std::ofstream o(file);
     o << std::setw(indent) << j;
@@ -50,4 +52,28 @@ std::vector<std::string> split(const std::string& str, const std::string& separa
         }
     }
     return v;
+}
+
+std::string alignedSpace(int total_space, int occupied_space)
+{
+    return std::string(total_space - occupied_space, ' ');
+}
+
+std::vector<std::string> getAlignedOutput(const std::vector<std::vector<std::string>>& v, int space)
+{
+    std::stringstream s;
+    std::vector<std::string> table;
+    
+    for(int i = 0; i < v.size(); i++) {
+        std::string temp;
+        s << std::left << std::setfill(' ') << std::setw(space);
+        for(int j = 0; j < v[i].size(); j++) {
+            s << v[i][j];
+            temp.append(s.str());
+            s.str(std::string());
+        }
+        table.push_back(temp);
+    }
+
+    return table;
 }

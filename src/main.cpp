@@ -7,9 +7,26 @@
 using json = nlohmann::json;
 namespace path = os::path;
 
-void listTemplates()
+void listTemplates(const std::string& template_dir, const std::string& container_name)
 {
-    std::cout << "list templates" << std::endl;
+    // std::cout << "Templates:" << std::endl;
+    // for(const auto& i : std::filesystem::directory_iterator(template_dir)) {
+    //     std::string template_name = i.path().filename().string();
+    //     std::cout << "  " << template_name;
+    //     std::string info_file = path::joinPath({i.path(), container_name, "info.json"});
+        
+    //     if(!path::exists(info_file)) {
+    //         std::cout << std::endl;
+    //         continue;
+    //     }
+
+    //     json info = readJsonFromFile(info_file);
+    // }
+    std::vector<std::vector<std::string>> v = {{"wassup", "some description of\nmy balls"}, {"gago", "this is swear"}};
+    std::vector<std::string> s = getAlignedOutput(v, 30);
+    for(const auto& i : s) {
+        std::cout << "  " << i << std::endl;
+    } 
 }
 
 int main(int argc, char** argv)
@@ -19,7 +36,8 @@ int main(int argc, char** argv)
 
     // Default settings
     json app_config = {
-        {"templateDir", path::joinPath(path::sourcePath(), "templates")} 
+        {"templateDirectory", path::joinPath(path::sourcePath(), "templates")},
+        {"containerName", ".ctemplate"}
     };
 
     std::string config_file_path = path::joinPath(path::sourcePath(), "config.json");
@@ -32,9 +50,9 @@ int main(int argc, char** argv)
     }
 
     // Directory where templates are stored
-    std::string template_dir = app_config.at("templateDir");
+    std::string template_dir = app_config.at("templateDirectory");
 
-    // Check if absolute path or relative path. If relative, make it absolute
+    // Check if absolute path or relative path. If relative, make it absolute, relative to source
     if(!path::isAbsolutePath(template_dir)) {
         template_dir = path::joinPath(path::sourcePath(), template_dir);
     }
@@ -43,6 +61,8 @@ int main(int argc, char** argv)
     if(!path::exists(template_dir)) {
         path::createDirectory(template_dir);
     }
+
+    std::string container_name = app_config.at("containerName");
 
     bool list_template = false;
 
@@ -82,7 +102,7 @@ int main(int argc, char** argv)
     if(*init) {
         std::cout << "init" << std::endl;
         if(list_template) {
-            listTemplates();
+            listTemplates(template_dir, container_name);
         }
     } else if(*add) {
         std::cout << add_path << std::endl;
@@ -93,7 +113,7 @@ int main(int argc, char** argv)
             std::cout << i << std::endl;
         }
     } else if(*list) {
-        listTemplates();
+        listTemplates(template_dir, container_name);
     } else {
         std::cout << "nuh uh" << std::endl;
     }
