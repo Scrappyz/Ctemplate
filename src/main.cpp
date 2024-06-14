@@ -7,6 +7,13 @@
 using json = nlohmann::json;
 namespace path = os::path;
 
+void showConfig(const json& config, int space_before = 0)
+{
+    for(const auto& i : config.items()) {
+        std::cout << std::string(space_before, ' ') << i.key() << " = " << i.value() << std::endl;
+    }
+}
+
 void listTemplates(const std::string& template_dir, const std::string& container_name)
 {
     // If the template directory is empty
@@ -127,6 +134,9 @@ int main(int argc, char** argv)
         }
     } else if(*list) {
         listTemplates(template_dir, container_name);
+    } else if(*config) {
+        std::cout << "Configuration:" << std::endl;
+        showConfig(app_config, 2);
     } else {
         std::cout << "nuh uh" << std::endl;
     }
