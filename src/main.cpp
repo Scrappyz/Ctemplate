@@ -28,6 +28,29 @@ void setConfigValue(json& config, const std::vector<std::string>& config_key_val
     }
 }
 
+void removeTemplates(const std::vector<std::string>& templates, const std::string& template_dir)
+{
+    std::vector<std::string> deleted;
+    for(int i = 0; i < templates.size(); i++) {
+        std::string template_path = path::joinPath(template_dir, templates[i]);
+        if(path::exists(template_path)) {
+            path::remove(template_path);
+            deleted.push_back(templates[i]);
+        }
+    }
+
+    if(!deleted.empty()) {
+        std::cout << "[SUCCESS] Templates ";
+        for(int i = 0; i < deleted.size(); i++) {
+            std::cout << "\"" << deleted[i] << "\"";
+            if(i < deleted.size()-1) {
+                std::cout << ", ";
+            }
+        }
+        std::cout << " have been removed" << std::endl;
+    }
+}
+
 void listTemplates(const std::string& template_dir, const std::string& container_name)
 {
     // If the template directory is empty
@@ -144,9 +167,7 @@ int main(int argc, char** argv)
         std::cout << add_template_name << std::endl;
         std::cout << add_template_desc << std::endl;
     } else if(*remove) {
-        for(const auto& i : remove_template_names) {
-            std::cout << i << std::endl;
-        }
+        removeTemplates(remove_template_names, template_dir);
     } else if(*list) {
         listTemplates(template_dir, container_name);
     } else if(*config) { // Config commands
