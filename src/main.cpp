@@ -9,8 +9,13 @@ namespace path = os::path;
 
 void listTemplates(const std::string& template_dir, const std::string& container_name)
 {
+    if(path::isEmpty(template_dir)) {
+        std::cout << "[ERROR] No Templates Found" << std::endl;
+        return;
+    }
+
     std::vector<std::vector<std::string>> v;
-    std::cout << "Templates:" << std::endl;
+    std::cout << "Templates:" << std::endl;    
     for(const auto& i : std::filesystem::directory_iterator(template_dir)) {
         std::vector<std::string> temp;
         std::string template_name = i.path().filename().string();

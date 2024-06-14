@@ -38,6 +38,11 @@ namespace os {
             return std::filesystem::exists(path);
         }
 
+        inline bool isEmpty(const std::filesystem::path& path)
+        {
+            return std::filesystem::is_empty(path);
+        }
+
         inline bool isAbsolutePath(const std::filesystem::path& path)
         {
             return path.is_absolute();
