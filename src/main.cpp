@@ -14,6 +14,20 @@ void showConfig(const json& config, int space_before = 0)
     }
 }
 
+void setConfigValue(json& config, const std::vector<std::string>& config_key_values)
+{
+    for(int i = 0; i < config_key_values.size(); i++) {
+        std::vector<std::string> keyval = split(config_key_values[i], "=");
+
+        if(!config.contains(keyval[0])) {
+            std::cout << "[WARNING] Key \"" << keyval[0] << "\" does not exist" << std::endl;
+            continue;
+        }
+
+        config[keyval[0]] = keyval[1];
+    }
+}
+
 void listTemplates(const std::string& template_dir, const std::string& container_name)
 {
     // If the template directory is empty
@@ -34,6 +48,7 @@ void listTemplates(const std::string& template_dir, const std::string& container
 
         // Check if info.json exists
         if(!path::exists(info_file)) {
+            v.push_back(temp);
             continue;
         }
 
@@ -134,7 +149,12 @@ int main(int argc, char** argv)
         }
     } else if(*list) {
         listTemplates(template_dir, container_name);
-    } else if(*config) {
+    } else if(*config) { // Config commands
+        if(*set) { // Change config values
+            setConfigValue(app_config, config_set_values);
+            writeJsonToFile(app_config, config_file_path, 4);
+            return 0;
+        }
         std::cout << "Configuration:" << std::endl;
         showConfig(app_config, 2);
     } else {
