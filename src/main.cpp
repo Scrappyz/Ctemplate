@@ -9,24 +9,27 @@ namespace path = os::path;
 
 void listTemplates(const std::string& template_dir, const std::string& container_name)
 {
-    // std::cout << "Templates:" << std::endl;
-    // for(const auto& i : std::filesystem::directory_iterator(template_dir)) {
-    //     std::string template_name = i.path().filename().string();
-    //     std::cout << "  " << template_name;
-    //     std::string info_file = path::joinPath({i.path(), container_name, "info.json"});
-        
-    //     if(!path::exists(info_file)) {
-    //         std::cout << std::endl;
-    //         continue;
-    //     }
+    std::vector<std::vector<std::string>> v;
+    std::cout << "Templates:" << std::endl;
+    for(const auto& i : std::filesystem::directory_iterator(template_dir)) {
+        std::vector<std::string> temp;
+        std::string template_name = i.path().filename().string();
+        temp.push_back(template_name);
+        std::string info_file = path::joinPath({i.path(), container_name, "info.json"});
 
-    //     json info = readJsonFromFile(info_file);
-    // }
-    std::vector<std::vector<std::string>> v = {{"wassup", "some description of\nmy balls"}, {"gago", "this is swear"}};
-    std::vector<std::string> s = getAlignedOutput(v, 30);
-    for(const auto& i : s) {
+        if(!path::exists(info_file)) {
+            continue;
+        }
+
+        json info = readJsonFromFile(info_file);
+        temp.push_back(info.at("description"));
+        v.push_back(temp);
+    }
+
+    std::vector<std::string> output = getAlignedOutput(v, 40);
+    for(const auto& i : output) {
         std::cout << "  " << i << std::endl;
-    } 
+    }
 }
 
 int main(int argc, char** argv)

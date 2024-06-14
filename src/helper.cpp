@@ -54,11 +54,6 @@ std::vector<std::string> split(const std::string& str, const std::string& separa
     return v;
 }
 
-std::string alignedSpace(int total_space, int occupied_space)
-{
-    return std::string(total_space - occupied_space, ' ');
-}
-
 std::vector<std::string> getAlignedOutput(const std::vector<std::vector<std::string>>& v, int space)
 {
     std::stringstream s;
@@ -76,4 +71,37 @@ std::vector<std::string> getAlignedOutput(const std::vector<std::vector<std::str
     }
 
     return table;
+}
+
+std::vector<std::vector<std::string>> makeTable(const std::vector<std::vector<std::string>>& v)
+{
+    // Unfinished
+    std::vector<std::vector<std::string>> cleaned;
+    std::vector<std::string> overflow;
+    for(int i = 0; i < v.size(); i++) {
+        for(int j = 0; j < v[i].size(); j++) {
+            std::string str = v[i][j];
+            int endlines = 0;
+            std::string temp;
+            for(int k = 0; k < str.size(); k++) {
+                if(str[k] == '\n') {
+                    endlines++;
+                    if(!temp.empty()) {
+                        overflow.push_back(temp);
+                    }
+                    temp.clear();
+                    continue;
+                }
+
+                if(endlines > 0) {
+                    temp.push_back(str[k]);
+                }
+            }
+            if(!temp.empty() && endlines > 0) {
+                overflow.push_back(temp);
+            }
+        }
+    }
+
+    return cleaned;
 }
