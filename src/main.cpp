@@ -9,19 +9,23 @@ namespace path = os::path;
 
 void listTemplates(const std::string& template_dir, const std::string& container_name)
 {
+    // If the template directory is empty
     if(path::isEmpty(template_dir)) {
         std::cout << "[ERROR] No Templates Found" << std::endl;
         return;
     }
 
-    std::vector<std::vector<std::string>> v;
+    std::vector<std::vector<std::string>> v; // A table
     std::cout << "Templates:" << std::endl;    
+
+    // Iterate through the whole template directory
     for(const auto& i : std::filesystem::directory_iterator(template_dir)) {
-        std::vector<std::string> temp;
+        std::vector<std::string> temp; // Row for the table
         std::string template_name = i.path().filename().string();
         temp.push_back(template_name);
         std::string info_file = path::joinPath({i.path(), container_name, "info.json"});
 
+        // Check if info.json exists
         if(!path::exists(info_file)) {
             continue;
         }
@@ -31,6 +35,7 @@ void listTemplates(const std::string& template_dir, const std::string& container
         v.push_back(temp);
     }
 
+    // Format the outputted text
     std::vector<std::string> output = getAlignedOutput(v, 40);
     for(const auto& i : output) {
         std::cout << "  " << i << std::endl;
