@@ -1,8 +1,8 @@
-## Project Template
+## Ctemplate
 A lightweight C++ program that initialize projects from saved templates.
 
 ## Table Of Contents
-- [Project Template](#project-template)
+- [Ctemplate](#project-template)
 - [Getting Started](#getting-started)
   - [Installation](#installation)
   - [Setup](#setup)
@@ -18,17 +18,17 @@ A lightweight C++ program that initialize projects from saved templates.
 2. Place the executable in an empty folder
 3. Add the directory the executable is in to the `PATH`
 
-You can now use `template.exe` in the command-line.
+You can now use `ctemplate.exe` in the command-line.
 
 ### Setup
-1. Run `template.exe --setup`
+1. Run `ctemplate.exe --setup`
 2. Enter the template directory
 
 ## Usage
 ```
 Usage:
-  template.exe <options> <values>
-  template.exe <subcommand> <options>
+  ctemplate.exe <options> <values>
+  ctemplate.exe <subcommand> <options>
 
 Subcommands:
   init                             Initializes a template project
@@ -46,8 +46,8 @@ Options:
 ### Initializing Templates
 ```
 Usage:
-  template.exe init <template> <options> [-p <path>]
-  template.exe init <options>
+  ctemplate.exe init <template> <options> [-p <path>]
+  ctemplate.exe init <options>
 
 Options:
   -h, --help                       Print help menu
@@ -57,12 +57,12 @@ Options:
   -o, --overwrite-existing         Overwrite existing files
   -f, --force                      Overwrite whole directory
 ```
-Use the `init` subcommand to initialize a template in the current directory. To use the `init` subcommand, you type in `template.exe init` then follow it up with the name of the template you want to initialize.
+Use the `init` subcommand to initialize a template in the current directory. To use the `init` subcommand, you type in `ctemplate.exe init` then follow it up with the name of the template you want to initialize.
 
 #### Examples
 Let's say you want to initialize a template named `cpp-app`, you run:
 ```
-template.exe init cpp-app
+ctemplate.exe init cpp-app
 ```
 This will initialize the template named `cpp-app` to the current directory.
 
@@ -70,7 +70,7 @@ This will initialize the template named `cpp-app` to the current directory.
 
 If you want to initialize the template to a certain directory, you run:
 ```
-template.exe init cpp-app -p <path>
+ctemplate.exe init cpp-app -p <path>
 ```
 Where `<path>` is the directory you want to initialize the template on.
 
@@ -78,15 +78,15 @@ Where `<path>` is the directory you want to initialize the template on.
 
 If you want to initialize the template and you want it to skip existing files, you run:
 ```
-template.exe init cpp-app -s
+ctemplate.exe init cpp-app -s
 ```
 The `-s` flag tells the program to skip all existing files. You can substitute the `-s` flag with `-o` to overwrite existing files or `-f` to overwrite the whole directory.
 
 ### Adding Templates
 ```
 Usage:
-  template.exe add <new-template> [-d <description>] [-p <path>]
-  template.exe add <options>
+  ctemplate.exe add <new-template> [-d <description>] [-p <path>]
+  ctemplate.exe add <options>
 
 Options:
   -h, --help                       Print help menu
@@ -99,7 +99,7 @@ To add a new template, you use the `add` subcommand.
 
 Let's say you want to add the current directory as a new template and you want to name it `my-template`, you run:
 ```
-template.exe add my-template
+ctemplate.exe add my-template
 ```
 This will add a new template to your template directory named `my-template`.
 
@@ -107,15 +107,15 @@ This will add a new template to your template directory named `my-template`.
 
 If you want to add a description to your new template, you can provide the description as a value of the `-d` flag:
 ```
-template.exe add my-template -d "My description for this template"
+ctemplate.exe add my-template -d "My description for this template"
 ```
-The description can be seen in the template list when you run `template.exe -l`.
+The description can be seen in the template list when you run `ctemplate.exe -l`.
 
 ### Deleting Templates
 ```
 Usage:
-  template.exe remove <existing-template>
-  template.exe remove <options>
+  ctemplate.exe remove <existing-template>
+  ctemplate.exe remove <options>
 
 Options:
   -h, --help                       Print help menu
@@ -126,15 +126,15 @@ You can use the `remove` subcommand to delete existing templates. To delete an e
 #### Examples
 Let's say you want to delete the template named `cpp-app`, you run:
 ```
-template.exe remove cpp-app
+ctemplate.exe remove cpp-app
 ```
 This will remove `cpp-app` from the template list.
 
 ### Editing Templates
 ```
 Usage:
-  template.exe edit <existing-template> <options> <values>
-  template.exe edit <options>
+  ctemplate.exe edit <existing-template> <options> <values>
+  ctemplate.exe edit <options>
 
 Options:
   -h, --help                       Print help menu
@@ -147,26 +147,26 @@ You can edit your templates by using the `edit` subcommand. When you edit a temp
 #### Examples
 If you want to open the template directory:
 ```
-template.exe edit
+ctemplate.exe edit
 ```
 
 <br>
 
 If you want to edit an existing template named `hello-world-cpp`:
 ```
-template.exe edit hello-world-cpp
+ctemplate.exe edit hello-world-cpp
 ```
 
 <br>
 
 If you want to rename an existing template named `hello-world-cpp` to `cpp`:
 ```
-template.exe edit hello-world-cpp -r cpp
+ctemplate.exe edit hello-world-cpp -r cpp
 ```
 
 <br>
 
 If you want to edit the description of an existing template, let's say `cpp`:
 ```
-template.exe edit cpp -d "My new description"
+ctemplate.exe edit cpp -d "My new description"
 ```
