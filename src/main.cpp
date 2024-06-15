@@ -28,7 +28,57 @@ void setConfigValue(json& config, const std::vector<std::string>& config_key_val
     }
 }
 
-void removeTemplates(const std::vector<std::string>& templates, const std::string& template_dir)
+void addTemplate(const std::string& template_dir, const std::string& path_to_add, const std::string& name, const std::string& desc, const std::string& container_name)
+{
+    if(name.empty()) {
+        std::cout << "[ERROR] Name cannot be empty" << std::endl;
+        return;
+    }
+
+    for(const auto& i : name) {
+        if(!path::isValidFilenameChar(i)) {
+            std::cout << "[ERROR] Invalid filename character \"" << i << "\" in \"" << name << "\"" << std::endl;
+            return;
+        }
+    }
+    
+    std::string new_template_path = path::joinPath(template_dir, name);
+    if(!path::exists(new_template_path)) {
+        path::createDirectory(new_template_path);
+    }
+
+    path::copy(path_to_add, new_template_path, path::CopyOption::None);
+
+    if(!path::exists(container_name)) {
+        path::createDirectory(container_name);
+    }
+
+    json info = {
+        {"description", desc}
+    };
+    json paths = json::parse(R"(
+        {
+            "includePaths": [],
+            "excludePaths": []
+        }
+    )");
+    json variables = json::parse(R"(
+        {
+            "includePaths": [],
+            "excludePaths": [],
+            "variablePrefix": "!",
+            "variableSuffix": "!",
+            "variableList": []
+        }
+    )");
+
+    std::string container_path = path::joinPath(new_template_path, container_name);
+    writeJsonToFile(info, path::joinPath(container_path, "info.json"), 4);
+    writeJsonToFile(paths, path::joinPath(container_path, "paths.json"), 4);
+    writeJsonToFile(variables, path::joinPath(container_path, "variables.json"), 4);
+}
+
+void removeTemplates(const std::string& template_dir, const std::vector<std::string>& templates)
 {
     std::vector<std::string> deleted;
     for(int i = 0; i < templates.size(); i++) {
@@ -135,7 +185,7 @@ int main(int argc, char** argv)
     std::string add_path;
     add->add_option("path", add_path, "Root project directory of template to be added")->expected(1);
     std::string add_template_name;
-    add->add_option("-n,--name", add_template_name, "Name of new template")->expected(1);
+    add->add_option("-n,--name", add_template_name, "Name of new template")->expected(1)->required();
     std::string add_template_desc;
     add->add_option("-d,--desc", add_template_desc, "Description of new template")->expected(1);
 
@@ -163,11 +213,10 @@ int main(int argc, char** argv)
             listTemplates(template_dir, container_name);
         }
     } else if(*add) {
-        std::cout << add_path << std::endl;
-        std::cout << add_template_name << std::endl;
-        std::cout << add_template_desc << std::endl;
+        std::string path_to_add = path::joinPath(path::currentPath(), add_path);
+        addTemplate(template_dir, path_to_add, add_template_name, add_template_desc, container_name);
     } else if(*remove) {
-        removeTemplates(remove_template_names, template_dir);
+        removeTemplates(template_dir, remove_template_names);
     } else if(*list) {
         listTemplates(template_dir, container_name);
     } else if(*config) { // Config commands
