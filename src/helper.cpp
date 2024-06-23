@@ -122,31 +122,58 @@ std::vector<std::vector<std::string>> makeTable(const std::vector<std::vector<st
     return cleaned;
 }
 
-std::string replaceVariables(const std::string& str, const std::vector<std::string>& keyval, const std::string& prefix, const std::string& suffix)
+std::string replaceVariables(const std::string& str, const std::unordered_map<std::string, std::string>& keyval, const std::string& prefix, const std::string& suffix)
 {
     if(prefix.empty() || suffix.empty()) {
         return str;
     }
 
+    int max_var_size = 0;
+    for(const auto& i : keyval) {
+        if(i.first.size() > max_var_size) {
+            max_var_size = i.first.size();
+        }
+    }
+
     std::string new_str;
 
     // iterate through "str" until prefix is found
-    std::string var;
-    int start_var_pos = -1;
     for(int i = 0; i < str.size(); i++) {
+        // check if current character is equivalent to the first character of prefix then check if it is the prefix itself
         if(str[i] == prefix[0] && str.substr(i, prefix.size()) == prefix) {
-            start_var_pos = i;
-            std::string temp;
-            int j = start_var_pos + prefix.size();
-            while(j < str.size()) {
+            std::string var;
+            int j = i + prefix.size(); // skip the prefix
+            int counter = 0;
+            bool has_suffix = false;
+
+            while(j < str.size() && counter <= max_var_size) {
+                // check if the current character is equivalent to the first character of suffix 
+                // then check if it is the suffix itself
                 if(str[j] == suffix[0] && str.substr(j, suffix.size()) == suffix) {
+                    has_suffix = true;
                     break;
                 }
-                temp.push_back(str[j]);
+                var.push_back(str[j]);
                 j++;
+                counter++;
             }
 
+            // if the variable is in keyval then append it to new_str
+            if(has_suffix && keyval.count(var) > 0) {
+                new_str.append(keyval.at(var));
+            }
+
+            // move to the last character of the suffix (-1 to not skip a character in the next iteration)
+            if(has_suffix) {
+                i = j + suffix.size() - 1;
+            } else {
+                new_str.append(prefix);
+                i += prefix.size() - 1;
+            }
+            continue;
         }
+
+        new_str.push_back(str[i]);
     }
 
     return new_str;
