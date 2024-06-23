@@ -54,6 +54,22 @@ std::vector<std::string> split(const std::string& str, const std::string& separa
     return v;
 }
 
+std::unordered_map<std::string, std::string> mapKeyValues(const std::vector<std::string>& keyvals)
+{
+    std::unordered_map<std::string, std::string> m;
+    for(const auto& i : keyvals) {
+        std::vector<std::string> splitted = split(i, "=");
+
+        if(splitted.size() < 2) {
+            continue;
+        }
+
+        m.insert({splitted[0], splitted[1]});
+    }
+
+    return m;
+}
+
 std::vector<std::string> getAlignedOutput(const std::vector<std::vector<std::string>>& v, int space)
 {
     std::stringstream s;
@@ -104,4 +120,34 @@ std::vector<std::vector<std::string>> makeTable(const std::vector<std::vector<st
     }
 
     return cleaned;
+}
+
+std::string replaceVariables(const std::string& str, const std::vector<std::string>& keyval, const std::string& prefix, const std::string& suffix)
+{
+    if(prefix.empty() || suffix.empty()) {
+        return str;
+    }
+
+    std::string new_str;
+
+    // iterate through "str" until prefix is found
+    std::string var;
+    int start_var_pos = -1;
+    for(int i = 0; i < str.size(); i++) {
+        if(str[i] == prefix[0] && str.substr(i, prefix.size()) == prefix) {
+            start_var_pos = i;
+            std::string temp;
+            int j = start_var_pos + prefix.size();
+            while(j < str.size()) {
+                if(str[j] == suffix[0] && str.substr(j, suffix.size()) == suffix) {
+                    break;
+                }
+                temp.push_back(str[j]);
+                j++;
+            }
+
+        }
+    }
+
+    return new_str;
 }
