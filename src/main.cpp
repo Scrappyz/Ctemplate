@@ -58,6 +58,7 @@ void addTemplate(const std::string& template_dir, const std::string& path_to_add
 
     std::string new_container_path = path::joinPath(new_template_path, container_name);
 
+    // If a container already exists, delete it and replace it with a fresh one
     if(path::exists(new_container_path)) {
         path::remove(new_container_path);
     }
