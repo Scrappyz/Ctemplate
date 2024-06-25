@@ -1,10 +1,32 @@
 #include <fstream>
 #include <unordered_set>
 #include <iomanip>
+#include <iostream>
 #include <sstream>
 #include "helper.hpp"
 
 using json = nlohmann::json;
+
+void showConfig(const json& config, int space_before)
+{
+    for(const auto& i : config.items()) {
+        std::cout << std::string(space_before, ' ') << i.key() << " = " << i.value() << std::endl;
+    }
+}
+
+void setConfigValue(json& config, const std::vector<std::string>& config_key_values)
+{
+    for(int i = 0; i < config_key_values.size(); i++) {
+        std::vector<std::string> keyval = split(config_key_values[i], "=");
+
+        if(!config.contains(keyval[0])) {
+            std::cout << "[WARNING] Key \"" << keyval[0] << "\" does not exist" << std::endl;
+            continue;
+        }
+
+        config[keyval[0]] = keyval[1];
+    }
+}
 
 json readJsonFromFile(const std::string& file)
 {

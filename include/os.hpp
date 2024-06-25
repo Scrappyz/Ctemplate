@@ -101,7 +101,7 @@ namespace os {
             return result;
         }
 
-        std::string appendFileExtension(std::string path, const std::string& extension, bool force = false)
+        inline std::string appendFileExtension(std::string path, const std::string& extension, bool force = false)
         {
             int i = 0;
             while(extension[i] == '.') {
@@ -605,7 +605,7 @@ namespace os {
         }
     }
 
-    std::string execute(const std::string& command, const std::string& mode = "r")
+    inline std::string execute(const std::string& command, const std::string& mode = "r")
     {
         FILE* pipe = popen(command.c_str(), mode.c_str());
         if(!pipe) {
