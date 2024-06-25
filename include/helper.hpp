@@ -11,3 +11,4 @@ std::unordered_map<std::string, std::string> mapKeyValues(const std::vector<std:
 std::vector<std::string> getAlignedOutput(const std::vector<std::vector<std::string>>& v, int space);
 std::vector<std::vector<std::string>> makeTable(const std::vector<std::vector<std::string>>& v);
 std::string replaceVariables(const std::string& str, const std::unordered_map<std::string, std::string>& keyval, const std::string& prefix, const std::string& suffix);
+void replaceVariablesInFile(const std::string& file_path, const std::unordered_map<std::string, std::string>& keyval, const std::string& prefix, const std::string& suffix);

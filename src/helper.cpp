@@ -178,3 +178,17 @@ std::string replaceVariables(const std::string& str, const std::unordered_map<st
 
     return new_str;
 }
+
+void replaceVariablesInFile(const std::string& file_path, const std::unordered_map<std::string, std::string>& keyval, const std::string& prefix, const std::string& suffix)
+{
+    std::ifstream file(file_path);
+    std::stringstream ss;
+    ss << file.rdbuf();
+    file.close();
+
+    std::string str = replaceVariables(ss.str(), keyval, prefix, suffix);
+
+    std::ofstream o(file_path);
+    o << str;
+    o.close();
+}

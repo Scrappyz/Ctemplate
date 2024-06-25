@@ -76,6 +76,18 @@ TEST(replaceVariables, missing_suffix)
     EXPECT_EQ(actual, expected);
 }
 
+TEST(replaceVariables, missing_variables)
+{
+    std::string str = "My name is !name! and";
+    std::string prefix = "!";
+    std::string suffix = "!";
+    std::unordered_map<std::string, std::string> keyvals = {{"name", "John"}, {"age", "12"}};
+
+    std::string actual = replaceVariables(str, keyvals, prefix, suffix);
+    std::string expected = "My name is John and";
+    EXPECT_EQ(actual, expected);
+}
+
 TEST(replaceVariables, endlines_in_str)
 {
     std::string str = "My name is {!name!}\nand I am\n{!age!} years old.";
