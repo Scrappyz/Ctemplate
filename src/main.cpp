@@ -30,22 +30,28 @@ void setConfigValue(json& config, const std::vector<std::string>& config_key_val
 
 void addTemplate(const std::string& template_dir, const std::string& path_to_add, const std::string& name, const std::string& desc, const std::string& container_name)
 {
+    // If name is empty
     if(name.empty()) {
         std::cout << "[ERROR] Name cannot be empty" << std::endl;
         return;
     }
 
+    // Check if there is an invalid filename character in the name
     for(const auto& i : name) {
         if(!path::isValidFilenameChar(i)) {
             std::cout << "[ERROR] Invalid filename character \"" << i << "\" in \"" << name << "\"" << std::endl;
             return;
         }
     }
-    
+
+    // Check if name already exists in available templates
     std::string new_template_path = path::joinPath(template_dir, name);
-    if(!path::exists(new_template_path)) {
-        path::createDirectory(new_template_path);
+    if(path::exists(new_template_path)) {
+        std::cout << "[ERROR] Template \"" << name << "\" already exists" << std::endl;
+        return;
     }
+    
+    path::createDirectory(new_template_path);
 
     // Add directory separator to only copy the contents of the path and not its folder
     path::copy(path_to_add + path::directorySeparator(), new_template_path, path::CopyOption::None);
