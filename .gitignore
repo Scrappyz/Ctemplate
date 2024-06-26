@@ -3,7 +3,7 @@
 !include/
 !include/**
 !src/
-!src/**
+!src/** 
 !test/
 !test/**
 test/bin

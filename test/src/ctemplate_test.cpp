@@ -9,6 +9,17 @@ std::string test_path = path::joinPath(path::sourcePath(), "../test_path");
 std::string template_path = path::joinPath(test_path, "templates");
 std::string temp_path = path::joinPath(test_path, "temp");
 
+std::unordered_set<std::string> normalizePaths(const std::unordered_set<std::string>& s, const std::string& relative_to = "")
+{
+    std::unordered_set<std::string> n;
+    for(const auto& i : s) {
+        std::string p = path::relativePath(path::joinPath(relative_to, i), relative_to);
+        n.insert(p);
+    }
+
+    return n;
+}
+
 TEST(addTemplate, adding)
 {
     std::string add_path = path::joinPath(template_path, "t1");
@@ -193,15 +204,11 @@ TEST(replaceVariables, edge_cases)
 
 TEST(compileIncludedPaths, include_all_with_excludes)
 {
-    std::unordered_set<std::string> actual = compileIncludedPaths(path::joinPath(template_path, "cpp-test"),
-            std::unordered_set<std::string>(), std::unordered_set<std::string>({"src/main.cpp"}));
-    std::unordered_set<std::string> expected = {"src\\temp.cpp", "CMakeLists.txt", ".gitignore", ".ctemplate\\info.json"};
-
-    EXPECT_EQ(actual, expected);
-
-    actual = compileIncludedPaths(path::joinPath(template_path, "cpp-test"),
-            std::unordered_set<std::string>(), std::unordered_set<std::string>({"src/main.cpp", ".ctemplate"}));
-    expected = {"src\\temp.cpp", "CMakeLists.txt", ".gitignore"};
+    std::string template_p = path::joinPath(template_path, "cpp-test");
+    std::unordered_set<std::string> actual = compileIncludedPaths(template_p,
+            std::unordered_set<std::string>(), std::unordered_set<std::string>({"src/main.cpp", "test", "include/stuff.hpp"}));
+    std::unordered_set<std::string> expected = {"src\\temp.cpp", "CMakeLists.txt", "include\\stuff1.hpp"};
+    expected = normalizePaths(expected, template_p);
 
     EXPECT_EQ(actual, expected);
 }
