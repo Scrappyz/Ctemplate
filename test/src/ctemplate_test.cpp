@@ -1,6 +1,31 @@
 #include "gtest/gtest.h"
 #include "ctemplate.hpp"
 #include "helper.hpp"
+#include "os.hpp"
+
+namespace path = os::path;
+
+std::string test_path = path::joinPath(path::sourcePath(), "../test_path");
+std::string template_path = path::joinPath(test_path, "templates");
+std::string temp_path = path::joinPath(test_path, "temp");
+
+TEST(removeTemplates, removing)
+{
+    path::copy(path::joinPath(template_path, "t1"), temp_path);
+    path::copy(path::joinPath(template_path, "t2"), temp_path);
+
+    ASSERT_TRUE(path::exists(path::joinPath(template_path, "t1")));
+    ASSERT_TRUE(path::exists(path::joinPath(template_path, "t2")));
+    removeTemplates(template_path, {"t1", "t2"});
+    ASSERT_TRUE(!path::exists(path::joinPath(template_path, "t1")));
+    ASSERT_TRUE(!path::exists(path::joinPath(template_path, "t2")));
+
+    path::copy(path::joinPath(temp_path, "t1"), template_path, path::CopyOption::OverwriteExisting);
+    path::copy(path::joinPath(temp_path, "t2"), template_path, path::CopyOption::OverwriteExisting);
+
+    path::remove(path::joinPath(temp_path, "t1"));
+    path::remove(path::joinPath(temp_path, "t2"));
+}
 
 TEST(split, splitting)
 {
