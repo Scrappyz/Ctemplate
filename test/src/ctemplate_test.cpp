@@ -9,6 +9,48 @@ std::string test_path = path::joinPath(path::sourcePath(), "../test_path");
 std::string template_path = path::joinPath(test_path, "templates");
 std::string temp_path = path::joinPath(test_path, "temp");
 
+TEST(addTemplate, adding)
+{
+    std::string add_path = path::joinPath(template_path, "t1");
+    std::string name = "testing";
+    std::string desc = "wassup boi";
+    std::string container_name = ".ctemplate";
+    addTemplate(template_path, add_path, name, desc, container_name);
+
+    std::string new_template = path::joinPath(template_path, "testing");
+    ASSERT_TRUE(path::exists(new_template));
+    ASSERT_TRUE(path::exists(path::joinPath(new_template, container_name)));
+    
+    path::remove(new_template);
+}
+
+TEST(addTemplate, empty_name)
+{
+    std::string add_path = path::joinPath(template_path, "t1");
+    std::string name = "testing";
+    std::string desc = "wassup boi";
+    std::string container_name = ".ctemplate";
+    addTemplate(template_path, add_path, "", desc, container_name);
+
+    ASSERT_TRUE(!path::exists(name));
+}
+
+TEST(addTemplate, existing_container)
+{
+    std::string add_path = path::joinPath(template_path, "t1");
+    std::string name = "testing";
+    std::string desc = "wassup boi";
+    std::string container_name = ".ctemplate";
+    addTemplate(template_path, add_path, name, desc, container_name);
+
+    std::string new_template = path::joinPath(template_path, "testing");
+    std::string new_container = path::joinPath(new_template, ".ctemplate");
+    ASSERT_TRUE(path::exists(path::joinPath(new_container, "info.json")));
+    ASSERT_TRUE(path::exists(path::joinPath(new_container, "variables.json")));
+
+    path::remove(new_template);
+}
+
 TEST(removeTemplates, removing)
 {
     path::copy(path::joinPath(template_path, "t1"), temp_path);
