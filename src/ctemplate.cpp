@@ -4,9 +4,22 @@
 #include "helper.hpp"
 #include <iostream>
 #include <fstream>
+#include <unordered_set>
 
 using json = nlohmann::json;
 namespace path = os::path;
+
+void initTemplate(const std::string& template_dir, const std::string& template_name, const std::string& init_to)
+{
+    std::string template_to_init = path::joinPath(template_dir, template_name);
+    if(!path::exists(template_to_init)) {
+        std::cout << "[ERROR] Template \"" << template_name << "\" does not exist" << std::endl;
+        return;
+    }
+
+    json vars = readJsonFromFile(path::joinPath(template_to_init, ".ctemplate/variables.json"));
+    
+}
 
 void addTemplate(const std::string& template_dir, const std::string& path_to_add, const std::string& name, const std::string& desc, const std::string& container_name)
 {
@@ -60,6 +73,8 @@ void addTemplate(const std::string& template_dir, const std::string& path_to_add
 
     writeJsonToFile(info, path::joinPath(new_container_path, "info.json"), 4);
     writeJsonToFile(variables, path::joinPath(new_container_path, "variables.json"), 4);
+
+    std::cout << "[SUCCESS] Template \"" << name << "\" has been initialized" << std::endl;
 }
 
 void removeTemplates(const std::string& template_dir, const std::vector<std::string>& templates)

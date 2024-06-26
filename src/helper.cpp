@@ -1,11 +1,13 @@
 #include <fstream>
-#include <unordered_set>
 #include <iomanip>
 #include <iostream>
 #include <sstream>
+#include "os.hpp"
 #include "helper.hpp"
 
 using json = nlohmann::json;
+namespace path = os::path;
+namespace fs = std::filesystem;
 
 void showConfig(const json& config, int space_before)
 {
@@ -213,4 +215,49 @@ void replaceVariablesInFile(const std::string& file_path, const std::unordered_m
     std::ofstream o(file_path);
     o << str;
     o.close();
+}
+
+std::unordered_set<std::string> compileIncludedPaths(const std::string& template_root, const std::unordered_set<std::string>& includes, const std::unordered_set<std::string>& excludes)
+{
+    // Ways
+    // Only get files relative to the template root
+
+    std::unordered_set<std::string> clean_includes;
+    for(const auto& i : includes) {
+        std::string p = path::relativePath(path::joinPath(template_root, i), template_root);
+        clean_includes.insert(p);
+    }
+
+    std::unordered_set<std::string> clean_excludes;
+    for(const auto& i : excludes) {
+        std::string p = path::relativePath(path::joinPath(template_root, i), template_root);
+        clean_excludes.insert(p);
+    }
+
+    std::unordered_set<std::string> compiled;
+    bool include_all = clean_includes.empty();
+
+    for(auto i = fs::recursive_directory_iterator(template_root); i != fs::recursive_directory_iterator(); i++) {
+        std::string path = i->path().string(); 
+        std::string relative_path = path::relativePath(path, template_root);
+
+        // problem is includes - excludes
+        if(!include_all && clean_includes.count(relative_path) < 1) {
+            continue;
+        }
+
+        bool is_directory = path::isDirectory(path);
+        bool is_excluded = clean_excludes.count(relative_path) > 0;
+
+        if(is_directory || is_excluded) {
+            if(is_excluded) {
+                i.disable_recursion_pending();
+            }
+            continue;
+        }
+
+        compiled.insert(relative_path);
+    }
+
+    return compiled;
 }

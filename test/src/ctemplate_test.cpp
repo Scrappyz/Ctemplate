@@ -190,3 +190,18 @@ TEST(replaceVariables, edge_cases)
     std::string expected = "My name is !name! and I am !age! years old.";
     EXPECT_EQ(actual, expected);
 }
+
+TEST(compileIncludedPaths, include_all_with_excludes)
+{
+    std::unordered_set<std::string> actual = compileIncludedPaths(path::joinPath(template_path, "cpp-test"),
+            std::unordered_set<std::string>(), std::unordered_set<std::string>({"src/main.cpp"}));
+    std::unordered_set<std::string> expected = {"src\\temp.cpp", "CMakeLists.txt", ".gitignore", ".ctemplate\\info.json"};
+
+    EXPECT_EQ(actual, expected);
+
+    actual = compileIncludedPaths(path::joinPath(template_path, "cpp-test"),
+            std::unordered_set<std::string>(), std::unordered_set<std::string>({"src/main.cpp", ".ctemplate"}));
+    expected = {"src\\temp.cpp", "CMakeLists.txt", ".gitignore"};
+
+    EXPECT_EQ(actual, expected);
+}
