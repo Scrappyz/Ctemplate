@@ -240,20 +240,20 @@ void replaceVariablesInFile(const std::string& file_path, const std::unordered_m
 }
 
 // Compiles included from excluded paths
-std::unordered_set<std::string> compileIncludedPaths(const std::string& template_root, const std::unordered_set<std::string>& includes, const std::unordered_set<std::string>& excludes)
+std::unordered_set<std::string> compileIncludedPaths(const std::string& root_path, const std::unordered_set<std::string>& includes, const std::unordered_set<std::string>& excludes)
 {
     std::unordered_set<std::string> clean_includes;
 
     if(includes.empty()) {
-        for(const auto& i : fs::recursive_directory_iterator(template_root)) {
+        for(const auto& i : fs::recursive_directory_iterator(root_path)) {
             std::string path = i.path().string();
-            clean_includes.insert(path::relativePath(path, template_root));
+            clean_includes.insert(path::relativePath(path, root_path));
         }
     } else {
-        clean_includes = getPathsForCompile(template_root, includes);
+        clean_includes = getPathsForCompile(root_path, includes);
     }
 
-    std::unordered_set<std::string> clean_excludes = getPathsForCompile(template_root, excludes);
+    std::unordered_set<std::string> clean_excludes = getPathsForCompile(root_path, excludes);
 
     if(clean_excludes.empty()) {
         return clean_includes;

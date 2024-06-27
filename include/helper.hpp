@@ -17,5 +17,5 @@ std::vector<std::string> getAlignedOutput(const std::vector<std::vector<std::str
 std::vector<std::vector<std::string>> makeTable(const std::vector<std::vector<std::string>>& v);
 std::string replaceVariables(const std::string& str, const std::unordered_map<std::string, std::string>& keyval, const std::string& prefix, const std::string& suffix);
 void replaceVariablesInFile(const std::string& file_path, const std::unordered_map<std::string, std::string>& keyval, const std::string& prefix, const std::string& suffix);
-std::unordered_set<std::string> compileIncludedPaths(const std::string& template_root, const std::unordered_set<std::string>& includes, const std::unordered_set<std::string>& excludes);
+std::unordered_set<std::string> compileIncludedPaths(const std::string& root_path, const std::unordered_set<std::string>& includes, const std::unordered_set<std::string>& excludes);
 std::unordered_set<std::string> getPathsForCompile(const std::string& root_path, const std::unordered_set<std::string>& s);
