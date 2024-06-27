@@ -168,7 +168,9 @@ std::vector<std::vector<std::string>> makeTable(const std::vector<std::vector<st
     return cleaned;
 }
 
-std::string replaceVariables(const std::string& str, const std::unordered_map<std::string, std::string>& keyval, const std::string& prefix, const std::string& suffix)
+std::string replaceVariables(const std::string& str, 
+                            const std::unordered_map<std::string, std::string>& keyval, 
+                            const std::string& prefix, const std::string& suffix)
 {
     if(prefix.empty() || suffix.empty()) {
         return str;
@@ -225,7 +227,9 @@ std::string replaceVariables(const std::string& str, const std::unordered_map<st
     return new_str;
 }
 
-void replaceVariablesInFile(const std::string& file_path, const std::unordered_map<std::string, std::string>& keyval, const std::string& prefix, const std::string& suffix)
+void replaceVariablesInFile(const std::string& file_path, 
+                            const std::unordered_map<std::string, std::string>& keyval, 
+                            const std::string& prefix, const std::string& suffix)
 {
     std::ifstream file(file_path);
     std::stringstream ss;
@@ -237,6 +241,21 @@ void replaceVariablesInFile(const std::string& file_path, const std::unordered_m
     std::ofstream o(file_path);
     o << str;
     o.close();
+}
+
+void replaceVariablesInAllFiles(const std::string& root_path, const std::unordered_set<std::string>& paths,
+                            const std::unordered_map<std::string, std::string>& keyval, 
+                            const std::string& prefix, const std::string& suffix)
+{
+    for(const auto& i : paths) {
+        std::string path = path::joinPath(root_path, i);
+        
+        if(path::isDirectory(path)) {
+            continue;
+        }
+
+        replaceVariablesInFile(path, keyval, prefix, suffix);
+    }
 }
 
 // Compiles included from excluded paths

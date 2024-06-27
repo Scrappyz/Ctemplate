@@ -10,7 +10,8 @@ using json = nlohmann::json;
 using ordered_json = nlohmann::ordered_json;
 namespace path = os::path;
 
-void initTemplate(const std::string& template_dir, const std::string& template_name, const std::string& init_to)
+void initTemplate(const std::string& template_dir, const std::string& template_name, const std::string& init_to,
+                const std::unordered_map<std::string, std::string>& keyval)
 {
     std::string template_to_init = path::joinPath(template_dir, template_name);
     if(!path::exists(template_to_init)) {
@@ -21,23 +22,21 @@ void initTemplate(const std::string& template_dir, const std::string& template_n
     json vars = readJsonFromFile(path::joinPath(template_to_init, ".ctemplate/variables.json"));
 
     path::copy(template_to_init + path::directorySeparator(), init_to);
-    
-    std::unordered_set<std::string> includes = jsonArrayToSet(vars.at("searchPaths").at("files").at("include"));
-    std::unordered_set<std::string> excludes = jsonArrayToSet(vars.at("searchPaths").at("files").at("exclude"));
 
-    std::unordered_set<std::string> included_files = compileIncludedPaths(init_to, includes, excludes);
+    std::unordered_set<std::string> included_files = compileIncludedPaths(init_to,
+                                                    jsonArrayToSet(vars.at("searchPaths").at("files").at("include")), 
+                                                    jsonArrayToSet(vars.at("searchPaths").at("files").at("exclude")));
 
-    std::unordered_map<std::string, std::string> keyval = {{"project", "shit"}, {"name", "Michael"}};
+    std::string var_prefix = vars.at("variablePrefix");
+    std::string var_suffix = vars.at("variableSuffix");
 
-    for(const auto& i : included_files) {
-        std::string path = path::joinPath(init_to, i);
-        
-        if(path::isDirectory(path)) {
-            continue;
-        }
+    replaceVariablesInAllFiles(init_to, included_files, keyval, var_prefix, var_suffix);
 
-        replaceVariablesInFile(path, keyval, "!", "!");
-    }
+    // std::unordered_set<std::string> included_filenames = jsonArrayToSet(vars.at("searchPaths").at("filenames"));
+
+    // for(const auto& i : included_filenames) {
+
+    // }
 }
 
 void addTemplate(const std::string& template_dir, const std::string& path_to_add, const std::string& name, const std::string& desc, const std::string& container_name)

@@ -101,7 +101,8 @@ int main(int argc, char** argv)
     // }
 
     std::string to = path::joinPath(path::sourcePath(), "temp");
-    initTemplate(template_dir, "py", to);
+    std::unordered_map<std::string, std::string> keyval = {{"project", "shit"}, {"name", "Michael"}};
+    initTemplate(template_dir, "py", to, keyval);
 
     return 0;
 }

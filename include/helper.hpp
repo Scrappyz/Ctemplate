@@ -15,7 +15,21 @@ std::vector<std::string> split(const std::string& str, const std::string& delimi
 std::unordered_map<std::string, std::string> mapKeyValues(const std::vector<std::string>& keyvals);
 std::vector<std::string> getAlignedOutput(const std::vector<std::vector<std::string>>& v, int space);
 std::vector<std::vector<std::string>> makeTable(const std::vector<std::vector<std::string>>& v);
-std::string replaceVariables(const std::string& str, const std::unordered_map<std::string, std::string>& keyval, const std::string& prefix, const std::string& suffix);
-void replaceVariablesInFile(const std::string& file_path, const std::unordered_map<std::string, std::string>& keyval, const std::string& prefix, const std::string& suffix);
-std::unordered_set<std::string> compileIncludedPaths(const std::string& root_path, const std::unordered_set<std::string>& includes, const std::unordered_set<std::string>& excludes);
+
+std::string replaceVariables(const std::string& str, 
+                            const std::unordered_map<std::string, std::string>& keyval, 
+                            const std::string& prefix, const std::string& suffix);
+
+void replaceVariablesInFile(const std::string& file_path, 
+                            const std::unordered_map<std::string, std::string>& keyval, 
+                            const std::string& prefix, const std::string& suffix);
+
+void replaceVariablesInAllFiles(const std::string& root_path, const std::unordered_set<std::string>& paths,
+                            const std::unordered_map<std::string, std::string>& keyval, 
+                            const std::string& prefix, const std::string& suffix);
+
+std::unordered_set<std::string> compileIncludedPaths(const std::string& root_path, 
+                            const std::unordered_set<std::string>& includes, 
+                            const std::unordered_set<std::string>& excludes);
+                            
 std::unordered_set<std::string> getPathsForCompile(const std::string& root_path, const std::unordered_set<std::string>& s);
