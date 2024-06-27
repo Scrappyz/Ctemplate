@@ -63,8 +63,13 @@ void addTemplate(const std::string& template_dir, const std::string& path_to_add
     };
     json variables = json::parse(R"(
         {
-            "includePaths": [],
-            "excludePaths": [],
+            "searchPaths": {
+                "files": {
+                    "include": [],
+                    "exclude": []
+                }
+                "filenames": []
+            }
             "variablePrefix": "!",
             "variableSuffix": "!",
             "variableList": []

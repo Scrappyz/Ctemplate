@@ -217,6 +217,7 @@ void replaceVariablesInFile(const std::string& file_path, const std::unordered_m
     o.close();
 }
 
+// Compiles included from excluded paths
 std::unordered_set<std::string> compileIncludedPaths(const std::string& template_root, const std::unordered_set<std::string>& includes, const std::unordered_set<std::string>& excludes)
 {
     std::unordered_set<std::string> clean_includes;
