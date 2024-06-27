@@ -21,7 +21,11 @@ void initTemplate(const std::string& template_dir, const std::string& template_n
 
     json vars = readJsonFromFile(path::joinPath(template_to_init, ".ctemplate/variables.json"));
 
+    // Directory separator to only copy the content
     path::copy(template_to_init + path::directorySeparator(), init_to);
+
+    // Remove ctemplate container from the initialized template
+    path::remove(path::joinPath(init_to, ".ctemplate"));
 
     std::unordered_set<std::string> included_files = compileIncludedPaths(init_to,
                                                     jsonArrayToSet(vars.at("searchPaths").at("files").at("include")), 
