@@ -222,11 +222,21 @@ std::unordered_set<std::string> compileIncludedPaths(const std::string& template
     // Ways
     // Only get files relative to the template root
 
+    // If empty, include all root folders
     std::unordered_set<std::string> clean_includes;
     for(const auto& i : includes) {
         std::string p = path::relativePath(path::joinPath(template_root, i), template_root);
         clean_includes.insert(p);
     }
+
+    // if(clean_includes.empty()) {
+    //     for(const auto& i : fs::recursive_directory_iterator(template_root)) {
+    //         std::string path = i.path().string();
+    //         std::string relative_path = path::relativePath(path, template_root);
+
+    //         clean_includes.insert(relative_path);
+    //     }
+    // }
 
     std::unordered_set<std::string> clean_excludes;
     for(const auto& i : excludes) {
@@ -235,28 +245,77 @@ std::unordered_set<std::string> compileIncludedPaths(const std::string& template
     }
 
     std::unordered_set<std::string> compiled;
+
+    // for(const auto& i : clean_includes) {
+    //     if(clean_excludes.count(i) > 0) {
+    //         continue;
+    //     }
+
+    //     compiled.insert(i);
+    // }
+
     bool include_all = clean_includes.empty();
+    if(include_all) {
+        for(auto i = fs::recursive_directory_iterator(template_root); i != fs::recursive_directory_iterator(); i++) {
+            std::string path = i->path().string(); 
+            std::string relative_path = path::relativePath(path, template_root);
 
-    for(auto i = fs::recursive_directory_iterator(template_root); i != fs::recursive_directory_iterator(); i++) {
-        std::string path = i->path().string(); 
-        std::string relative_path = path::relativePath(path, template_root);
+            bool is_directory = path::isDirectory(path);
+            bool is_excluded = clean_excludes.count(relative_path) > 0;
 
-        // problem is includes - excludes
-        if(!include_all && clean_includes.count(relative_path) < 1) {
-            continue;
-        }
-
-        bool is_directory = path::isDirectory(path);
-        bool is_excluded = clean_excludes.count(relative_path) > 0;
-
-        if(is_directory || is_excluded) {
-            if(is_excluded) {
-                i.disable_recursion_pending();
+            if(is_directory) {
+                if(is_excluded) {
+                    i.disable_recursion_pending();
+                }
+                continue;
             }
-            continue;
-        }
 
-        compiled.insert(relative_path);
+            if(is_excluded) {
+                continue;
+            }
+
+            compiled.insert(relative_path);
+        }
+    } else {
+        std::unordered_set<std::string> visited;
+        for(const auto& i : clean_includes) {
+            if(compiled.count(i) > 0) {
+                continue;
+            }
+
+            std::string path = path::joinPath(template_root, i);
+            std::string relative_path = i;
+
+            bool is_directory = path::isDirectory(path);
+
+            if(!is_directory) {
+                if(clean_excludes.count(relative_path) < 1) {
+                    compiled.insert(relative_path);
+                }
+                continue;
+            }
+
+            for(auto j = fs::recursive_directory_iterator(path); j != fs::recursive_directory_iterator(); j++) {
+                std::string path1 = j->path().string(); 
+                std::string relative_path1 = path::relativePath(path1, template_root);
+
+                bool is_directory1 = path::isDirectory(path1);
+                bool is_excluded1 = clean_excludes.count(relative_path1) > 0;
+
+                if(is_directory1) {
+                    if(is_excluded1) {
+                        j.disable_recursion_pending();
+                    }
+                    continue;
+                }
+
+                if(is_excluded1) {
+                    continue;
+                }
+
+                compiled.insert(relative_path1);
+            }
+        }
     }
 
     return compiled;

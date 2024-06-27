@@ -100,8 +100,9 @@ int main(int argc, char** argv)
     //     std::cout << "nuh uh" << std::endl;
     // }
 
-    std::unordered_set<std::string> s = compileIncludedPaths(path::joinPath(template_dir, "cpp-basic"), 
-                                        std::unordered_set<std::string>({"src"}), std::unordered_set<std::string>({"src/main.cpp"}));
+    std::string test_template = path::joinPath(path::sourcePath(), "../../test/test_path/templates/cpp-test");
+    std::unordered_set<std::string> s = compileIncludedPaths(test_template,
+            std::unordered_set<std::string>({"src", "test", "test/test1.cpp", "test_path"}), std::unordered_set<std::string>());
     for(const auto& i : s) {
         std::cout << i << std::endl;
     }
