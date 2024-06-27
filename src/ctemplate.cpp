@@ -7,6 +7,7 @@
 #include <unordered_set>
 
 using json = nlohmann::json;
+using ordered_json = nlohmann::ordered_json;
 namespace path = os::path;
 
 void initTemplate(const std::string& template_dir, const std::string& template_name, const std::string& init_to)
@@ -18,6 +19,7 @@ void initTemplate(const std::string& template_dir, const std::string& template_n
     }
 
     json vars = readJsonFromFile(path::joinPath(template_to_init, ".ctemplate/variables.json"));
+    
     
 }
 

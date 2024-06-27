@@ -47,6 +47,25 @@ void writeJsonToFile(const json& j, const std::string& file, int indent)
     o.close();
 }
 
+void writeJsonToFile(const nlohmann::ordered_json& j, const std::string& file, int indent)
+{
+    std::ofstream o(file);
+    o << std::setw(indent) << j;
+    o.close();
+}
+
+std::unordered_set<std::string> jsonArrayToSet(const json& j)
+{
+    std::unordered_set<std::string> s;
+
+    if(!j.is_array()) {
+        return s;
+    }
+
+    
+    return s;
+}
+
 std::vector<std::string> split(const std::string& str, const std::string& separators)
 {
     std::vector<std::string> v;
