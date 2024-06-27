@@ -36,11 +36,9 @@ void initTemplate(const std::string& template_dir, const std::string& template_n
 
     replaceVariablesInAllFiles(init_to, included_files, keyval, var_prefix, var_suffix);
 
-    // std::unordered_set<std::string> included_filenames = jsonArrayToSet(vars.at("searchPaths").at("filenames"));
+    std::set<std::string> included_filenames = jsonArrayToOrderedSet(vars.at("searchPaths").at("filenames"));
 
-    // for(const auto& i : included_filenames) {
-
-    // }
+    replaceVariablesInAllFilenames(init_to, included_filenames, keyval, var_prefix, var_suffix);
 }
 
 void addTemplate(const std::string& template_dir, const std::string& path_to_add, const std::string& name, const std::string& desc, const std::string& container_name)

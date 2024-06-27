@@ -69,6 +69,30 @@ std::unordered_set<std::string> jsonArrayToSet(const json& j)
     return s;
 }
 
+std::set<std::string> jsonArrayToOrderedSet(const nlohmann::json& j)
+{
+    std::set<std::string> s;
+
+    if(!j.is_array()) {
+        return s;
+    }
+
+    for(int i = 0; i < j.size(); i++) {
+        s.insert(j[i]);
+    }
+    
+    return s;
+}
+
+std::set<std::string> unorderedSetToSet(const std::unordered_set<std::string>& s)
+{
+    std::set<std::string> ss;
+    for(const auto& i : s) {
+        ss.insert(i);
+    }
+    return ss;
+}
+
 std::vector<std::string> split(const std::string& str, const std::string& separators)
 {
     std::vector<std::string> v;
@@ -255,6 +279,25 @@ void replaceVariablesInAllFiles(const std::string& root_path, const std::unorder
         }
 
         replaceVariablesInFile(path, keyval, prefix, suffix);
+    }
+}
+
+void replaceVariablesInAllFilenames(const std::string& root_path, const std::set<std::string>& paths,
+                            const std::unordered_map<std::string, std::string>& keyval,
+                            const std::string& prefix, const std::string& suffix)
+{
+    // Needs to change names from bottom to top of file tree to avoid error
+    for(auto i = paths.rbegin(); i != paths.rend(); i++) {
+        std::string filename = path::filename(*i);
+        std::string path = path::joinPath(root_path, *i);
+
+        if(!path::exists(path)) {
+            continue;
+        }
+
+        filename = replaceVariables(filename, keyval, prefix, suffix);
+
+        path::rename(path, filename);
     }
 }
 
