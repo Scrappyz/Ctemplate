@@ -288,3 +288,15 @@ TEST(getPathsForCompile, with_directories_and_inordered_recursion)
 
     EXPECT_EQ(actual, expected);
 }
+
+TEST(getPathsForCompile, non_existing_path)
+{
+    std::string template_p = path::joinPath(template_path, "cpp-test");
+    std::unordered_set<std::string> actual = getPathsForCompile(template_p, 
+            std::unordered_set<std::string>({"src", "test/test_path/test4.cpp", "test/test_path", "test", "hello", "hello/world"}));
+    std::unordered_set<std::string> expected = {"src", "src/main.cpp", "src/temp.cpp", "test/test_path", "test/test_path/test4.cpp",
+     "test", "test/test1.cpp", "test/test2.cpp", "test/test3.cpp"};
+    expected = normalizePaths(expected, template_p);
+
+    EXPECT_EQ(actual, expected);
+}

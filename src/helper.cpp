@@ -301,6 +301,10 @@ std::unordered_set<std::string> getPathsForCompile(const std::string& root_path,
         std::string path = path::joinPath(root_path, i);
         std::string relative_path = path::relativePath(path::joinPath(root_path, i), root_path);
 
+        if(!path::exists(path)) {
+            continue;
+        }
+
         if(paths.count(relative_path) > 0) {
             continue;
         }
