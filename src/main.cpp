@@ -100,14 +100,8 @@ int main(int argc, char** argv)
     //     std::cout << "nuh uh" << std::endl;
     // }
 
-    std::string test_path = path::joinPath(path::sourcePath(), "../../test/test_path");
-    std::string template_path = path::joinPath(test_path, "templates");
-
-    std::string add_path = path::joinPath(template_path, "t1");
-    std::string name = "testing";
-    std::string desc = "wassup boi";
-    std::string container_name = ".ctemplate";
-    addTemplate(template_path, add_path, name, desc, container_name);
+    std::string to = path::joinPath(path::sourcePath(), "temp");
+    initTemplate(template_dir, "py", to);
 
     return 0;
 }

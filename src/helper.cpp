@@ -62,6 +62,9 @@ std::unordered_set<std::string> jsonArrayToSet(const json& j)
         return s;
     }
 
+    for(int i = 0; i < j.size(); i++) {
+        s.insert(j[i]);
+    }
     
     return s;
 }

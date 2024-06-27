@@ -19,8 +19,25 @@ void initTemplate(const std::string& template_dir, const std::string& template_n
     }
 
     json vars = readJsonFromFile(path::joinPath(template_to_init, ".ctemplate/variables.json"));
+
+    path::copy(template_to_init + path::directorySeparator(), init_to);
     
-    
+    std::unordered_set<std::string> includes = jsonArrayToSet(vars.at("searchPaths").at("files").at("include"));
+    std::unordered_set<std::string> excludes = jsonArrayToSet(vars.at("searchPaths").at("files").at("exclude"));
+
+    std::unordered_set<std::string> included_files = compileIncludedPaths(init_to, includes, excludes);
+
+    std::unordered_map<std::string, std::string> keyval = {{"project", "shit"}, {"name", "Michael"}};
+
+    for(const auto& i : included_files) {
+        std::string path = path::joinPath(init_to, i);
+        
+        if(path::isDirectory(path)) {
+            continue;
+        }
+
+        replaceVariablesInFile(path, keyval, "!", "!");
+    }
 }
 
 void addTemplate(const std::string& template_dir, const std::string& path_to_add, const std::string& name, const std::string& desc, const std::string& container_name)
