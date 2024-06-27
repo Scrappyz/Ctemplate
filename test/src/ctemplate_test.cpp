@@ -202,64 +202,53 @@ TEST(replaceVariables, edge_cases)
     EXPECT_EQ(actual, expected);
 }
 
-// TEST(compileIncludedPaths, empty_includes_with_excludes)
-// {
-//     std::string template_p = path::joinPath(template_path, "cpp-test");
-//     std::unordered_set<std::string> actual = compileIncludedPaths(template_p,
-//             std::unordered_set<std::string>(), std::unordered_set<std::string>({"src/main.cpp", "test", "include/stuff.hpp"}));
-//     std::unordered_set<std::string> expected = {"src/temp.cpp", "CMakeLists.txt", "include/stuff1.hpp"};
-//     expected = normalizePaths(expected, template_p);
-
-//     EXPECT_EQ(actual, expected);
-// }
-
-// TEST(compileIncludedPaths, includes_and_empty_excludes)
-// {
-//     std::string template_p = path::joinPath(template_path, "cpp-test");
-//     std::unordered_set<std::string> actual = compileIncludedPaths(template_p,
-//             std::unordered_set<std::string>({"src"}), std::unordered_set<std::string>());
-//     std::unordered_set<std::string> expected = {"src/temp.cpp", "src/main.cpp"};
-//     expected = normalizePaths(expected, template_p);
-
-//     EXPECT_EQ(actual, expected);
-// }
-
-// TEST(compileIncludedPaths, includes_with_recursion_and_empty_excludes)
-// {
-//     std::string template_p = path::joinPath(template_path, "cpp-test");
-//     std::unordered_set<std::string> actual = compileIncludedPaths(template_p,
-//             std::unordered_set<std::string>({"src", "src/temp.cpp", "src/main.cpp"}), std::unordered_set<std::string>());
-//     std::unordered_set<std::string> expected = {"src/temp.cpp", "src/main.cpp"};
-//     expected = normalizePaths(expected, template_p);
-
-//     EXPECT_EQ(actual, expected);
-
-//     actual = compileIncludedPaths(template_p,
-//             std::unordered_set<std::string>({"src", "test", "test/test1.cpp", "test_path"}), std::unordered_set<std::string>());
-//     expected = {"src/temp.cpp", "src/main.cpp", "test/test1.cpp", "test/test2.cpp", "test/test3.cpp", "test/test_path/test4.cpp"};
-//     expected = normalizePaths(expected, template_p);
-
-//     EXPECT_EQ(actual, expected);
-// }
-
-// TEST(compileIncludedPaths, includes_and_excludes)
-// {
-//     std::string template_p = path::joinPath(template_path, "cpp-test");
-//     std::unordered_set<std::string> actual = compileIncludedPaths(template_p,
-//             std::unordered_set<std::string>({"src"}), std::unordered_set<std::string>({"src/main.cpp", "test", "include/stuff.hpp"}));
-//     std::unordered_set<std::string> expected = {"src/temp.cpp"};
-//     expected = normalizePaths(expected, template_p);
-
-//     EXPECT_EQ(actual, expected);
-// }
-
-TEST(getPathsForCompile, empty_set)
+TEST(compileIncludedPaths, empty_includes_with_excludes)
 {
     std::string template_p = path::joinPath(template_path, "cpp-test");
-    std::unordered_set<std::string> actual = getPathsForCompile(template_p, std::unordered_set<std::string>());
-    std::unordered_set<std::string> expected = {"src", "src/main.cpp", "src/temp.cpp", "test", "test/test1.cpp", "test/test2.cpp",
-            "test/test3.cpp", "test/test_path", "test/test_path/test4.cpp", "include", "include/stuff.hpp", "include/stuff1.hpp",
-            "CMakeLists.txt"};
+    std::unordered_set<std::string> actual = compileIncludedPaths(template_p,
+            std::unordered_set<std::string>(), std::unordered_set<std::string>({"src/main.cpp", "test", "include/stuff.hpp"}));
+    std::unordered_set<std::string> expected = {"src", "src/temp.cpp", "CMakeLists.txt", "include", "include/stuff1.hpp"};
+    expected = normalizePaths(expected, template_p);
+
+    EXPECT_EQ(actual, expected);
+}
+
+TEST(compileIncludedPaths, includes_and_empty_excludes)
+{
+    std::string template_p = path::joinPath(template_path, "cpp-test");
+    std::unordered_set<std::string> actual = compileIncludedPaths(template_p,
+            std::unordered_set<std::string>({"src"}), std::unordered_set<std::string>());
+    std::unordered_set<std::string> expected = {"src", "src/temp.cpp", "src/main.cpp"};
+    expected = normalizePaths(expected, template_p);
+
+    EXPECT_EQ(actual, expected);
+}
+
+TEST(compileIncludedPaths, includes_with_recursion_and_empty_excludes)
+{
+    std::string template_p = path::joinPath(template_path, "cpp-test");
+    std::unordered_set<std::string> actual = compileIncludedPaths(template_p,
+            std::unordered_set<std::string>({"src", "src/temp.cpp", "src/main.cpp"}), std::unordered_set<std::string>());
+    std::unordered_set<std::string> expected = {"src", "src/temp.cpp", "src/main.cpp"};
+    expected = normalizePaths(expected, template_p);
+
+    EXPECT_EQ(actual, expected);
+
+    actual = compileIncludedPaths(template_p,
+            std::unordered_set<std::string>({"src", "test", "test/test1.cpp", "test/test_path"}), std::unordered_set<std::string>());
+    expected = {"src", "src/temp.cpp", "src/main.cpp", "test", "test/test1.cpp", "test/test2.cpp", "test/test3.cpp", 
+    "test/test_path/test4.cpp", "test/test_path"};
+    expected = normalizePaths(expected, template_p);
+
+    EXPECT_EQ(actual, expected);
+}
+
+TEST(compileIncludedPaths, includes_and_excludes)
+{
+    std::string template_p = path::joinPath(template_path, "cpp-test");
+    std::unordered_set<std::string> actual = compileIncludedPaths(template_p,
+            std::unordered_set<std::string>({"src"}), std::unordered_set<std::string>({"src/main.cpp", "test", "include/stuff.hpp"}));
+    std::unordered_set<std::string> expected = {"src", "src/temp.cpp"};
     expected = normalizePaths(expected, template_p);
 
     EXPECT_EQ(actual, expected);

@@ -219,31 +219,41 @@ void replaceVariablesInFile(const std::string& file_path, const std::unordered_m
 
 std::unordered_set<std::string> compileIncludedPaths(const std::string& template_root, const std::unordered_set<std::string>& includes, const std::unordered_set<std::string>& excludes)
 {
-    // Ways
-    // Only get files relative to the template root
+    std::unordered_set<std::string> clean_includes;
 
-    // Get all files included files and directory
-    std::unordered_set<std::string> clean_includes = getPathsForCompile(template_root, includes);
+    if(includes.empty()) {
+        for(const auto& i : fs::recursive_directory_iterator(template_root)) {
+            std::string path = i.path().string();
+            clean_includes.insert(path::relativePath(path, template_root));
+        }
+    } else {
+        clean_includes = getPathsForCompile(template_root, includes);
+    }
+
     std::unordered_set<std::string> clean_excludes = getPathsForCompile(template_root, excludes);
 
+    if(clean_excludes.empty()) {
+        return clean_includes;
+    }
+
     std::unordered_set<std::string> compiled;
+    for(const auto& i : clean_includes) {
+        if(clean_excludes.count(i) > 0) {
+            continue;
+        }
+
+        compiled.insert(i);
+    }
 
     return compiled;
 }
 
 // Helper for compileIncludedPaths
+// Gets all paths relative to "root_path" from a given set of directories
+// {"src"} to {"src", "src/main.cpp", "src/temp.cpp"}
 std::unordered_set<std::string> getPathsForCompile(const std::string& root_path, const std::unordered_set<std::string>& s)
 {
     std::unordered_set<std::string> paths;
-
-    if(s.empty()) {
-        for(const auto& i : fs::recursive_directory_iterator(root_path)) {
-            std::string path = i.path().string();
-            paths.insert(path::relativePath(path, root_path));
-        }
-
-        return paths;
-    }
     
     for(const auto& i : s) {
         std::string path = path::joinPath(root_path, i);
