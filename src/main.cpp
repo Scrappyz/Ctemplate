@@ -100,15 +100,14 @@ int main(int argc, char** argv)
     //     std::cout << "nuh uh" << std::endl;
     // }
 
-    std::string test_template = path::joinPath(path::sourcePath(), "../../test/test_path/templates/cpp-test");
-    // std::unordered_set<std::string> s = compileIncludedPaths(test_template,
-    //         std::unordered_set<std::string>({"src", "test", "test/test1.cpp", "test_path"}), std::unordered_set<std::string>());
+    std::string test_path = path::joinPath(path::sourcePath(), "../../test/test_path");
+    std::string template_path = path::joinPath(test_path, "templates");
 
-    std::unordered_set<std::string> s = compileIncludedPaths(test_template,
-            std::unordered_set<std::string>({"src"}), std::unordered_set<std::string>());
-    for(const auto& i : s) {
-        std::cout << i << std::endl;
-    }
+    std::string add_path = path::joinPath(template_path, "t1");
+    std::string name = "testing";
+    std::string desc = "wassup boi";
+    std::string container_name = ".ctemplate";
+    addTemplate(template_path, add_path, name, desc, container_name);
 
     return 0;
 }
