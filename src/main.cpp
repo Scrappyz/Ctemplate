@@ -105,7 +105,7 @@ int main(int argc, char** argv)
     //         std::unordered_set<std::string>({"src", "test", "test/test1.cpp", "test_path"}), std::unordered_set<std::string>());
 
     std::unordered_set<std::string> s = getPathsForCompile(test_template, 
-            std::unordered_set<std::string>({"src", "test", "test/test_path"}));
+            std::unordered_set<std::string>({"src", "test/test_path", "test"}));
     for(const auto& i : s) {
         std::cout << i << std::endl;
     }

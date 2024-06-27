@@ -223,24 +223,8 @@ std::unordered_set<std::string> compileIncludedPaths(const std::string& template
     // Only get files relative to the template root
 
     // Get all files included files and directory
-    std::unordered_set<std::string> clean_includes;
-    for(const auto& i : includes) {
-        std::string path = i;
-        std::string relative_path = path::relativePath(path::joinPath(template_root, i), template_root);
-
-        if(clean_includes.count(path) > 0) {
-            continue;
-        }
-
-        if(!path::isDirectory(path)) {
-            clean_includes.insert(relative_path);
-            continue;
-        }
-
-        for(auto i = fs::recursive_directory_iterator(path); i != fs::recursive_directory_iterator(); i++) {
-
-        }
-    }
+    std::unordered_set<std::string> clean_includes = getPathsForCompile(template_root, includes);
+    std::unordered_set<std::string> clean_excludes = getPathsForCompile(template_root, excludes);
 
     std::unordered_set<std::string> compiled;
 
@@ -251,12 +235,21 @@ std::unordered_set<std::string> compileIncludedPaths(const std::string& template
 std::unordered_set<std::string> getPathsForCompile(const std::string& root_path, const std::unordered_set<std::string>& s)
 {
     std::unordered_set<std::string> paths;
+
+    if(s.empty()) {
+        for(const auto& i : fs::recursive_directory_iterator(root_path)) {
+            std::string path = i.path().string();
+            paths.insert(path::relativePath(path, root_path));
+        }
+
+        return paths;
+    }
     
     for(const auto& i : s) {
         std::string path = path::joinPath(root_path, i);
         std::string relative_path = path::relativePath(path::joinPath(root_path, i), root_path);
 
-        if(paths.count(path) > 0) {
+        if(paths.count(relative_path) > 0) {
             continue;
         }
 
