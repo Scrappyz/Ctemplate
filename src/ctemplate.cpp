@@ -27,7 +27,7 @@ void initTemplate(const std::string& template_dir, const std::string& template_n
     // Remove ctemplate container from the initialized template
     path::remove(path::joinPath(path_to_init_template_to, template_files_container_name));
 
-    std::unordered_set<std::string> included_files = compileIncludedPaths(path_to_init_template_to,
+    std::unordered_set<std::string> included_files = getIncludedPaths(path_to_init_template_to,
                                                     jsonArrayToSet(vars.at("searchPaths").at("files").at("include")), 
                                                     jsonArrayToSet(vars.at("searchPaths").at("files").at("exclude")));
 
