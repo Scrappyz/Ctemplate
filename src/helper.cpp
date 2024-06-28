@@ -84,15 +84,6 @@ std::set<std::string> jsonArrayToOrderedSet(const nlohmann::json& j)
     return s;
 }
 
-std::set<std::string> unorderedSetToSet(const std::unordered_set<std::string>& s)
-{
-    std::set<std::string> ss;
-    for(const auto& i : s) {
-        ss.insert(i);
-    }
-    return ss;
-}
-
 std::vector<std::string> split(const std::string& str, const std::string& separators)
 {
     std::vector<std::string> v;
