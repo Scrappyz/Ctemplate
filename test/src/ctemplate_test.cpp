@@ -318,3 +318,26 @@ TEST(replaceVariablesInAllFilenames, working)
     path::rename(path::joinPath(testing_path, "pypy/pypy.py"), "!project!.py");
     path::rename(path::joinPath(testing_path, "pypy"), "!project!");
 }
+
+TEST(replaceVariablesInAllFilenames, working_includes_and_excludes)
+{
+    // std::string testing_path = path::joinPath(test_path, "testing/replace_filenames");
+    // std::unordered_set<std::string> includes = {"!project!"};
+    // std::unordered_set<std::string> excludes = {"!project!/!project!.py", "!project!/temp.py"};
+    // std::set<std::string> paths = convertUnorderedSetToSet(getIncludedPaths(testing_path, includes, excludes));
+
+    // EXPECT_EQ(paths, std::set<std::string>({"!project!"}));
+
+    // std::unordered_map<std::string, std::string> keyval = {{"project", "pypy"}, {"unused", "var"}};
+
+    // replaceVariablesInAllFilenames(testing_path, paths, keyval, "!", "!");
+
+    // ASSERT_TRUE(!path::exists(path::joinPath(testing_path, "!project!")));
+    // ASSERT_TRUE(path::exists(path::joinPath(testing_path, "pypy")));
+
+    // ASSERT_TRUE(!path::exists(path::joinPath(testing_path, "!project!/!project!.py")));
+    // ASSERT_TRUE(path::exists(path::joinPath(testing_path, "pypy/pypy.py")));
+
+    // path::rename(path::joinPath(testing_path, "pypy/pypy.py"), "!project!.py");
+    // path::rename(path::joinPath(testing_path, "pypy"), "!project!");
+}
