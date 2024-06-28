@@ -301,7 +301,7 @@ void replaceVariablesInAllFilenames(const std::string& root_path, const std::set
         if(filename == new_filename) {
             continue;
         }
-        
+
         path::rename(path, new_filename);
     }
 }
