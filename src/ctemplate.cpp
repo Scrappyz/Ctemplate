@@ -10,8 +10,8 @@ using json = nlohmann::json;
 using ordered_json = nlohmann::ordered_json;
 namespace path = os::path;
 
-void initTemplate(const std::string& template_dir, const std::string& template_name, const std::string& init_to,
-                const std::unordered_map<std::string, std::string>& keyval)
+void initTemplate(const std::string& template_dir, const std::string& template_name, const std::string& template_files_container_name, 
+                const std::string& path_to_init_template_to, const std::unordered_map<std::string, std::string>& keyval)
 {
     std::string template_to_init = path::joinPath(template_dir, template_name);
     if(!path::exists(template_to_init)) {
@@ -22,23 +22,23 @@ void initTemplate(const std::string& template_dir, const std::string& template_n
     json vars = readJsonFromFile(path::joinPath(template_to_init, ".ctemplate/variables.json"));
 
     // Directory separator to only copy the content
-    path::copy(template_to_init + path::directorySeparator(), init_to);
+    path::copy(template_to_init + path::directorySeparator(), path_to_init_template_to);
 
     // Remove ctemplate container from the initialized template
-    path::remove(path::joinPath(init_to, ".ctemplate"));
+    path::remove(path::joinPath(path_to_init_template_to, template_files_container_name));
 
-    std::unordered_set<std::string> included_files = compileIncludedPaths(init_to,
+    std::unordered_set<std::string> included_files = compileIncludedPaths(path_to_init_template_to,
                                                     jsonArrayToSet(vars.at("searchPaths").at("files").at("include")), 
                                                     jsonArrayToSet(vars.at("searchPaths").at("files").at("exclude")));
 
     std::string var_prefix = vars.at("variablePrefix");
     std::string var_suffix = vars.at("variableSuffix");
 
-    replaceVariablesInAllFiles(init_to, included_files, keyval, var_prefix, var_suffix);
+    replaceVariablesInAllFiles(path_to_init_template_to, included_files, keyval, var_prefix, var_suffix);
 
     std::set<std::string> included_filenames = jsonArrayToOrderedSet(vars.at("searchPaths").at("filenames"));
 
-    replaceVariablesInAllFilenames(init_to, included_filenames, keyval, var_prefix, var_suffix);
+    replaceVariablesInAllFilenames(path_to_init_template_to, included_filenames, keyval, var_prefix, var_suffix);
 }
 
 void addTemplate(const std::string& template_dir, const std::string& path_to_add, const std::string& name, const std::string& desc, const std::string& container_name)

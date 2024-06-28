@@ -287,6 +287,7 @@ void replaceVariablesInAllFilenames(const std::string& root_path, const std::set
                             const std::string& prefix, const std::string& suffix)
 {
     // Needs to change names from bottom to top of file tree to avoid error
+    // Ordered set is used to fix this
     for(auto i = paths.rbegin(); i != paths.rend(); i++) {
         std::string filename = path::filename(*i);
         std::string path = path::joinPath(root_path, *i);
