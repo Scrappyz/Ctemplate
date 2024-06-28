@@ -35,14 +35,14 @@ int main(int argc, char** argv)
         template_dir = path::joinPath(path::sourcePath(), template_dir);
     }
 
-    // // If template directory does not exist, create one
-    // if(!path::exists(template_dir)) {
-    //     path::createDirectory(template_dir);
-    // }
+    // If template directory does not exist, create one
+    if(!path::exists(template_dir)) {
+        path::createDirectory(template_dir);
+    }
 
-    // std::string container_name = app_config.at("containerName");
+    std::string container_name = app_config.at("containerName");
 
-    // bool list_template = false;
+    bool list_template = false;
 
     // // For "init" subcommand
     // CLI::App* init = app.add_subcommand("init", "Initialize a template");
@@ -101,8 +101,8 @@ int main(int argc, char** argv)
     // }
 
     std::string to = path::joinPath(path::sourcePath(), "temp");
-    std::unordered_map<std::string, std::string> keyval = {{"project", "shit"}, {"name", "Michael"}};
-    initTemplate(template_dir, "py", to, keyval);
+    std::unordered_map<std::string, std::string> keyval = {{"project", "cummies"}, {"name", "Michael"}};
+    initTemplate(template_dir, "py", container_name, to, keyval);
 
     return 0;
 }

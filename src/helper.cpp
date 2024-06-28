@@ -296,9 +296,13 @@ void replaceVariablesInAllFilenames(const std::string& root_path, const std::set
             continue;
         }
 
-        filename = replaceVariables(filename, keyval, prefix, suffix);
+        std::string new_filename = replaceVariables(filename, keyval, prefix, suffix);
 
-        path::rename(path, filename);
+        if(filename == new_filename) {
+            continue;
+        }
+        
+        path::rename(path, new_filename);
     }
 }
 
