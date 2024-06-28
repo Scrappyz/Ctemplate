@@ -307,7 +307,7 @@ void replaceVariablesInAllFilenames(const std::string& root_path, const std::set
 }
 
 // Compiles included from excluded paths
-std::unordered_set<std::string> compileIncludedPaths(const std::string& root_path, const std::unordered_set<std::string>& includes, const std::unordered_set<std::string>& excludes)
+std::unordered_set<std::string> getIncludedPaths(const std::string& root_path, const std::unordered_set<std::string>& includes, const std::unordered_set<std::string>& excludes)
 {
     std::unordered_set<std::string> clean_includes;
 
@@ -317,10 +317,10 @@ std::unordered_set<std::string> compileIncludedPaths(const std::string& root_pat
             clean_includes.insert(path::relativePath(path, root_path));
         }
     } else {
-        clean_includes = getPathsForCompile(root_path, includes);
+        clean_includes = getAllPaths(root_path, includes);
     }
 
-    std::unordered_set<std::string> clean_excludes = getPathsForCompile(root_path, excludes);
+    std::unordered_set<std::string> clean_excludes = getAllPaths(root_path, excludes);
 
     if(clean_excludes.empty()) {
         return clean_includes;
@@ -341,7 +341,7 @@ std::unordered_set<std::string> compileIncludedPaths(const std::string& root_pat
 // Helper for compileIncludedPaths
 // Gets all paths relative to "root_path" from a given set of directories
 // {"src"} to {"src", "src/main.cpp", "src/temp.cpp"}
-std::unordered_set<std::string> getPathsForCompile(const std::string& root_path, const std::unordered_set<std::string>& s)
+std::unordered_set<std::string> getAllPaths(const std::string& root_path, const std::unordered_set<std::string>& s)
 {
     std::unordered_set<std::string> paths;
     
