@@ -100,11 +100,9 @@ int main(int argc, char** argv)
     //     std::cout << "nuh uh" << std::endl;
     // }
 
-    std::unordered_set<int> us = {1,8,9,3,4,5};
-    std::set<int> s = convertUnorderedSetToSet(us);
-    for(const auto& i : s) {
-        std::cout << i << std::endl;
-    }
+    std::string to = path::joinPath(path::sourcePath(), "temp");
+    std::unordered_map<std::string, std::string> keyval = {{"project", "cummies"}, {"name", "Michael"}};
+    initTemplate(template_dir, "py", container_name, to, keyval);
 
     return 0;
 }

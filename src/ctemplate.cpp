@@ -27,18 +27,22 @@ void initTemplate(const std::string& template_dir, const std::string& template_n
     // Remove ctemplate container from the initialized template
     path::remove(path::joinPath(path_to_init_template_to, template_files_container_name));
 
-    std::unordered_set<std::string> included_files = getIncludedPaths(path_to_init_template_to,
-                                                    jsonArrayToSet(vars.at("searchPaths").at("files").at("include")), 
-                                                    jsonArrayToSet(vars.at("searchPaths").at("files").at("exclude")));
+    std::unordered_set<std::string> includes = jsonArrayToSet(vars.at("searchPaths").at("files").at("include"));
+    std::unordered_set<std::string> excludes = jsonArrayToSet(vars.at("searchPaths").at("files").at("exclude"));
+
+    std::unordered_set<std::string> included_files = getIncludedPaths(path_to_init_template_to, includes, excludes);
 
     std::string var_prefix = vars.at("variablePrefix");
     std::string var_suffix = vars.at("variableSuffix");
 
     replaceVariablesInAllFiles(path_to_init_template_to, included_files, keyval, var_prefix, var_suffix);
 
-    std::set<std::string> included_filenames = jsonArrayToOrderedSet(vars.at("searchPaths").at("filenames"));
+    includes = jsonArrayToSet(vars.at("searchPaths").at("filenames").at("include"));
+    excludes = jsonArrayToSet(vars.at("searchPaths").at("filenames").at("exclude"));
 
-    replaceVariablesInAllFilenames(path_to_init_template_to, included_filenames, keyval, var_prefix, var_suffix);
+    included_files = getIncludedPaths(path_to_init_template_to, includes, excludes);
+
+    replaceVariablesInAllFilenames(path_to_init_template_to, convertUnorderedSetToSet(included_files), keyval, var_prefix, var_suffix);
 }
 
 void addTemplate(const std::string& template_dir, const std::string& path_to_add, const std::string& name, const std::string& desc, const std::string& container_name)
