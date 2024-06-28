@@ -1,10 +1,10 @@
 #pragma once
 
+#include "json.hpp"
 #include <vector>
 #include <unordered_map>
 #include <unordered_set>
 #include <set>
-#include "json.hpp"
 
 void showConfig(const nlohmann::json& config, int space_before = 0);
 void setConfigValue(nlohmann::json& config, const std::vector<std::string>& config_key_values);
