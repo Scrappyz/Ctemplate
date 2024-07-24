@@ -44,9 +44,3 @@ void replaceVariablesInAllFiles(const std::string& root_path, const std::unorder
 void replaceVariablesInAllFilenames(const std::string& root_path, const std::set<std::string>& paths,
                             const std::unordered_map<std::string, std::string>& keyval,
                             const std::string& prefix, const std::string& suffix);
-
-std::unordered_set<std::string> getIncludedPaths(const std::string& root_path, 
-                            const std::unordered_set<std::string>& includes, 
-                            const std::unordered_set<std::string>& excludes);
-                            
-std::unordered_set<std::string> getAllPaths(const std::string& root_path, const std::unordered_set<std::string>& s);
