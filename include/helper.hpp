@@ -24,6 +24,16 @@ std::set<T> convertUnorderedSetToSet(const std::unordered_set<T>& s)
     return ss;
 }
 
+template<typename T>
+std::unordered_set<T> convertSetToUnorderedSet(const std::set<T>& s)
+{
+    std::unordered_set<T> ss;
+    for(const auto& i : s) {
+        ss.insert(i);
+    }
+    return ss;
+}
+
 std::vector<std::string> split(const std::string& str, const std::string& delimiter);
 std::unordered_map<std::string, std::string> mapKeyValues(const std::vector<std::string>& keyvals);
 std::vector<std::string> getAlignedOutput(const std::vector<std::vector<std::string>>& v, int space);
@@ -44,3 +54,6 @@ void replaceVariablesInAllFiles(const std::string& root_path, const std::unorder
 void replaceVariablesInAllFilenames(const std::string& root_path, const std::set<std::string>& paths,
                             const std::unordered_map<std::string, std::string>& keyval,
                             const std::string& prefix, const std::string& suffix);
+
+std::set<std::string> getPaths(const std::string& path, const std::string& relative_to = "");
+std::set<std::string> matchPaths(const std::set<std::string>& paths, const std::set<std::string>& include, const std::set<std::string>& exclude);

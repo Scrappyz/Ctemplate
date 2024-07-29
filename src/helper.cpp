@@ -1,5 +1,6 @@
 #include "os.hpp"
 #include "helper.hpp"
+#include "fmatch.hpp"
 #include <fstream>
 #include <iomanip>
 #include <iostream>
@@ -295,4 +296,45 @@ void replaceVariablesInAllFilenames(const std::string& root_path, const std::set
 
         path::rename(path, new_filename);
     }
+}
+
+std::set<std::string> getPaths(const std::string& path, const std::string& relative_to)
+{
+    std::set<std::string> paths;
+    for(const auto& i : fs::recursive_directory_iterator(path)) {
+        std::string p = relative_to.empty() ? i.path().string() : path::relativePath(i, path);
+        paths.insert(p);
+    }
+
+    return paths;
+}
+
+std::set<std::string> matchPaths(const std::set<std::string>& included_paths, const std::set<std::string>& include, const std::set<std::string>& exclude)
+{
+    std::set<std::string> matched;
+    for(const auto& str : included_paths) {
+        bool included = false;
+        for(const auto& pattern : include) {
+            if(fmatch::match(str, pattern)) {
+                included = true;
+                break;
+            }
+        }
+
+        if(included || include.empty()) {
+            bool excluded = false;
+            for(const auto& pattern : exclude) {
+                if(fmatch::match(str, pattern)) {
+                    excluded = true;
+                    break;
+                }
+            }
+
+            if(!excluded) {
+                matched.insert(str);
+            }
+        }
+    }
+
+    return matched;
 }

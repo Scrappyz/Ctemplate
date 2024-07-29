@@ -100,9 +100,14 @@ int main(int argc, char** argv)
     //     std::cout << "nuh uh" << std::endl;
     // }
 
-    std::string to = path::joinPath(path::sourcePath(), "temp");
-    std::unordered_map<std::string, std::string> keyval = {{"project", "cummies"}, {"name", "Michael"}};
-    initTemplate(template_dir, "py", container_name, to, keyval);
+    // std::string to = path::joinPath(path::sourcePath(), "temp");
+    // std::unordered_map<std::string, std::string> keyval = {{"project", "cummies"}, {"name", "Michael"}};
+    // initTemplate(template_dir, "py", container_name, to, keyval);
 
+    std::string tp = path::joinPath(path::sourcePath(), "../../test/test_path/templates/cpp-test");
+    std::set<std::string> s = matchPaths(getPaths(tp, tp), {"include", "include/**"}, {"include/*1.hpp"});
+    for(const auto& i : s) {
+        std::cout << i << std::endl;
+    }
     return 0;
 }

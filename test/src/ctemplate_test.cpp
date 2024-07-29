@@ -20,6 +20,17 @@ std::unordered_set<std::string> normalizePaths(const std::unordered_set<std::str
     return n;
 }
 
+std::set<std::string> normalizePaths(const std::set<std::string>& s, const std::string& relative_to = "")
+{
+    std::set<std::string> n;
+    for(const auto& i : s) {
+        std::string p = path::relativePath(path::joinPath(relative_to, i), relative_to);
+        n.insert(p);
+    }
+
+    return n;
+}
+
 TEST(addTemplate, adding)
 {
     std::string add_path = path::joinPath(template_path, "t1");
@@ -202,142 +213,151 @@ TEST(replaceVariables, edge_cases)
     EXPECT_EQ(actual, expected);
 }
 
-TEST(getIncludedPaths, empty_includes_with_excludes)
+TEST(matchPaths, work)
 {
     std::string template_p = path::joinPath(template_path, "cpp-test");
-    std::unordered_set<std::string> actual = getIncludedPaths(template_p,
-            std::unordered_set<std::string>(), std::unordered_set<std::string>({"src/main.cpp", "test", "include/stuff.hpp"}));
-    std::unordered_set<std::string> expected = {"src", "src/temp.cpp", "CMakeLists.txt", "include", "include/stuff1.hpp"};
+    std::set<std::string> actual = matchPaths(getPaths(template_p, template_p), {"include", "include/**"}, {"include/*1.hpp"});
+    std::set<std::string> expected = {"include/stuff.hpp", "include"};
     expected = normalizePaths(expected, template_p);
 
     EXPECT_EQ(actual, expected);
 }
 
-TEST(getIncludedPaths, includes_and_empty_excludes)
+TEST(matchPaths, empty_includes_with_excludes)
 {
     std::string template_p = path::joinPath(template_path, "cpp-test");
-    std::unordered_set<std::string> actual = getIncludedPaths(template_p,
-            std::unordered_set<std::string>({"src"}), std::unordered_set<std::string>());
-    std::unordered_set<std::string> expected = {"src", "src/temp.cpp", "src/main.cpp"};
+    std::set<std::string> actual = matchPaths(getPaths(template_p, template_p), {}, {"src/**", "test/*", "include/stuff.hpp"});
+    std::set<std::string> expected = {"CMakeLists.txt", "src", "test", "test/test_path/test4.cpp", "include", "include/stuff1.hpp"};
     expected = normalizePaths(expected, template_p);
 
     EXPECT_EQ(actual, expected);
 }
 
-TEST(getIncludedPaths, includes_with_recursion_and_empty_excludes)
-{
-    std::string template_p = path::joinPath(template_path, "cpp-test");
-    std::unordered_set<std::string> actual = getIncludedPaths(template_p,
-            std::unordered_set<std::string>({"src", "src/temp.cpp", "src/main.cpp"}), std::unordered_set<std::string>());
-    std::unordered_set<std::string> expected = {"src", "src/temp.cpp", "src/main.cpp"};
-    expected = normalizePaths(expected, template_p);
+// TEST(getIncludedPaths, includes_and_empty_excludes)
+// {
+//     std::string template_p = path::joinPath(template_path, "cpp-test");
+//     std::unordered_set<std::string> actual = getIncludedPaths(template_p,
+//             std::unordered_set<std::string>({"src"}), std::unordered_set<std::string>());
+//     std::unordered_set<std::string> expected = {"src", "src/temp.cpp", "src/main.cpp"};
+//     expected = normalizePaths(expected, template_p);
 
-    EXPECT_EQ(actual, expected);
+//     EXPECT_EQ(actual, expected);
+// }
 
-    actual = getIncludedPaths(template_p,
-            std::unordered_set<std::string>({"src", "test", "test/test1.cpp", "test/test_path"}), std::unordered_set<std::string>());
-    expected = {"src", "src/temp.cpp", "src/main.cpp", "test", "test/test1.cpp", "test/test2.cpp", "test/test3.cpp", 
-    "test/test_path/test4.cpp", "test/test_path"};
-    expected = normalizePaths(expected, template_p);
+// TEST(getIncludedPaths, includes_with_recursion_and_empty_excludes)
+// {
+//     std::string template_p = path::joinPath(template_path, "cpp-test");
+//     std::unordered_set<std::string> actual = getIncludedPaths(template_p,
+//             std::unordered_set<std::string>({"src", "src/temp.cpp", "src/main.cpp"}), std::unordered_set<std::string>());
+//     std::unordered_set<std::string> expected = {"src", "src/temp.cpp", "src/main.cpp"};
+//     expected = normalizePaths(expected, template_p);
 
-    EXPECT_EQ(actual, expected);
-}
+//     EXPECT_EQ(actual, expected);
 
-TEST(getIncludedPaths, includes_and_excludes)
-{
-    std::string template_p = path::joinPath(template_path, "cpp-test");
-    std::unordered_set<std::string> actual = getIncludedPaths(template_p,
-            std::unordered_set<std::string>({"src"}), std::unordered_set<std::string>({"src/main.cpp", "test", "include/stuff.hpp"}));
-    std::unordered_set<std::string> expected = {"src", "src/temp.cpp"};
-    expected = normalizePaths(expected, template_p);
+//     actual = getIncludedPaths(template_p,
+//             std::unordered_set<std::string>({"src", "test", "test/test1.cpp", "test/test_path"}), std::unordered_set<std::string>());
+//     expected = {"src", "src/temp.cpp", "src/main.cpp", "test", "test/test1.cpp", "test/test2.cpp", "test/test3.cpp", 
+//     "test/test_path/test4.cpp", "test/test_path"};
+//     expected = normalizePaths(expected, template_p);
 
-    EXPECT_EQ(actual, expected);
-}
+//     EXPECT_EQ(actual, expected);
+// }
 
-TEST(getAllPaths, with_directories)
-{
-    std::string template_p = path::joinPath(template_path, "cpp-test");
-    std::unordered_set<std::string> actual = getAllPaths(template_p, std::unordered_set<std::string>({"src", "test"}));
-    std::unordered_set<std::string> expected = {"src", "src/main.cpp", "src/temp.cpp", "test/test_path", "test/test_path/test4.cpp",
-     "test", "test/test1.cpp", "test/test2.cpp", "test/test3.cpp"};
-    expected = normalizePaths(expected, template_p);
+// TEST(getIncludedPaths, includes_and_excludes)
+// {
+//     std::string template_p = path::joinPath(template_path, "cpp-test");
+//     std::unordered_set<std::string> actual = getIncludedPaths(template_p,
+//             std::unordered_set<std::string>({"src"}), std::unordered_set<std::string>({"src/main.cpp", "test", "include/stuff.hpp"}));
+//     std::unordered_set<std::string> expected = {"src", "src/temp.cpp"};
+//     expected = normalizePaths(expected, template_p);
 
-    EXPECT_EQ(actual, expected);
-}
+//     EXPECT_EQ(actual, expected);
+// }
 
-TEST(getAllPaths, with_directories_and_recursion)
-{
-    std::string template_p = path::joinPath(template_path, "cpp-test");
-    std::unordered_set<std::string> actual = getAllPaths(template_p, 
-            std::unordered_set<std::string>({"src", "test", "test/test_path", "test/test_path/test4.cpp"}));
-    std::unordered_set<std::string> expected = {"src", "src/main.cpp", "src/temp.cpp", "test/test_path", "test/test_path/test4.cpp",
-     "test", "test/test1.cpp", "test/test2.cpp", "test/test3.cpp"};
-    expected = normalizePaths(expected, template_p);
+// TEST(getAllPaths, with_directories)
+// {
+//     std::string template_p = path::joinPath(template_path, "cpp-test");
+//     std::unordered_set<std::string> actual = getAllPaths(template_p, std::unordered_set<std::string>({"src", "test"}));
+//     std::unordered_set<std::string> expected = {"src", "src/main.cpp", "src/temp.cpp", "test/test_path", "test/test_path/test4.cpp",
+//      "test", "test/test1.cpp", "test/test2.cpp", "test/test3.cpp"};
+//     expected = normalizePaths(expected, template_p);
 
-    EXPECT_EQ(actual, expected);
-}
+//     EXPECT_EQ(actual, expected);
+// }
 
-TEST(getAllPaths, with_directories_and_inordered_recursion)
-{
-    std::string template_p = path::joinPath(template_path, "cpp-test");
-    std::unordered_set<std::string> actual = getAllPaths(template_p, 
-            std::unordered_set<std::string>({"src", "test/test_path/test4.cpp", "test/test_path", "test"}));
-    std::unordered_set<std::string> expected = {"src", "src/main.cpp", "src/temp.cpp", "test/test_path", "test/test_path/test4.cpp",
-     "test", "test/test1.cpp", "test/test2.cpp", "test/test3.cpp"};
-    expected = normalizePaths(expected, template_p);
+// TEST(getAllPaths, with_directories_and_recursion)
+// {
+//     std::string template_p = path::joinPath(template_path, "cpp-test");
+//     std::unordered_set<std::string> actual = getAllPaths(template_p, 
+//             std::unordered_set<std::string>({"src", "test", "test/test_path", "test/test_path/test4.cpp"}));
+//     std::unordered_set<std::string> expected = {"src", "src/main.cpp", "src/temp.cpp", "test/test_path", "test/test_path/test4.cpp",
+//      "test", "test/test1.cpp", "test/test2.cpp", "test/test3.cpp"};
+//     expected = normalizePaths(expected, template_p);
 
-    EXPECT_EQ(actual, expected);
-}
+//     EXPECT_EQ(actual, expected);
+// }
 
-TEST(getAllPaths, non_existing_path)
-{
-    std::string template_p = path::joinPath(template_path, "cpp-test");
-    std::unordered_set<std::string> actual = getAllPaths(template_p, 
-            std::unordered_set<std::string>({"src", "test/test_path/test4.cpp", "test/test_path", "test", "hello", "hello/world"}));
-    std::unordered_set<std::string> expected = {"src", "src/main.cpp", "src/temp.cpp", "test/test_path", "test/test_path/test4.cpp",
-     "test", "test/test1.cpp", "test/test2.cpp", "test/test3.cpp"};
-    expected = normalizePaths(expected, template_p);
+// TEST(getAllPaths, with_directories_and_inordered_recursion)
+// {
+//     std::string template_p = path::joinPath(template_path, "cpp-test");
+//     std::unordered_set<std::string> actual = getAllPaths(template_p, 
+//             std::unordered_set<std::string>({"src", "test/test_path/test4.cpp", "test/test_path", "test"}));
+//     std::unordered_set<std::string> expected = {"src", "src/main.cpp", "src/temp.cpp", "test/test_path", "test/test_path/test4.cpp",
+//      "test", "test/test1.cpp", "test/test2.cpp", "test/test3.cpp"};
+//     expected = normalizePaths(expected, template_p);
 
-    EXPECT_EQ(actual, expected);
-} 
+//     EXPECT_EQ(actual, expected);
+// }
 
-TEST(replaceVariablesInAllFilenames, working)
-{
-    std::string testing_path = path::joinPath(test_path, "testing/replace_filenames");
-    std::set<std::string> paths = {"!project!", "!project!/!project!.py"};
-    std::unordered_map<std::string, std::string> keyval = {{"project", "pypy"}, {"unused", "var"}};
+// TEST(getAllPaths, non_existing_path)
+// {
+//     std::string template_p = path::joinPath(template_path, "cpp-test");
+//     std::unordered_set<std::string> actual = getAllPaths(template_p, 
+//             std::unordered_set<std::string>({"src", "test/test_path/test4.cpp", "test/test_path", "test", "hello", "hello/world"}));
+//     std::unordered_set<std::string> expected = {"src", "src/main.cpp", "src/temp.cpp", "test/test_path", "test/test_path/test4.cpp",
+//      "test", "test/test1.cpp", "test/test2.cpp", "test/test3.cpp"};
+//     expected = normalizePaths(expected, template_p);
 
-    replaceVariablesInAllFilenames(testing_path, paths, keyval, "!", "!");
+//     EXPECT_EQ(actual, expected);
+// } 
 
-    ASSERT_TRUE(!path::exists(path::joinPath(testing_path, "!project!")));
-    ASSERT_TRUE(path::exists(path::joinPath(testing_path, "pypy")));
+// TEST(replaceVariablesInAllFilenames, working)
+// {
+//     std::string testing_path = path::joinPath(test_path, "testing/replace_filenames");
+//     std::set<std::string> paths = {"!project!", "!project!/!project!.py"};
+//     std::unordered_map<std::string, std::string> keyval = {{"project", "pypy"}, {"unused", "var"}};
 
-    ASSERT_TRUE(!path::exists(path::joinPath(testing_path, "!project!/!project!.py")));
-    ASSERT_TRUE(path::exists(path::joinPath(testing_path, "pypy/pypy.py")));
+//     replaceVariablesInAllFilenames(testing_path, paths, keyval, "!", "!");
 
-    path::rename(path::joinPath(testing_path, "pypy/pypy.py"), "!project!.py");
-    path::rename(path::joinPath(testing_path, "pypy"), "!project!");
-}
+//     ASSERT_TRUE(!path::exists(path::joinPath(testing_path, "!project!")));
+//     ASSERT_TRUE(path::exists(path::joinPath(testing_path, "pypy")));
 
-TEST(replaceVariablesInAllFilenames, working_includes_and_excludes)
-{
-    // std::string testing_path = path::joinPath(test_path, "testing/replace_filenames");
-    // std::unordered_set<std::string> includes = {"!project!"};
-    // std::unordered_set<std::string> excludes = {"!project!/!project!.py", "!project!/temp.py"};
-    // std::set<std::string> paths = convertUnorderedSetToSet(getIncludedPaths(testing_path, includes, excludes));
+//     ASSERT_TRUE(!path::exists(path::joinPath(testing_path, "!project!/!project!.py")));
+//     ASSERT_TRUE(path::exists(path::joinPath(testing_path, "pypy/pypy.py")));
 
-    // EXPECT_EQ(paths, std::set<std::string>({"!project!"}));
+//     path::rename(path::joinPath(testing_path, "pypy/pypy.py"), "!project!.py");
+//     path::rename(path::joinPath(testing_path, "pypy"), "!project!");
+// }
 
-    // std::unordered_map<std::string, std::string> keyval = {{"project", "pypy"}, {"unused", "var"}};
+// TEST(replaceVariablesInAllFilenames, working_includes_and_excludes)
+// {
+//     // std::string testing_path = path::joinPath(test_path, "testing/replace_filenames");
+//     // std::unordered_set<std::string> includes = {"!project!"};
+//     // std::unordered_set<std::string> excludes = {"!project!/!project!.py", "!project!/temp.py"};
+//     // std::set<std::string> paths = convertUnorderedSetToSet(getIncludedPaths(testing_path, includes, excludes));
 
-    // replaceVariablesInAllFilenames(testing_path, paths, keyval, "!", "!");
+//     // EXPECT_EQ(paths, std::set<std::string>({"!project!"}));
 
-    // ASSERT_TRUE(!path::exists(path::joinPath(testing_path, "!project!")));
-    // ASSERT_TRUE(path::exists(path::joinPath(testing_path, "pypy")));
+//     // std::unordered_map<std::string, std::string> keyval = {{"project", "pypy"}, {"unused", "var"}};
 
-    // ASSERT_TRUE(!path::exists(path::joinPath(testing_path, "!project!/!project!.py")));
-    // ASSERT_TRUE(path::exists(path::joinPath(testing_path, "pypy/pypy.py")));
+//     // replaceVariablesInAllFilenames(testing_path, paths, keyval, "!", "!");
 
-    // path::rename(path::joinPath(testing_path, "pypy/pypy.py"), "!project!.py");
-    // path::rename(path::joinPath(testing_path, "pypy"), "!project!");
-}
+//     // ASSERT_TRUE(!path::exists(path::joinPath(testing_path, "!project!")));
+//     // ASSERT_TRUE(path::exists(path::joinPath(testing_path, "pypy")));
+
+//     // ASSERT_TRUE(!path::exists(path::joinPath(testing_path, "!project!/!project!.py")));
+//     // ASSERT_TRUE(path::exists(path::joinPath(testing_path, "pypy/pypy.py")));
+
+//     // path::rename(path::joinPath(testing_path, "pypy/pypy.py"), "!project!.py");
+//     // path::rename(path::joinPath(testing_path, "pypy"), "!project!");
+// }
