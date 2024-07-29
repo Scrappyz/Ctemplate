@@ -254,43 +254,43 @@ TEST(getIncludedPaths, includes_and_excludes)
     EXPECT_EQ(actual, expected);
 }
 
-// TEST(replaceVariablesInAllFilenames, working)
-// {
-//     std::string testing_path = path::joinPath(test_path, "testing/replace_filenames");
-//     std::set<std::string> paths = {"!project!", "!project!/!project!.py"};
-//     std::unordered_map<std::string, std::string> keyval = {{"project", "pypy"}, {"unused", "var"}};
+TEST(replaceVariablesInAllFilenames, working)
+{
+    std::string testing_path = path::joinPath(test_path, "testing/replace_filenames");
+    std::set<std::string> paths = {"!project!", "!project!/!project!.py"};
+    std::unordered_map<std::string, std::string> keyval = {{"project", "pypy"}, {"unused", "var"}};
 
-//     replaceVariablesInAllFilenames(testing_path, paths, keyval, "!", "!");
+    replaceVariablesInAllFilenames(testing_path, paths, keyval, "!", "!");
 
-//     ASSERT_TRUE(!path::exists(path::joinPath(testing_path, "!project!")));
-//     ASSERT_TRUE(path::exists(path::joinPath(testing_path, "pypy")));
+    ASSERT_TRUE(!path::exists(path::joinPath(testing_path, "!project!")));
+    ASSERT_TRUE(path::exists(path::joinPath(testing_path, "pypy")));
 
-//     ASSERT_TRUE(!path::exists(path::joinPath(testing_path, "!project!/!project!.py")));
-//     ASSERT_TRUE(path::exists(path::joinPath(testing_path, "pypy/pypy.py")));
+    ASSERT_TRUE(!path::exists(path::joinPath(testing_path, "!project!/!project!.py")));
+    ASSERT_TRUE(path::exists(path::joinPath(testing_path, "pypy/pypy.py")));
 
-//     path::rename(path::joinPath(testing_path, "pypy/pypy.py"), "!project!.py");
-//     path::rename(path::joinPath(testing_path, "pypy"), "!project!");
-// }
+    path::rename(path::joinPath(testing_path, "pypy/pypy.py"), "!project!.py");
+    path::rename(path::joinPath(testing_path, "pypy"), "!project!");
+}
 
-// TEST(replaceVariablesInAllFilenames, working_includes_and_excludes)
-// {
-//     // std::string testing_path = path::joinPath(test_path, "testing/replace_filenames");
-//     // std::unordered_set<std::string> includes = {"!project!"};
-//     // std::unordered_set<std::string> excludes = {"!project!/!project!.py", "!project!/temp.py"};
-//     // std::set<std::string> paths = convertUnorderedSetToSet(getIncludedPaths(testing_path, includes, excludes));
+TEST(replaceVariablesInAllFilenames, working_includes_and_excludes)
+{
+    std::string testing_path = path::joinPath(test_path, "testing/replace_filenames");
+    std::set<std::string> includes = {"!project!", "!project!/**"};
+    std::set<std::string> excludes = {"!project!/temp*"};
+    std::set<std::string> paths = matchPaths(getPaths(testing_path, testing_path), includes, excludes);
 
-//     // EXPECT_EQ(paths, std::set<std::string>({"!project!"}));
+    EXPECT_EQ(paths, normalizePaths(std::set<std::string>({"!project!", "!project!/!project!.py"})));
 
-//     // std::unordered_map<std::string, std::string> keyval = {{"project", "pypy"}, {"unused", "var"}};
+    std::unordered_map<std::string, std::string> keyval = {{"project", "pypy"}, {"unused", "var"}};
 
-//     // replaceVariablesInAllFilenames(testing_path, paths, keyval, "!", "!");
+    replaceVariablesInAllFilenames(testing_path, paths, keyval, "!", "!");
 
-//     // ASSERT_TRUE(!path::exists(path::joinPath(testing_path, "!project!")));
-//     // ASSERT_TRUE(path::exists(path::joinPath(testing_path, "pypy")));
+    ASSERT_TRUE(!path::exists(path::joinPath(testing_path, "!project!")));
+    ASSERT_TRUE(path::exists(path::joinPath(testing_path, "pypy")));
 
-//     // ASSERT_TRUE(!path::exists(path::joinPath(testing_path, "!project!/!project!.py")));
-//     // ASSERT_TRUE(path::exists(path::joinPath(testing_path, "pypy/pypy.py")));
+    ASSERT_TRUE(!path::exists(path::joinPath(testing_path, "!project!/!project!.py")));
+    ASSERT_TRUE(path::exists(path::joinPath(testing_path, "pypy/pypy.py")));
 
-//     // path::rename(path::joinPath(testing_path, "pypy/pypy.py"), "!project!.py");
-//     // path::rename(path::joinPath(testing_path, "pypy"), "!project!");
-// }
+    path::rename(path::joinPath(testing_path, "pypy/pypy.py"), "!project!.py");
+    path::rename(path::joinPath(testing_path, "pypy"), "!project!");
+}
