@@ -11,8 +11,8 @@ void setConfigValue(nlohmann::json& config, const std::vector<std::string>& conf
 nlohmann::json readJsonFromFile(const std::string& file);
 void writeJsonToFile(const nlohmann::json& j, const std::string& file, int indent = 0);
 void writeJsonToFile(const nlohmann::ordered_json& j, const std::string& file, int indent = 0);
-std::unordered_set<std::string> jsonArrayToSet(const nlohmann::json& j);
-std::set<std::string> jsonArrayToOrderedSet(const nlohmann::json& j);
+std::set<std::string> jsonArrayToSet(const nlohmann::json& j);
+std::unordered_set<std::string> jsonArrayToUnorderedSet(const nlohmann::json& j);
 
 template<typename T>
 std::set<T> convertUnorderedSetToSet(const std::unordered_set<T>& s)

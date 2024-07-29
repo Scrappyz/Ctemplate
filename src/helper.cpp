@@ -55,9 +55,9 @@ void writeJsonToFile(const nlohmann::ordered_json& j, const std::string& file, i
     o.close();
 }
 
-std::unordered_set<std::string> jsonArrayToSet(const json& j)
+std::set<std::string> jsonArrayToSet(const json& j)
 {
-    std::unordered_set<std::string> s;
+    std::set<std::string> s;
 
     if(!j.is_array()) {
         return s;
@@ -70,9 +70,9 @@ std::unordered_set<std::string> jsonArrayToSet(const json& j)
     return s;
 }
 
-std::set<std::string> jsonArrayToOrderedSet(const nlohmann::json& j)
+std::unordered_set<std::string> jsonArrayToUnorderedSet(const nlohmann::json& j)
 {
-    std::set<std::string> s;
+    std::unordered_set<std::string> s;
 
     if(!j.is_array()) {
         return s;
