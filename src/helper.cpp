@@ -259,7 +259,7 @@ void replaceVariablesInFile(const std::string& file_path,
     o.close();
 }
 
-void replaceVariablesInAllFiles(const std::string& root_path, const std::unordered_set<std::string>& paths,
+void replaceVariablesInAllFiles(const std::string& root_path, const std::set<std::string>& paths,
                             const std::unordered_map<std::string, std::string>& keyval, 
                             const std::string& prefix, const std::string& suffix)
 {
