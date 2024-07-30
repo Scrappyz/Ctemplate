@@ -20,6 +20,11 @@ void initTemplate(const std::string& template_dir, const std::string& template_n
     }
 
     json vars = readJsonFromFile(path::joinPath({template_to_init, template_files_container_name, "variables.json"}));
+    json var_list = vars.at("variables");
+
+    if(!equalVariables(var_list, keyval, true)) {
+        return;
+    }
 
     // Directory separator to only copy the content
     path::copy(template_to_init + path::directorySeparator(), path_to_init_template_to);
@@ -27,9 +32,7 @@ void initTemplate(const std::string& template_dir, const std::string& template_n
     // Remove ctemplate container from the initialized template
     path::remove(path::joinPath(path_to_init_template_to, template_files_container_name));
 
-    json var_list = vars.at("variables");
-
-    if(var_list.empty()) {
+    if(keyval.empty()) {
         return;
     }
 

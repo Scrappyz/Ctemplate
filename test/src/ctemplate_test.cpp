@@ -31,6 +31,11 @@ std::set<std::string> normalizePaths(const std::set<std::string>& s, const std::
     return n;
 }
 
+TEST(initTemplate, working)
+{
+    
+}
+
 TEST(addTemplate, adding)
 {
     std::string add_path = path::joinPath(template_path, "t1");
@@ -233,7 +238,7 @@ TEST(matchPaths, empty_includes_with_excludes)
     EXPECT_EQ(actual, expected);
 }
 
-TEST(getIncludedPaths, includes_with_empty_excludes)
+TEST(matchPaths, includes_with_empty_excludes)
 {
     std::string template_p = path::joinPath(template_path, "cpp-test");
     std::set<std::string> actual = matchPaths(getPaths(template_p, template_p), {"test/**", "include", "src/*"}, {});
@@ -244,7 +249,7 @@ TEST(getIncludedPaths, includes_with_empty_excludes)
     EXPECT_EQ(actual, expected);
 }
 
-TEST(getIncludedPaths, includes_and_excludes)
+TEST(matchPaths, includes_and_excludes)
 {
     std::string template_p = path::joinPath(template_path, "cpp-test");
     std::set<std::string> actual = matchPaths(getPaths(template_p, template_p), {"test/**", "include", "src/*"}, {"test/test*", "src/temp.cpp"});
