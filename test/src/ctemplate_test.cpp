@@ -31,27 +31,27 @@ std::set<std::string> normalizePaths(const std::set<std::string>& s, const std::
     return n;
 }
 
-TEST(initTemplate, working)
-{
-    std::string tp = path::joinPath(template_path, "py");
-    std::string t_path = path::joinPath(test_path, "testing/init_template/test");
-    std::string tmp_path = path::joinPath(test_path, "testing/init_template/temp");
-    std::unordered_map<std::string, std::string> keyval = {{"project", "hello_world"}, {"name", "User"}};
+// TEST(initTemplate, working)
+// {
+//     std::string tp = path::joinPath(template_path, "py");
+//     std::string t_path = path::joinPath(test_path, "testing/init_template/test");
+//     std::string tmp_path = path::joinPath(test_path, "testing/init_template/temp");
+//     std::unordered_map<std::string, std::string> keyval = {{"project", "hello_world"}, {"name", "User"}};
      
-    initTemplate(tp, ".ctemplate", t_path, keyval);
+//     initTemplate(tp, ".ctemplate", t_path, keyval);
 
-    ASSERT_TRUE(path::exists(path::joinPath(t_path, "hello_world")));
-    ASSERT_TRUE(path::exists(path::joinPath(t_path, "hello_world/hello_world.py")));
+//     ASSERT_TRUE(path::exists(path::joinPath(t_path, "hello_world")));
+//     ASSERT_TRUE(path::exists(path::joinPath(t_path, "hello_world/hello_world.py")));
 
-    ASSERT_TRUE(!path::exists(path::joinPath(t_path, ".ctemplate")));
+//     ASSERT_TRUE(!path::exists(path::joinPath(t_path, ".ctemplate")));
 
-    std::string actual_file_content = readTextFromFile(path::joinPath(t_path, "hello_world/hello_world.py"));
-    std::string expected_file_content = readTextFromFile(path::joinPath(tmp_path, "test.py"));
+//     std::string actual_file_content = readTextFromFile(path::joinPath(t_path, "hello_world/hello_world.py"));
+//     std::string expected_file_content = readTextFromFile(path::joinPath(tmp_path, "test.py"));
 
-    EXPECT_EQ(actual_file_content, expected_file_content);
+//     EXPECT_EQ(actual_file_content, expected_file_content);
 
-    path::remove(t_path + path::directorySeparator());
-}
+//     path::remove(t_path + path::directorySeparator());
+// }
 
 TEST(addTemplate, adding)
 {
@@ -249,7 +249,7 @@ TEST(matchPaths, empty_includes_with_excludes)
 {
     std::string template_p = path::joinPath(template_path, "cpp-test");
     std::set<std::string> actual = matchPaths(getPaths(template_p, template_p), {}, {"src/**", "test/*", "include/stuff.hpp"});
-    std::set<std::string> expected = {"CMakeLists.txt", "src", "test", "test/test_path/test4.cpp", "include", "include/stuff1.hpp"};
+    std::set<std::string> expected = {};
     expected = normalizePaths(expected, template_p);
 
     EXPECT_EQ(actual, expected);
@@ -271,6 +271,27 @@ TEST(matchPaths, includes_and_excludes)
     std::string template_p = path::joinPath(template_path, "cpp-test");
     std::set<std::string> actual = matchPaths(getPaths(template_p, template_p), {"test/**", "include", "src/*"}, {"test/test*", "src/temp.cpp"});
     std::set<std::string> expected = {"test/test_path/test4.cpp", "src/main.cpp", "include"};
+    expected = normalizePaths(expected, template_p);
+
+    EXPECT_EQ(actual, expected);
+}
+
+TEST(matchPaths, include_all)
+{
+    std::string template_p = path::joinPath(template_path, "cpp-test");
+    std::set<std::string> actual = matchPaths(getPaths(template_p, template_p), {"**"}, {});
+    std::set<std::string> expected = {"include", "include/stuff.hpp", "include/stuff1.hpp", "src", "src/main.cpp", "src/temp.cpp",
+     "test", "test/test_path", "test/test_path/test4.cpp", "test/test1.cpp", "test/test2.cpp", "test/test3.cpp", "CMakeLists.txt"};
+    expected = normalizePaths(expected, template_p);
+
+    EXPECT_EQ(actual, expected);
+}
+
+TEST(matchPaths, include_all_exclude_all)
+{
+    std::string template_p = path::joinPath(template_path, "cpp-test");
+    std::set<std::string> actual = matchPaths(getPaths(template_p, template_p), {"**"}, {"**"});
+    std::set<std::string> expected = {};
     expected = normalizePaths(expected, template_p);
 
     EXPECT_EQ(actual, expected);

@@ -362,7 +362,7 @@ std::set<std::string> matchPaths(const std::set<std::string>& included_paths, co
             }
         }
 
-        if(included || include.empty()) {
+        if(included) {
             bool excluded = false;
             for(const auto& pattern : exclude) {
                 if(fmatch::match(str, pattern)) {
