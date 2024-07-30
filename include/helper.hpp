@@ -8,7 +8,9 @@
 
 void showConfig(const nlohmann::json& config, int space_before = 0);
 void setConfigValue(nlohmann::json& config, const std::vector<std::string>& config_key_values);
+std::string readTextFromFile(const std::string& file_path);
 nlohmann::json readJsonFromFile(const std::string& file);
+void writeTextToFile(const std::string& str, const std::string& file_path);
 void writeJsonToFile(const nlohmann::json& j, const std::string& file, int indent = 0);
 void writeJsonToFile(const nlohmann::ordered_json& j, const std::string& file, int indent = 0);
 

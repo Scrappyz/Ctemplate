@@ -31,6 +31,16 @@ void setConfigValue(json& config, const std::vector<std::string>& config_key_val
     }
 }
 
+std::string readTextFromFile(const std::string& file_path)
+{
+    std::ifstream file(file_path);
+    std::stringstream ss;
+    ss << file.rdbuf();
+    file.close();
+
+    return ss.str();
+}
+
 json readJsonFromFile(const std::string& file)
 {
     json j;
@@ -39,6 +49,13 @@ json readJsonFromFile(const std::string& file)
     i.close();
     
     return j;
+}
+
+void writeTextToFile(const std::string& str, const std::string& file_path)
+{
+    std::ofstream o(file_path);
+    o << str;
+    o.close();
 }
 
 void writeJsonToFile(const json& j, const std::string& file, int indent)
@@ -279,16 +296,8 @@ void replaceVariablesInFile(const std::string& file_path,
                             const std::unordered_map<std::string, std::string>& keyval, 
                             const std::string& prefix, const std::string& suffix)
 {
-    std::ifstream file(file_path);
-    std::stringstream ss;
-    ss << file.rdbuf();
-    file.close();
-
-    std::string str = replaceVariables(ss.str(), keyval, prefix, suffix);
-
-    std::ofstream o(file_path);
-    o << str;
-    o.close();
+    std::string str = replaceVariables(readTextFromFile(file_path), keyval, prefix, suffix);
+    writeTextToFile(str, file_path);
 }
 
 void replaceVariablesInAllFiles(const std::string& root_path, const std::set<std::string>& paths,

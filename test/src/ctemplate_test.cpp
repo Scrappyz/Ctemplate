@@ -31,10 +31,19 @@ std::set<std::string> normalizePaths(const std::set<std::string>& s, const std::
     return n;
 }
 
-TEST(initTemplate, working)
-{
-    
-}
+// TEST(initTemplate, working)
+// {
+//     std::string tp = path::joinPath(template_path, "py");
+//     std::string t_path = path::joinPath(test_path, "testing/init_template");
+//     std::unordered_map<std::string, std::string> keyval = {{"project", "hello_world"}, {"name", "User"}};
+     
+//     initTemplate(tp, ".ctemplate", t_path, keyval);
+
+//     ASSERT_TRUE(path::exists(path::joinPath(t_path, "hello_world")));
+//     ASSERT_TRUE(path::exists(path::joinPath(t_path, "hello_world/hello_world.py")));
+
+
+// }
 
 TEST(addTemplate, adding)
 {

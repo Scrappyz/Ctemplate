@@ -10,12 +10,11 @@ using json = nlohmann::json;
 using ordered_json = nlohmann::ordered_json;
 namespace path = os::path;
 
-void initTemplate(const std::string& template_dir, const std::string& template_name, const std::string& template_files_container_name, 
+void initTemplate(const std::string& template_to_init, const std::string& template_files_container_name, 
                 const std::string& path_to_init_template_to, const std::unordered_map<std::string, std::string>& keyval)
 {
-    std::string template_to_init = path::joinPath(template_dir, template_name);
     if(!path::exists(template_to_init)) {
-        std::cout << "[ERROR] Template \"" << template_name << "\" does not exist" << std::endl;
+        std::cout << "[ERROR] Template \"" << path::filename(template_to_init) << "\" does not exist" << std::endl;
         return;
     }
 
@@ -54,6 +53,12 @@ void initTemplate(const std::string& template_dir, const std::string& template_n
         includes, excludes);
 
     replaceVariablesInAllFilenames(path_to_init_template_to, included_files, keyval, var_prefix, var_suffix);
+}
+
+void initTemplate(const std::string& template_dir, const std::string& template_name, const std::string& template_files_container_name, 
+                const std::string& path_to_init_template_to, const std::unordered_map<std::string, std::string>& keyval)
+{
+    return initTemplate(path::joinPath(template_dir, template_name), template_files_container_name, path_to_init_template_to, keyval);
 }
 
 void addTemplate(const std::string& template_dir, const std::string& path_to_add, const std::string& name, const std::string& desc, const std::string& container_name)
