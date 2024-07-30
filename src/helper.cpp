@@ -55,33 +55,37 @@ void writeJsonToFile(const nlohmann::ordered_json& j, const std::string& file, i
     o.close();
 }
 
-std::set<std::string> jsonArrayToSet(const json& j)
+std::set<std::string> jsonListToSet(const nlohmann::json& j)
 {
     std::set<std::string> s;
 
-    if(!j.is_array()) {
-        return s;
+    if(j.is_array()) {
+        for(int i = 0; i < j.size(); i++) {
+            s.insert(j[i]);
+        }
+    } else if(j.is_object()) {
+        for(auto it = j.begin(); it != j.end(); it++) {
+            s.insert(it.key());
+        }
     }
 
-    for(int i = 0; i < j.size(); i++) {
-        s.insert(j[i]);
-    }
-    
     return s;
 }
 
-std::unordered_set<std::string> jsonArrayToUnorderedSet(const nlohmann::json& j)
+std::unordered_set<std::string> jsonListToUnorderedSet(const nlohmann::json& j)
 {
     std::unordered_set<std::string> s;
 
-    if(!j.is_array()) {
-        return s;
+    if(j.is_array()) {
+        for(int i = 0; i < j.size(); i++) {
+            s.insert(j[i]);
+        }
+    } else if(j.is_object()) {
+        for(auto it = j.begin(); it != j.end(); it++) {
+            s.insert(it.key());
+        }
     }
 
-    for(int i = 0; i < j.size(); i++) {
-        s.insert(j[i]);
-    }
-    
     return s;
 }
 
@@ -130,6 +134,34 @@ std::unordered_map<std::string, std::string> mapKeyValues(const std::vector<std:
     }
 
     return m;
+}
+
+bool equalVariables(const nlohmann::json& j, const std::unordered_map<std::string, std::string>& keyvals, bool error_message)
+{
+    std::unordered_set<std::string> vars = jsonListToUnorderedSet(j);
+    std::set<std::string> unknown_vars;
+
+    for(const auto& i : keyvals) {
+        if(vars.count(i.first) < 1) {
+            unknown_vars.insert(i.first);
+        }
+    }
+
+    if(unknown_vars.empty()) {
+        return true;
+    }
+ 
+    if(error_message) {
+        std::string message = "[ERROR] Unknown variable(s): ";
+        for(const auto& i : unknown_vars) {
+            message += "\"" + i + "\", ";
+        }
+        message.pop_back();
+        message.pop_back();
+        std::cout << message << std::endl;
+    }
+
+    return false;
 }
 
 std::vector<std::string> getAlignedOutput(const std::vector<std::vector<std::string>>& v, int space)

@@ -27,6 +27,12 @@ void initTemplate(const std::string& template_dir, const std::string& template_n
     // Remove ctemplate container from the initialized template
     path::remove(path::joinPath(path_to_init_template_to, template_files_container_name));
 
+    json var_list = vars.at("variables");
+
+    if(var_list.empty()) {
+        return;
+    }
+
     std::set<std::string> includes = jsonArrayToSet(vars.at("searchPaths").at("files").at("include"));
     std::set<std::string> excludes = jsonArrayToSet(vars.at("searchPaths").at("files").at("exclude"));
 
