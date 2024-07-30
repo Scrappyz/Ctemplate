@@ -33,8 +33,8 @@ void initTemplate(const std::string& template_dir, const std::string& template_n
         return;
     }
 
-    std::set<std::string> includes = jsonArrayToSet(vars.at("searchPaths").at("files").at("include"));
-    std::set<std::string> excludes = jsonArrayToSet(vars.at("searchPaths").at("files").at("exclude"));
+    std::set<std::string> includes = jsonListToSet(vars.at("searchPaths").at("files").at("include"));
+    std::set<std::string> excludes = jsonListToSet(vars.at("searchPaths").at("files").at("exclude"));
 
     std::set<std::string> included_files = matchPaths(getPaths(path_to_init_template_to, path_to_init_template_to), 
         includes, excludes);
@@ -44,8 +44,8 @@ void initTemplate(const std::string& template_dir, const std::string& template_n
 
     replaceVariablesInAllFiles(path_to_init_template_to, included_files, keyval, var_prefix, var_suffix);
 
-    includes = jsonArrayToSet(vars.at("searchPaths").at("filenames").at("include"));
-    excludes = jsonArrayToSet(vars.at("searchPaths").at("filenames").at("exclude"));
+    includes = jsonListToSet(vars.at("searchPaths").at("filenames").at("include"));
+    excludes = jsonListToSet(vars.at("searchPaths").at("filenames").at("exclude"));
 
     included_files = matchPaths(getPaths(path_to_init_template_to, path_to_init_template_to), 
         includes, excludes);
