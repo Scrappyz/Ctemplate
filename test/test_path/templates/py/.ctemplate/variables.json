@@ -10,7 +10,8 @@
         },
         "filenames": {
             "include": [
-                
+                "!project!",
+                "!project!/**"
             ],
             "exclude": [
                 
