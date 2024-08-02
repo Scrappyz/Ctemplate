@@ -108,11 +108,14 @@ void addTemplate(const std::string& template_dir, const std::string& path_to_add
                     "include": [],
                     "exclude": []
                 },
-                "filenames": []
+                "filenames": {
+                    "include": [],
+                    "exclude": []
+                }
             },
             "variablePrefix": "!",
             "variableSuffix": "!",
-            "variableList": []
+            "variables": []
         }
     )");
 
