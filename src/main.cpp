@@ -9,6 +9,8 @@ namespace path = os::path;
 
 int main(int argc, char** argv)
 {
+    argv = {"ctemplate", "init", "py"};
+
     CLI::App app("Ctemplate");
     app.set_version_flag("-v,--version", "v1.0.0");
 
@@ -46,9 +48,14 @@ int main(int argc, char** argv)
 
     // For "init" subcommand
     CLI::App* init = app.add_subcommand("init", "Initialize a template");
-    init->add_flag("-l,--list", list_template, "List existing templates");
     std::string init_template_name;
-    init->add_option("name", init_template_name, "Name of the template to initialize");
+    std::string init_path;
+    bool init_force_overwrite = false;
+    std::vector<std::string> init_keyval;
+    init->add_option("name", init_template_name, "Name of the template to initialize")->required();
+    init->add_option("-p, --path", init_path, "Path to initialize to")->expected(1);
+    init->add_flag("-f,--force", init_force_overwrite, "Force overwrite directory");
+    init->add_option("-v, --vars", init_keyval, "Initialize variables");
     
     // For "add" subcommand
     CLI::App* add = app.add_subcommand("add", "Add a new template");
@@ -82,26 +89,25 @@ int main(int argc, char** argv)
 
     CLI11_PARSE(app, argc, argv);
 
-    if(*init) {
-        if(list_template) {
-            listTemplates(template_dir, container_name);
-        }
-    } else if(*add) {
+    if(*init) { // "init" subcommand
+        std::string init_to = path::joinPath(path::currentPath(), init_path);
+        initTemplate(template_dir, init_template_name, container_name, init_to, mapKeyValues(init_keyval), init_force_overwrite);
+    } else if(*add) { // "add" subcommand
         std::string path_to_add = path::joinPath(path::currentPath(), add_path);
         addTemplate(template_dir, path_to_add, add_template_name, add_template_desc, container_name);
-    } else if(*remove) {
+    } else if(*remove) { // "remove" subcommand
         removeTemplates(template_dir, remove_template_names);
-    } else if(*list) {
+    } else if(*list) { // "list" subcommand
         listTemplates(template_dir, container_name);
-    } else if(*config) { // Config commands
-        if(*set) { // Change config values
+    } else if(*config) { // "config" subcommand
+        if(*set) { // "set" subcommand
             setConfigValue(app_config, config_set_values);
             writeJsonToFile(app_config, config_file_path, 4);
             return 0;
         }
         std::cout << "Configuration:" << std::endl;
         showConfig(app_config, 2);
-    } else if(*info) {
+    } else if(*info) { // "into" subcommand
         printTemplateInfo(template_dir, info_template, container_name);
     } else {
         CLI::CallForHelp();

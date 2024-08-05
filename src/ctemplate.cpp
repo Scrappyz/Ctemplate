@@ -12,10 +12,17 @@ using ordered_json = nlohmann::ordered_json;
 namespace path = os::path;
 
 void initTemplate(const std::string& template_to_init, const std::string& template_files_container_name, 
-                const std::string& path_to_init_template_to, const std::unordered_map<std::string, std::string>& keyval)
+                  const std::string& path_to_init_template_to, const std::unordered_map<std::string, std::string>& keyval,
+                  bool force_overwrite)
 {
     if(!path::exists(template_to_init)) {
         std::cout << "[ERROR] Template \"" << path::filename(template_to_init) << "\" does not exist" << std::endl;
+        return;
+    }
+
+    if(!path::isEmpty(path_to_init_template_to) && !force_overwrite) {
+        std::cout << "[ERROR] Path \"" << path_to_init_template_to << "\" is not empty." << std::endl;
+        std::cout << "        Use \"-f\" flag to force overwrite." << std::endl;
         return;
     }
 
@@ -27,12 +34,13 @@ void initTemplate(const std::string& template_to_init, const std::string& templa
     }
 
     // Directory separator to only copy the content
-    path::copy(template_to_init + path::directorySeparator(), path_to_init_template_to);
+    path::copy(template_to_init + path::directorySeparator(), path_to_init_template_to, path::CopyOption::OverwriteAll);
 
     // Remove ctemplate container from the initialized template
     path::remove(path::joinPath(path_to_init_template_to, template_files_container_name));
 
     if(keyval.empty()) {
+        std::cout << "[SUCCESS] Template \"" << path::filename(template_to_init) << "\" has been initialized." << std::endl;
         return;
     }
 
@@ -54,12 +62,16 @@ void initTemplate(const std::string& template_to_init, const std::string& templa
         includes, excludes);
 
     replaceVariablesInAllFilenames(path_to_init_template_to, included_files, keyval, var_prefix, var_suffix);
+
+    std::cout << "[SUCCESS] Template \"" << path::filename(template_to_init) << "\" has been initialized." << std::endl;
 }
 
 void initTemplate(const std::string& template_dir, const std::string& template_name, const std::string& template_files_container_name, 
-                const std::string& path_to_init_template_to, const std::unordered_map<std::string, std::string>& keyval)
+                  const std::string& path_to_init_template_to, const std::unordered_map<std::string, std::string>& keyval,
+                  bool force_overwrite)
 {
-    return initTemplate(path::joinPath(template_dir, template_name), template_files_container_name, path_to_init_template_to, keyval);
+    return initTemplate(path::joinPath(template_dir, template_name), template_files_container_name,
+            path_to_init_template_to, keyval, force_overwrite);
 }
 
 void addTemplate(const std::string& template_dir, const std::string& path_to_add, const std::string& name, const std::string& desc, const std::string& container_name)
