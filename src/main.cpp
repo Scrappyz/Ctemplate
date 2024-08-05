@@ -9,8 +9,6 @@ namespace path = os::path;
 
 int main(int argc, char** argv)
 {
-    argv = {"ctemplate", "init", "py"};
-
     CLI::App app("Ctemplate");
     app.set_version_flag("-v,--version", "v1.0.0");
 

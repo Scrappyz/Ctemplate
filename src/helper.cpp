@@ -10,6 +10,13 @@ using json = nlohmann::json;
 namespace path = os::path;
 namespace fs = std::filesystem;
 
+void printKeyval(const std::unordered_map<std::string, std::string>& keyval)
+{
+    for(const auto& i : keyval) {
+        std::cout << i.first << ": " << i.second << std::endl;
+    }
+}
+
 void showConfig(const json& config, int space_before)
 {
     for(const auto& i : config.items()) {
