@@ -106,6 +106,23 @@ std::unordered_set<std::string> jsonListToUnorderedSet(const nlohmann::json& j)
     return s;
 }
 
+std::vector<std::string> jsonObjectToList(const nlohmann::json& j)
+{
+    std::vector<std::string> v;
+
+    if(j.is_array()) {
+        for(int i = 0; i < j.size(); i++) {
+            v.push_back(j[i]);
+        }
+    } else if(j.is_object()) {
+        for(auto it = j.begin(); it != j.end(); it++) {
+            v.push_back(it.key());
+        }
+    }
+
+    return v;
+}
+
 std::vector<std::string> split(const std::string& str, const std::string& separators)
 {
     std::vector<std::string> v;

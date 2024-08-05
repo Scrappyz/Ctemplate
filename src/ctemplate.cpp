@@ -1,6 +1,7 @@
 #include "ctemplate.hpp"
 #include "os.hpp"
 #include "json.hpp"
+#include "format.hpp"
 #include "helper.hpp"
 #include <iostream>
 #include <fstream>
@@ -187,6 +188,14 @@ void listTemplates(const std::string& template_dir, const std::string& container
 void printTemplateInfo(const std::string& template_dir, const std::string& template_name, const std::string& container_name)
 {
     std::string container_path = path::joinPath({template_dir, template_name, container_name});
+    std::vector<std::vector<std::string>> table = {{"Description", "Variables", "Variable Description"}};
 
-    
+    json info = readJsonFromFile(path::joinPath(container_path, "info.json"));
+    json var_info = readJsonFromFile(path::joinPath(container_path, "variables.json"));
+
+    std::vector<std::string> temp = {info.at("description")};
+
+    if(var_info.at("variables").is_array()) {
+        
+    }
 }
