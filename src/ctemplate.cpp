@@ -188,14 +188,62 @@ void listTemplates(const std::string& template_dir, const std::string& container
 void printTemplateInfo(const std::string& template_dir, const std::string& template_name, const std::string& container_name)
 {
     std::string container_path = path::joinPath({template_dir, template_name, container_name});
-    std::vector<std::vector<std::string>> table = {{"Description", "Variables", "Variable Description"}};
+    std::vector<std::vector<std::string>> table;
 
     json info = readJsonFromFile(path::joinPath(container_path, "info.json"));
     json var_info = readJsonFromFile(path::joinPath(container_path, "variables.json"));
 
-    std::vector<std::string> temp = {info.at("description")};
+    std::vector<std::string> header;
+    std::vector<std::string> values;
 
-    if(var_info.at("variables").is_array()) {
-        
+    std::string desc = info.at("description");
+    std::string variables;
+    std::string variable_desc;
+    std::string var_prefix = var_info.at("variablePrefix");
+    std::string var_suffix = var_info.at("variableSuffix");
+
+    json vars = var_info.at("variables");
+
+    if(!vars.empty()) {
+        if(vars.is_object()) {
+            for(auto it = vars.begin(); it != vars.end(); it++) {
+                variables.append(it.key());
+                variable_desc.append(it.value());
+                variables.push_back('\n');
+                variable_desc.push_back('\n');
+            }
+        } else if(vars.is_array()) {
+            for(int i = 0; i < vars.size(); i++) {
+                variables.append(vars[i]);
+                variables.push_back('\n');
+            }
+        }
     }
+
+    if(!desc.empty()) {
+        header.push_back("Description");
+        values.push_back(desc);
+    }
+
+    if(!variables.empty()) {
+        header.push_back("Variables");
+        values.push_back(variables);
+    }
+
+    if(!variable_desc.empty()) {
+        header.push_back("Variable Description");
+        values.push_back(variable_desc);
+    }
+
+    header.push_back("Prefix");
+    values.push_back(var_prefix);
+
+    header.push_back("Suffix");
+    values.push_back(var_suffix);
+
+    table.push_back(header);
+    table.push_back(values);
+
+    format::Table t(table, '-', '|', 3);
+    t.print();
 }

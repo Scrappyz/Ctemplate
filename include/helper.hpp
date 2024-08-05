@@ -18,6 +18,7 @@ void writeJsonToFile(const nlohmann::ordered_json& j, const std::string& file, i
 std::set<std::string> jsonListToSet(const nlohmann::json& j);
 std::unordered_set<std::string> jsonListToUnorderedSet(const nlohmann::json& j);
 std::vector<std::string> jsonObjectToList(const nlohmann::json& j);
+std::string listToString(const std::vector<std::string>& v, const std::string& separator = " ");
 
 template<typename T>
 std::set<T> convertUnorderedSetToSet(const std::unordered_set<T>& s)

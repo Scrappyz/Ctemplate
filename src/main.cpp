@@ -102,7 +102,7 @@ int main(int argc, char** argv)
         std::cout << "Configuration:" << std::endl;
         showConfig(app_config, 2);
     } else if(*info) {
-        
+        printTemplateInfo(template_dir, info_template, container_name);
     } else {
         CLI::CallForHelp();
     }

@@ -123,6 +123,20 @@ std::vector<std::string> jsonObjectToList(const nlohmann::json& j)
     return v;
 }
 
+std::string listToString(const std::vector<std::string>& v, const std::string& separator)
+{
+    std::string s;
+
+    for(int i = 0; i < v.size(); i++) {
+        s.append(v[i]);
+        if(i < v.size()-1) {
+            s.append(separator);
+        }
+    }
+
+    return s;
+}
+
 std::vector<std::string> split(const std::string& str, const std::string& separators)
 {
     std::vector<std::string> v;
