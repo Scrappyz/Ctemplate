@@ -183,3 +183,10 @@ void listTemplates(const std::string& template_dir, const std::string& container
         std::cout << "  " << i << std::endl;
     }
 }
+
+void printTemplateInfo(const std::string& template_dir, const std::string& template_name, const std::string& container_name)
+{
+    std::string container_path = path::joinPath({template_dir, template_name, container_name});
+
+    
+}

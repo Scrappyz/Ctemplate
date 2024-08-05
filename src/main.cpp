@@ -75,6 +75,11 @@ int main(int argc, char** argv)
     std::vector<std::string> config_set_values;
     set->add_option("keyvalue", config_set_values, "Config values to change (eg: \"key=value\")");
 
+    // For "info" subcommand
+    CLI::App* info = app.add_subcommand("info", "Info about templates");
+    std::string info_template;
+    info->add_option("template", info_template, "Template to get info from");
+
     CLI11_PARSE(app, argc, argv);
 
     if(*init) {
@@ -96,8 +101,10 @@ int main(int argc, char** argv)
         }
         std::cout << "Configuration:" << std::endl;
         showConfig(app_config, 2);
+    } else if(*info) {
+        
     } else {
-        std::cout << "nuh uh" << std::endl;
+        CLI::CallForHelp();
     }
 
     return 0;
