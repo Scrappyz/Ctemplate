@@ -44,8 +44,6 @@ std::unordered_set<T> convertSetToUnorderedSet(const std::set<T>& s)
 std::vector<std::string> split(const std::string& str, const std::string& delimiter);
 std::unordered_map<std::string, std::string> mapKeyValues(const std::vector<std::string>& keyvals);
 bool equalVariables(const nlohmann::json& j, const std::unordered_map<std::string, std::string>& keyvals, bool error_message = false);
-std::vector<std::string> getAlignedOutput(const std::vector<std::vector<std::string>>& v, int space);
-std::vector<std::vector<std::string>> makeTable(const std::vector<std::vector<std::string>>& v);
 
 std::string replaceVariables(const std::string& str, 
                             const std::unordered_map<std::string, std::string>& keyval, 

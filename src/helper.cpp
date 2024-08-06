@@ -219,58 +219,6 @@ bool equalVariables(const nlohmann::json& j, const std::unordered_map<std::strin
     return false;
 }
 
-std::vector<std::string> getAlignedOutput(const std::vector<std::vector<std::string>>& v, int space)
-{
-    std::stringstream s;
-    std::vector<std::string> table;
-    
-    for(int i = 0; i < v.size(); i++) {
-        std::string temp;
-        s << std::left << std::setfill(' ') << std::setw(space);
-        for(int j = 0; j < v[i].size(); j++) {
-            s << v[i][j];
-            temp.append(s.str());
-            s.str(std::string());
-        }
-        table.push_back(temp);
-    }
-
-    return table;
-}
-
-std::vector<std::vector<std::string>> makeTable(const std::vector<std::vector<std::string>>& v)
-{
-    // Unfinished
-    std::vector<std::vector<std::string>> cleaned;
-    std::vector<std::string> overflow;
-    for(int i = 0; i < v.size(); i++) {
-        for(int j = 0; j < v[i].size(); j++) {
-            std::string str = v[i][j];
-            int endlines = 0;
-            std::string temp;
-            for(int k = 0; k < str.size(); k++) {
-                if(str[k] == '\n') {
-                    endlines++;
-                    if(!temp.empty()) {
-                        overflow.push_back(temp);
-                    }
-                    temp.clear();
-                    continue;
-                }
-
-                if(endlines > 0) {
-                    temp.push_back(str[k]);
-                }
-            }
-            if(!temp.empty() && endlines > 0) {
-                overflow.push_back(temp);
-            }
-        }
-    }
-
-    return cleaned;
-}
-
 std::string replaceVariables(const std::string& str, 
                             const std::unordered_map<std::string, std::string>& keyval, 
                             const std::string& prefix, const std::string& suffix)
