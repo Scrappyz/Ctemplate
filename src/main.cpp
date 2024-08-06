@@ -50,10 +50,14 @@ int main(int argc, char** argv)
     std::string init_path;
     bool init_force_overwrite = false;
     std::vector<std::string> init_keyval;
+    std::vector<std::string> init_includes = {"**"};
+    std::vector<std::string> init_excludes;
     init->add_option("name", init_template_name, "Name of the template to initialize")->required();
     init->add_option("-p, --path", init_path, "Path to initialize to")->expected(1);
     init->add_flag("-f,--force", init_force_overwrite, "Force overwrite directory");
-    init->add_option("-v, --vars", init_keyval, "Initialize variables");
+    init->add_option("-v, --variables", init_keyval, "Initialize variables");
+    init->add_option("-i,--include", init_includes, "Include paths");
+    init->add_option("-e,--exclude", init_excludes, "Exclude paths");
     
     // For "add" subcommand
     CLI::App* add = app.add_subcommand("add", "Add a new template");
@@ -89,7 +93,10 @@ int main(int argc, char** argv)
 
     if(*init) { // "init" subcommand
         std::string init_to = path::joinPath(path::currentPath(), init_path);
-        initTemplate(template_dir, init_template_name, container_name, init_to, mapKeyValues(init_keyval), init_force_overwrite);
+        std::string template_path_to_init = path::joinPath(template_dir, init_template_name);
+        initTemplate(template_dir, init_template_name, 
+                    matchPaths(getPaths(template_path_to_init, template_path_to_init), arrayToSet(init_includes), arrayToSet(init_excludes)), 
+                    container_name, init_to, mapKeyValues(init_keyval), init_force_overwrite);
     } else if(*add) { // "add" subcommand
         std::string path_to_add = path::joinPath(path::currentPath(), add_path);
         addTemplate(template_dir, path_to_add, add_template_name, add_template_desc, container_name);

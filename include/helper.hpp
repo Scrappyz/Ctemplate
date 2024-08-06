@@ -22,7 +22,18 @@ std::vector<std::string> jsonObjectToList(const nlohmann::json& j);
 std::string listToString(const std::vector<std::string>& v, const std::string& separator = " ");
 
 template<typename T>
-std::set<T> convertUnorderedSetToSet(const std::unordered_set<T>& s)
+std::set<T> arrayToSet(const std::vector<T>& v)
+{
+    std::set<T> s;
+    for(const auto& i : v) {
+        s.insert(i);
+    }
+
+    return s;
+}
+
+template<typename T>
+std::set<T> unorderedSetToSet(const std::unordered_set<T>& s)
 {
     std::set<T> ss;
     for(const auto& i : s) {
@@ -32,7 +43,7 @@ std::set<T> convertUnorderedSetToSet(const std::unordered_set<T>& s)
 }
 
 template<typename T>
-std::unordered_set<T> convertSetToUnorderedSet(const std::set<T>& s)
+std::unordered_set<T> setToUnorderedSet(const std::set<T>& s)
 {
     std::unordered_set<T> ss;
     for(const auto& i : s) {

@@ -12,7 +12,7 @@ using ordered_json = nlohmann::ordered_json;
 namespace path = os::path;
 namespace fs = std::filesystem;
 
-void initTemplate(const std::string& template_to_init, const std::string& template_files_container_name, 
+void initTemplate(const std::string& template_to_init, const std::set<std::string>& paths, const std::string& template_files_container_name, 
                   const std::string& path_to_init_template_to, const std::unordered_map<std::string, std::string>& keyval,
                   bool force_overwrite)
 {
@@ -35,7 +35,14 @@ void initTemplate(const std::string& template_to_init, const std::string& templa
     }
 
     // Directory separator to only copy the content
-    path::copy(template_to_init + path::directorySeparator(), path_to_init_template_to, path::CopyOption::OverwriteAll);
+    // path::copy(template_to_init + path::directorySeparator(), path_to_init_template_to, path::CopyOption::OverwriteAll);
+    path::remove(path_to_init_template_to + path::directorySeparator());
+    for(const auto& i : paths) {
+        std::string from = path::joinPath(template_to_init, i);
+        std::string to = path::joinPath(path_to_init_template_to, i);
+
+        path::copy(from, to);
+    }
 
     // Remove ctemplate container from the initialized template
     path::remove(path::joinPath(path_to_init_template_to, template_files_container_name));
@@ -48,8 +55,7 @@ void initTemplate(const std::string& template_to_init, const std::string& templa
     std::set<std::string> includes = jsonListToSet(vars.at("searchPaths").at("files").at("include"));
     std::set<std::string> excludes = jsonListToSet(vars.at("searchPaths").at("files").at("exclude"));
 
-    std::set<std::string> included_files = matchPaths(getPaths(path_to_init_template_to, path_to_init_template_to), 
-        includes, excludes);
+    std::set<std::string> included_files = matchPaths(paths, includes, excludes);
 
     std::string var_prefix = vars.at("variablePrefix");
     std::string var_suffix = vars.at("variableSuffix");
@@ -59,19 +65,18 @@ void initTemplate(const std::string& template_to_init, const std::string& templa
     includes = jsonListToSet(vars.at("searchPaths").at("filenames").at("include"));
     excludes = jsonListToSet(vars.at("searchPaths").at("filenames").at("exclude"));
 
-    included_files = matchPaths(getPaths(path_to_init_template_to, path_to_init_template_to), 
-        includes, excludes);
+    included_files = matchPaths(paths, includes, excludes);
 
     replaceVariablesInAllFilenames(path_to_init_template_to, included_files, keyval, var_prefix, var_suffix);
 
     std::cout << "[SUCCESS] Template \"" << path::filename(template_to_init) << "\" has been initialized." << std::endl;
 }
 
-void initTemplate(const std::string& template_dir, const std::string& template_name, const std::string& template_files_container_name, 
+void initTemplate(const std::string& template_dir, const std::string& template_name, const std::set<std::string>& paths, const std::string& template_files_container_name, 
                   const std::string& path_to_init_template_to, const std::unordered_map<std::string, std::string>& keyval,
                   bool force_overwrite)
 {
-    return initTemplate(path::joinPath(template_dir, template_name), template_files_container_name,
+    return initTemplate(path::joinPath(template_dir, template_name), paths, template_files_container_name,
             path_to_init_template_to, keyval, force_overwrite);
 }
 
