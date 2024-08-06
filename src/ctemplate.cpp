@@ -36,13 +36,13 @@ void initTemplate(const std::string& template_to_init, const std::set<std::strin
 
     // Directory separator to only copy the content
     // path::copy(template_to_init + path::directorySeparator(), path_to_init_template_to, path::CopyOption::OverwriteAll);
-    path::remove(path_to_init_template_to + path::directorySeparator());
-    for(const auto& i : paths) {
-        std::string from = path::joinPath(template_to_init, i);
-        std::string to = path::joinPath(path_to_init_template_to, i);
+    // path::remove(path_to_init_template_to + path::directorySeparator());
+    // for(const auto& i : paths) {
+    //     std::string from = path::joinPath(template_to_init, i);
+    //     std::string to = path::joinPath(path_to_init_template_to, i);
 
-        path::copy(from, to);
-    }
+    //     path::copy(from, to);
+    // }
 
     // Remove ctemplate container from the initialized template
     path::remove(path::joinPath(path_to_init_template_to, template_files_container_name));

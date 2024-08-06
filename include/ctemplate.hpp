@@ -3,6 +3,7 @@
 #include <string>
 #include <vector>
 #include <unordered_map>
+#include <set>
 
 void initTemplate(const std::string& template_to_init, const std::set<std::string>& paths, const std::string& template_files_container_name, 
                   const std::string& path_to_init_template_to, const std::unordered_map<std::string, std::string>& keyval,
