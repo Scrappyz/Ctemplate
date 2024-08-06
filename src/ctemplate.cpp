@@ -10,6 +10,7 @@
 using json = nlohmann::json;
 using ordered_json = nlohmann::ordered_json;
 namespace path = os::path;
+namespace fs = std::filesystem;
 
 void initTemplate(const std::string& template_to_init, const std::string& template_files_container_name, 
                   const std::string& path_to_init_template_to, const std::unordered_map<std::string, std::string>& keyval,
@@ -165,15 +166,14 @@ void listTemplates(const std::string& template_dir, const std::string& container
 {
     // If the template directory is empty
     if(path::isEmpty(template_dir)) {
-        std::cout << "[ERROR] No Templates Found" << std::endl;
+        std::cout << "[ERROR] No templates found" << std::endl;
         return;
     }
 
-    std::vector<std::vector<std::string>> v; // A table
-    std::cout << "Templates:" << std::endl;    
+    std::vector<std::vector<std::string>> v = {{"Name", "Description"}}; // A table  
 
     // Iterate through the whole template directory
-    for(const auto& i : std::filesystem::directory_iterator(template_dir)) {
+    for(const auto& i : fs::directory_iterator(template_dir)) {
         std::vector<std::string> temp; // Row for the table
         std::string template_name = i.path().filename().string();
         temp.push_back(template_name);
@@ -191,10 +191,8 @@ void listTemplates(const std::string& template_dir, const std::string& container
     }
 
     // Format the outputted text
-    std::vector<std::string> output = getAlignedOutput(v, 40);
-    for(const auto& i : output) {
-        std::cout << "  " << i << std::endl;
-    }
+    format::Table table(v, '-', '|', 3);
+    table.print();
 }
 
 void printTemplateInfo(const std::string& template_dir, const std::string& template_name, const std::string& container_name)
