@@ -101,6 +101,11 @@ namespace fmatch {
             }
         }
 
+        // Edge case
+        if(i == pattern_copy.size()-1 && pattern_copy[i] == '*') {
+            return true;
+        }
+
         // Did not reach the end of their respective strings
         if(i < pattern_copy.size() || j < str_copy.size()) {
             return false;
