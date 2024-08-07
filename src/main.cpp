@@ -7,6 +7,13 @@
 using json = nlohmann::json;
 namespace path = os::path;
 
+void print(const std::vector<std::string>& v)
+{
+    for(const auto& i : v) {
+        std::cout << i << std::endl;
+    }
+}
+
 int main(int argc, char** argv)
 {
     CLI::App app("Ctemplate");
@@ -50,7 +57,7 @@ int main(int argc, char** argv)
     std::string init_path;
     bool init_force_overwrite = false;
     std::vector<std::string> init_keyval;
-    std::vector<std::string> init_includes = {"**"};
+    std::vector<std::string> init_includes;
     std::vector<std::string> init_excludes;
     init->add_option("name", init_template_name, "Name of the template to initialize")->required();
     init->add_option("-p, --path", init_path, "Path to initialize to")->expected(1);
@@ -91,7 +98,9 @@ int main(int argc, char** argv)
 
     CLI11_PARSE(app, argc, argv);
 
-    if(*init) { // "init" subcommand
+    print(init_includes);
+
+    if(true) { // "init" subcommand
         std::string init_to = path::joinPath(path::currentPath(), init_path);
         std::string template_path_to_init = path::joinPath(template_dir, init_template_name);
         initTemplate(template_dir, init_template_name, 

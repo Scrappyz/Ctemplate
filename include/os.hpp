@@ -5,6 +5,7 @@
 #include <vector>
 #include <fstream>
 #include <filesystem>
+#include <set>
 #if defined(_WIN32)
     #include <windows.h>
 #elif defined(__linux__)
@@ -29,8 +30,18 @@ namespace os {
         namespace _private { // forward declaration
             std::string errorMessage(const std::string& function_name, const std::string& message);
             char copyWarning(const std::filesystem::path& path);
-            bool copy(std::filesystem::path from, std::filesystem::path to, const CopyOption& op, const TraversalOption& t_op);
-            bool move(const std::filesystem::path& from, const std::filesystem::path& to, const CopyOption& op, const TraversalOption& t_op);
+
+            bool copy(const std::filesystem::path& source, const std::filesystem::path& destination, 
+                      const CopyOption& op, const TraversalOption& t_op);
+
+            bool copy(const std::filesystem::path& source, const std::set<std::string>& paths, 
+                      const std::filesystem::path& destination, const CopyOption& op);
+
+            bool move(const std::filesystem::path& source, const std::filesystem::path& destination, 
+                      const CopyOption& op, const TraversalOption& t_op);
+
+            bool move(const std::filesystem::path& source, const std::set<std::string>& paths, 
+                      const std::filesystem::path& destination, const CopyOption& op);
         }
 
         inline bool exists(const std::filesystem::path& path)
@@ -362,6 +373,11 @@ namespace os {
             return _private::copy(from, to, CopyOption::None, TraversalOption::Recursive);
         }
 
+        inline bool copy(const std::filesystem::path& from, const std::set<std::string>& paths_to_copy_in_from, const std::filesystem::path& to, const CopyOption& op = CopyOption::None)
+        {
+            return _private::copy(from, paths_to_copy_in_from, to, op);
+        }
+
         inline bool move(const std::filesystem::path& from, const std::filesystem::path& to, const TraversalOption& traversal_option,
                         const CopyOption& copy_option = CopyOption::None)
         {
@@ -377,6 +393,11 @@ namespace os {
         inline bool move(const std::filesystem::path& from, const std::filesystem::path& to)
         {
             return _private::move(from, to, CopyOption::None, TraversalOption::Recursive);
+        }
+
+        inline bool move(const std::filesystem::path& from, const std::set<std::string>& paths_to_copy_in_from, const std::filesystem::path& to, const CopyOption& op = CopyOption::None)
+        {
+            return _private::move(from, paths_to_copy_in_from, to, op);
         }
 
         inline bool remove(const std::filesystem::path& path)
@@ -552,13 +573,16 @@ namespace os {
                 return true;
             }
 
-            inline bool copy(std::filesystem::path from, std::filesystem::path to, const CopyOption& op, const TraversalOption& t_op)
+            inline bool copy(const std::filesystem::path& source, const std::filesystem::path& destination, 
+                             const CopyOption& op, const TraversalOption& t_op)
             {
-                if(!std::filesystem::exists(from)) {
-                    throw std::runtime_error(_private::errorMessage(__func__, "\"" + from.string() + "\" does not exist"));
+                if(!std::filesystem::exists(source)) {
+                    throw std::runtime_error(_private::errorMessage(__func__, "\"" + source.string() + "\" does not exist"));
                 }
 
                 char ch;
+                std::filesystem::path from = source;
+                std::filesystem::path to = destination;
                 if(std::filesystem::is_directory(from)) { // is directory
 
                     // Create directory when destination does not exists
@@ -657,13 +681,74 @@ namespace os {
                 return true;
             }
 
-            inline bool move(const std::filesystem::path& from, const std::filesystem::path& to, const CopyOption& op, const TraversalOption& t_op)
+            inline bool copy(const std::filesystem::path& source, const std::set<std::string>& paths, 
+                             const std::filesystem::path& destination, const CopyOption& op)
             {
-                if(!_private::copy(from, to, op, t_op)) {
+                if(!std::filesystem::exists(source)) {
+                    throw std::runtime_error(_private::errorMessage(__func__, "\"" + source.string() + "\" does not exist"));
+                }
+
+                if(op == CopyOption::OverwriteAll) {
+                    for(const auto& entry : std::filesystem::directory_iterator(destination)) {
+                        path::remove(entry.path());
+                    }
+                }
+
+                char ch;
+                for(const auto& i : paths) {
+                    std::filesystem::path from = std::filesystem::weakly_canonical(source / i);
+                    std::filesystem::path to = std::filesystem::weakly_canonical(destination / std::filesystem::relative(from, source));
+
+                    bool is_source_dir = std::filesystem::is_directory(from);
+                    bool destination_exists = std::filesystem::exists(to);
+                    
+                    // display warning
+                    if(op == CopyOption::None && destination_exists && ch != 'a' && ch != 'A') {
+                        ch = _private::copyWarning(path::relativePath(to));
+                    }
+
+                    if(ch == 'x' || ch == 'X') {
+                        return false;
+                    }
+
+                    if(is_source_dir) { 
+                        std::filesystem::create_directories(to);
+                    } else if(!destination_exists || op == CopyOption::OverwriteExisting || ch == 'y' || ch == 'Y' || ch == 'a' || ch == 'A') {
+                        _private::copyFile(from, to);
+                    } 
+                }
+
+                return true;
+            }
+
+            inline bool move(const std::filesystem::path& source, const std::filesystem::path& destination, 
+                             const CopyOption& op, const TraversalOption& t_op)
+            {
+                if(!_private::copy(source, destination, op, t_op)) {
                     return false;
                 }
 
-                path::remove(from);
+                path::remove(source);
+                return true;
+            }
+
+            inline bool move(const std::filesystem::path& source, const std::set<std::string>& paths, 
+                             const std::filesystem::path& destination, const CopyOption& op)
+            {
+                if(!_private::copy(source, paths, destination, op)) {
+                    return false;
+                }
+
+                for(auto it = paths.rbegin(); it != paths.rend(); it++) {
+                    std::string full_path = path::joinPath(source, *it);
+
+                    if(isDirectory(full_path) && !isEmpty(full_path)) {
+                        continue;
+                    }
+
+                    path::remove(full_path);
+                }
+
                 return true;
             }
         }
