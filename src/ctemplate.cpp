@@ -70,7 +70,24 @@ void initTemplate(const std::string& template_dir, const std::string& template_n
                   bool force_overwrite)
 {
     return initTemplate(path::joinPath(template_dir, template_name), paths, template_files_container_name,
-            path_to_init_template_to, keyval, force_overwrite);
+                        path_to_init_template_to, keyval, force_overwrite);
+}
+
+void initTemplate(const std::string& template_to_init, const std::string& template_files_container_name, 
+                  const std::string& path_to_init_template_to, const std::unordered_map<std::string, std::string>& keyval,
+                  bool force_overwrite)
+{
+    return initTemplate(template_to_init, getPaths(template_to_init, template_to_init), template_files_container_name, 
+                        path_to_init_template_to, keyval, force_overwrite);
+}
+
+void initTemplate(const std::string& template_dir, const std::string& template_name,
+                  const std::string& template_files_container_name, const std::string& path_to_init_template_to, 
+                  const std::unordered_map<std::string, std::string>& keyval, bool force_overwrite)
+{
+    std::string template_to_init = path::joinPath(template_dir, template_name);
+    return initTemplate(template_to_init, getPaths(template_to_init, template_to_init), 
+                        template_files_container_name, path_to_init_template_to, keyval, force_overwrite);
 }
 
 void addTemplate(const std::string& template_dir, const std::string& path_to_add, const std::string& name, const std::string& desc, const std::string& container_name)
