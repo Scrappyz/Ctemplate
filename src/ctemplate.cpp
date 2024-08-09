@@ -187,7 +187,7 @@ void listTemplates(const std::string& template_dir, const std::string& container
         return;
     }
 
-    std::vector<std::vector<std::string>> v = {{"Name", "Description"}}; // A table  
+    std::vector<std::vector<std::string>> v = {{"Name", "Author", "Description"}}; // A table  
 
     // Iterate through the whole template directory
     for(const auto& i : fs::directory_iterator(template_dir)) {
@@ -203,7 +203,13 @@ void listTemplates(const std::string& template_dir, const std::string& container
         }
 
         temp.push_back(template_name);
-        std::string info_file = path::joinPath({i.path(), container_name, "info.json"});
+        std::string container_path = path::joinPath(i.path(), container_name);
+
+        if(!path::exists(container_path)) {
+            continue;
+        }
+
+        std::string info_file = path::joinPath(container_path, "info.json");
 
         // Check if info.json exists
         if(!path::exists(info_file)) {
