@@ -1,10 +1,9 @@
 #include "os.hpp"
 #include "helper.hpp"
 #include "fmatch.hpp"
+#include "format.hpp"
 #include <fstream>
-#include <iomanip>
 #include <iostream>
-#include <sstream>
 
 using json = nlohmann::json;
 namespace path = os::path;
@@ -17,11 +16,16 @@ void printKeyval(const std::unordered_map<std::string, std::string>& keyval)
     }
 }
 
-void showConfig(const json& config, int space_before)
+void showConfig(const json& config)
 {
-    for(const auto& i : config.items()) {
-        std::cout << std::string(space_before, ' ') << i.key() << " = " << i.value() << std::endl;
+    std::vector<std::vector<std::string>> table = {{"Key", "Value"}};
+    for(auto it = config.begin(); it != config.end(); it++) {
+        std::vector<std::string> temp = {it.key(), it.value()};
+        table.push_back(temp);
     }
+
+    format::Table t(table, '-', '|', 3);
+    t.print();
 }
 
 void setConfigValue(json& config, const std::vector<std::string>& config_key_values)

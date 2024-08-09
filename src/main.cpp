@@ -123,7 +123,7 @@ int main(int argc, char** argv)
             return 0;
         }
         std::cout << "Configuration:" << std::endl;
-        showConfig(app_config, 2);
+        showConfig(app_config);
     } else if(*info) { // "into" subcommand
         printTemplateInfo(template_dir, info_template, container_name);
     } else {

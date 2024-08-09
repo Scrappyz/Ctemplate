@@ -7,7 +7,7 @@
 #include <set>
 
 void printKeyval(const std::unordered_map<std::string, std::string>& keyval);
-void showConfig(const nlohmann::json& config, int space_before = 0);
+void showConfig(const nlohmann::json& config);
 void setConfigValue(nlohmann::json& config, const std::vector<std::string>& config_key_values);
 std::string readTextFromFile(const std::string& file_path);
 nlohmann::json readJsonFromFile(const std::string& file);
