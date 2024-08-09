@@ -151,9 +151,10 @@ TEST(addTemplate, adding)
 {
     std::string add_path = path::joinPath(template_path, "t1");
     std::string name = "testing";
+    std::string author = "scrap";
     std::string desc = "wassup boi";
     std::string container_name = ".ctemplate";
-    addTemplate(template_path, add_path, name, desc, container_name);
+    addTemplate(template_path, add_path, name, author, desc, container_name);
 
     std::string new_template = path::joinPath(template_path, "testing");
     ASSERT_TRUE(path::exists(new_template));
@@ -166,9 +167,10 @@ TEST(addTemplate, empty_name)
 {
     std::string add_path = path::joinPath(template_path, "t1");
     std::string name = "testing";
+    std::string author = "scrap";
     std::string desc = "wassup boi";
     std::string container_name = ".ctemplate";
-    addTemplate(template_path, add_path, "", desc, container_name);
+    addTemplate(template_path, add_path, "", author, desc, container_name);
 
     ASSERT_TRUE(!path::exists(name));
 }
@@ -177,9 +179,10 @@ TEST(addTemplate, existing_container)
 {
     std::string add_path = path::joinPath(template_path, "t1");
     std::string name = "testing";
+    std::string author = "scrap";
     std::string desc = "wassup boi";
     std::string container_name = ".ctemplate";
-    addTemplate(template_path, add_path, name, desc, container_name);
+    addTemplate(template_path, add_path, name, author, desc, container_name);
 
     std::string new_template = path::joinPath(template_path, "testing");
     std::string new_container = path::joinPath(new_template, ".ctemplate");

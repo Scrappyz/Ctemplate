@@ -7,6 +7,7 @@
 using json = nlohmann::json;
 namespace path = os::path;
 
+// Remove on release
 void print(const std::vector<std::string>& v)
 {
     for(const auto& i : v) {
@@ -17,7 +18,7 @@ void print(const std::vector<std::string>& v)
 int main(int argc, char** argv)
 {
     CLI::App app("Ctemplate");
-    app.set_version_flag("-v,--version", "v1.0.0");
+    app.set_version_flag("-v,--version", "v1.0.0-beta.1");
 
     // Default settings
     json app_config = {
@@ -57,7 +58,7 @@ int main(int argc, char** argv)
     std::string init_path;
     bool init_force_overwrite = false;
     std::vector<std::string> init_keyval;
-    std::vector<std::string> init_includes;
+    std::vector<std::string> init_includes = {"**"};
     std::vector<std::string> init_excludes;
     init->add_option("name", init_template_name, "Name of the template to initialize")->required();
     init->add_option("-p, --path", init_path, "Path to initialize to")->expected(1);
@@ -72,8 +73,10 @@ int main(int argc, char** argv)
     add->add_option("path", add_path, "Root project directory of template to be added")->expected(1);
     std::string add_template_name;
     add->add_option("-n,--name", add_template_name, "Name of new template")->expected(1)->required();
+    std::string add_template_author;
+    add->add_option("-a,--author", add_template_author, "Author of new template")->expected(0, 1);
     std::string add_template_desc;
-    add->add_option("-d,--desc", add_template_desc, "Description of new template")->expected(1);
+    add->add_option("-d,--desc", add_template_desc, "Description of new template")->expected(0, 1);
 
     // For "remove" subcommand
     CLI::App* remove = app.add_subcommand("remove", "Remove an existing template");
@@ -94,21 +97,21 @@ int main(int argc, char** argv)
     // For "info" subcommand
     CLI::App* info = app.add_subcommand("info", "Info about templates");
     std::string info_template;
-    info->add_option("template", info_template, "Template to get info from");
+    info->add_option("template", info_template, "Template to get info from")->required();
 
     CLI11_PARSE(app, argc, argv);
 
-    print(init_includes);
+    // print(init_includes);
 
-    if(true) { // "init" subcommand
+    if(*init) { // "init" subcommand
         std::string init_to = path::joinPath(path::currentPath(), init_path);
         std::string template_path_to_init = path::joinPath(template_dir, init_template_name);
+        std::set<std::string> paths = matchPaths(getPaths(template_path_to_init, template_path_to_init), arrayToSet(init_includes), arrayToSet(init_excludes));
         initTemplate(template_dir, init_template_name, 
-                    matchPaths(getPaths(template_path_to_init, template_path_to_init), arrayToSet(init_includes), arrayToSet(init_excludes)), 
-                    container_name, init_to, mapKeyValues(init_keyval), init_force_overwrite);
+                    paths, container_name, init_to, mapKeyValues(init_keyval), init_force_overwrite);
     } else if(*add) { // "add" subcommand
         std::string path_to_add = path::joinPath(path::currentPath(), add_path);
-        addTemplate(template_dir, path_to_add, add_template_name, add_template_desc, container_name);
+        addTemplate(template_dir, path_to_add, add_template_name, add_template_author, add_template_desc, container_name);
     } else if(*remove) { // "remove" subcommand
         removeTemplates(template_dir, remove_template_names);
     } else if(*list) { // "list" subcommand

@@ -90,7 +90,8 @@ void initTemplate(const std::string& template_dir, const std::string& template_n
                         template_files_container_name, path_to_init_template_to, keyval, force_overwrite);
 }
 
-void addTemplate(const std::string& template_dir, const std::string& path_to_add, const std::string& name, const std::string& desc, const std::string& container_name)
+void addTemplate(const std::string& template_dir, const std::string& path_to_add, const std::string& name,
+                 const std::string& author, const std::string& desc, const std::string& container_name)
 {
     // If name is empty
     if(name.empty()) {
@@ -128,6 +129,7 @@ void addTemplate(const std::string& template_dir, const std::string& path_to_add
     path::createDirectory(new_container_path);
 
     json info = {
+        {"author", author},
         {"description", desc}
     };
     json variables = json::parse(R"(
@@ -191,6 +193,15 @@ void listTemplates(const std::string& template_dir, const std::string& container
     for(const auto& i : fs::directory_iterator(template_dir)) {
         std::vector<std::string> temp; // Row for the table
         std::string template_name = i.path().filename().string();
+
+        if(template_name.empty()) {
+            continue;
+        }
+
+        if(template_name[0] == '.') {
+            continue;
+        }
+
         temp.push_back(template_name);
         std::string info_file = path::joinPath({i.path(), container_name, "info.json"});
 
@@ -201,7 +212,19 @@ void listTemplates(const std::string& template_dir, const std::string& container
         }
 
         json info = readJsonFromFile(info_file);
-        temp.push_back(info.at("description"));
+        
+        if(info.contains("author")) {
+            temp.push_back(info.at("author"));
+        } else {
+            temp.push_back("");
+        }
+
+        if(info.contains("description")) {
+            temp.push_back(info.at("description"));
+        } else {
+            temp.push_back("");
+        }
+
         v.push_back(temp);
     }
 
@@ -212,8 +235,20 @@ void listTemplates(const std::string& template_dir, const std::string& container
 
 void printTemplateInfo(const std::string& template_dir, const std::string& template_name, const std::string& container_name)
 {
-    std::string container_path = path::joinPath({template_dir, template_name, container_name});
+    std::string template_path = path::joinPath(template_dir, template_name);
+
+    if(!path::exists(template_path)) {
+        std::cout << "[ERROR] Path \"" << template_path << "\" does not exist" << std::endl;
+        return; 
+    }
+
+    std::string container_path = path::joinPath(template_path, container_name);
     std::vector<std::vector<std::string>> table;
+
+    if(!path::exists(container_path)) {
+        std::cout << "[ERROR] No container in template \"" << template_name << "\"" << std::endl;
+        return;
+    }
 
     json info = readJsonFromFile(path::joinPath(container_path, "info.json"));
     json var_info = readJsonFromFile(path::joinPath(container_path, "variables.json"));
@@ -221,6 +256,7 @@ void printTemplateInfo(const std::string& template_dir, const std::string& templ
     std::vector<std::string> header;
     std::vector<std::string> values;
 
+    std::string author = info.at("author");
     std::string desc = info.at("description");
     std::string variables;
     std::string variable_desc;
@@ -243,6 +279,11 @@ void printTemplateInfo(const std::string& template_dir, const std::string& templ
                 variables.push_back('\n');
             }
         }
+    }
+
+    if(!author.empty()) {
+        header.push_back("Author");
+        values.push_back(author);
     }
 
     if(!desc.empty()) {
