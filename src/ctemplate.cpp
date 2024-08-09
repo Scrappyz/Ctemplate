@@ -153,7 +153,7 @@ void addTemplate(const std::string& template_dir, const std::string& path_to_add
     writeJsonToFile(info, path::joinPath(new_container_path, "info.json"), 4);
     writeJsonToFile(variables, path::joinPath(new_container_path, "variables.json"), 4);
 
-    std::cout << "[SUCCESS] Template \"" << name << "\" has been initialized" << std::endl;
+    std::cout << "[SUCCESS] Template \"" << name << "\" has been added" << std::endl;
 }
 
 void removeTemplates(const std::string& template_dir, const std::vector<std::string>& templates)
