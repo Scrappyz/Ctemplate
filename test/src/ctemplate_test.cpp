@@ -123,6 +123,30 @@ TEST(initTemplate, custom_includes)
     path::remove(t_path + path::directorySeparator());
 }
 
+// TEST(initTemplate, custom_includes_no_parent)
+// {
+//     std::string tp = path::joinPath(template_path, "py");
+//     std::string t_path = path::joinPath(test_path, "testing/init_template/test");
+//     std::string tmp_path = path::joinPath(test_path, "testing/init_template/temp");
+//     std::unordered_map<std::string, std::string> keyval = {{"project", "hello_world"}, {"name", "User"}};
+//     std::set<std::string> paths = matchPaths(getPaths(tp, tp), {"!project!/**"}, {});
+     
+//     initTemplate(tp, paths, ".ctemplate", t_path, keyval);
+
+//     ASSERT_TRUE(path::exists(path::joinPath(t_path, "hello_world")));
+//     ASSERT_TRUE(path::exists(path::joinPath(t_path, "hello_world/hello_world.py")));
+
+//     ASSERT_TRUE(!path::exists(path::joinPath(t_path, ".ctemplate")));
+//     ASSERT_TRUE(!path::exists(path::joinPath(t_path, "test")));
+
+//     std::string actual_file_content = readTextFromFile(path::joinPath(t_path, "hello_world/hello_world.py"));
+//     std::string expected_file_content = readTextFromFile(path::joinPath(tmp_path, "test.py"));
+
+//     EXPECT_EQ(actual_file_content, expected_file_content);
+
+//     path::remove(t_path + path::directorySeparator());
+// }
+
 TEST(addTemplate, adding)
 {
     std::string add_path = path::joinPath(template_path, "t1");
