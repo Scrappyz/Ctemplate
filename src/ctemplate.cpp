@@ -50,6 +50,11 @@ void initTemplate(const std::string& template_to_init, const std::set<std::strin
 
     std::set<std::string> included_files = matchPaths(paths, includes, excludes);
 
+    std::cout << "==============INCLUDES INIT1==============" << std::endl;
+    for(const auto& i : included_files) {
+        std::cout << i << std::endl;
+    }
+
     std::string var_prefix = vars.at("variablePrefix");
     std::string var_suffix = vars.at("variableSuffix");
 
@@ -59,6 +64,11 @@ void initTemplate(const std::string& template_to_init, const std::set<std::strin
     excludes = jsonListToSet(vars.at("searchPaths").at("filenames").at("exclude"));
 
     included_files = matchPaths(paths, includes, excludes);
+
+    std::cout << "==============INCLUDES INIT2==============" << std::endl;
+    for(const auto& i : included_files) {
+        std::cout << i << std::endl;
+    }
 
     replaceVariablesInAllFilenames(path_to_init_template_to, included_files, keyval, var_prefix, var_suffix);
 

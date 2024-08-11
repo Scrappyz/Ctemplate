@@ -198,7 +198,15 @@ namespace os {
 
         inline std::string normalizePath(const std::filesystem::path& path)
         {
-            return std::filesystem::weakly_canonical(path).string();
+            std::string p = path.string();
+            
+            for(int i = 0; i < p.size(); i++) {
+                if(isDirectorySeparator(p[i], true)) {
+                    p[i] = directorySeparator();
+                }
+            }
+
+            return p;
         }
 
         inline std::string absolutePath(const std::filesystem::path& path)
