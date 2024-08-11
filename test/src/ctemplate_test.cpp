@@ -394,6 +394,26 @@ TEST(matchPaths, include_all_exclude_all)
     EXPECT_EQ(actual, expected);
 }
 
+TEST(matchPaths, include_non_patterns)
+{
+    std::string template_p = path::joinPath(template_path, "cpp-test");
+    std::set<std::string> actual = matchPaths(getPaths(template_p, template_p), {"src/main.cpp", "src/temp.cpp", "test"}, {});
+    std::set<std::string> expected = {"src/main.cpp", "src/temp.cpp", "test"};
+    expected = normalizePaths(expected, template_p);
+
+    EXPECT_EQ(actual, expected);
+}
+
+TEST(matchPaths, include_and_exclude_non_patterns)
+{
+    std::string template_p = path::joinPath(template_path, "cpp-test");
+    std::set<std::string> actual = matchPaths(getPaths(template_p, template_p), {"src/main.cpp", "src/temp.cpp", "test"}, {"src/main.cpp", "test"});
+    std::set<std::string> expected = {"src/temp.cpp"};
+    expected = normalizePaths(expected, template_p);
+
+    EXPECT_EQ(actual, expected);
+}
+
 TEST(replaceVariablesInAllFilenames, working)
 {
     std::string testing_path = path::joinPath(test_path, "testing/replace_filenames");
