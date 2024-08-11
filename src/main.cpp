@@ -106,11 +106,8 @@ int main(int argc, char** argv)
     if(*init) { // "init" subcommand
         std::string init_to = path::joinPath(path::currentPath(), init_path);
         std::string template_path_to_init = path::joinPath(template_dir, init_template_name);
-        std::set<std::string> paths = matchPaths(getPaths(template_path_to_init, template_path_to_init), arrayToSet(init_includes), arrayToSet(init_excludes));
-        std::cout << "==============INCLUDES MAIN==============" << std::endl;
-        for(const auto& i : paths) {
-            std::cout << i << std::endl;
-        }
+        std::set<std::string> paths = matchPaths(getPaths(template_path_to_init, template_path_to_init),
+                                       arrayToSet(init_includes), arrayToSet(init_excludes));
         initTemplate(template_dir, init_template_name, 
                     paths, container_name, init_to, mapKeyValues(init_keyval), init_force_overwrite);
     } else if(*add) { // "add" subcommand
