@@ -335,7 +335,7 @@ std::set<std::string> getPaths(const std::string& path, const std::string& relat
     std::set<std::string> paths;
     for(const auto& i : fs::recursive_directory_iterator(path)) {
         std::string p = relative_to.empty() ? i.path().string() : path::relativePath(i, path);
-        paths.insert(p);
+        paths.insert(path::normalizePath(p));
     }
 
     return paths;
