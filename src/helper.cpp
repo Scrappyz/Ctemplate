@@ -4,6 +4,7 @@
 #include "format.hpp"
 #include <fstream>
 #include <iostream>
+#include <unordered_set>
 
 using json = nlohmann::json;
 namespace path = os::path;
@@ -343,21 +344,61 @@ std::set<std::string> getPaths(const std::string& path, const std::string& relat
 std::set<std::string> matchPaths(const std::set<std::string>& included_paths, const std::set<std::string>& include, const std::set<std::string>& exclude)
 {
     std::set<std::string> matched;
+    std::string pattern_char = "*?";
+
+    std::unordered_set<std::string> non_pattern_includes;
+    std::set<std::string> pattern_includes;
+    std::unordered_set<std::string> non_pattern_excludes;
+    std::set<std::string> pattern_excludes;
+
+    // Separate patterns from non-patterns
+    for(const auto& pattern : include) {
+        std::string normalized_pattern = path::normalizePath(pattern);
+        if(pattern.find_first_of(pattern_char) != std::string::npos) {
+            pattern_includes.insert(normalized_pattern);
+        } else {
+            non_pattern_includes.insert(normalized_pattern);
+        }
+    }
+
+    for(const auto& pattern : exclude) {
+        std::string normalized_pattern = path::normalizePath(pattern);
+        if(pattern.find_first_of(pattern_char) != std::string::npos) {
+            pattern_excludes.insert(normalized_pattern);
+        } else {
+            non_pattern_excludes.insert(normalized_pattern);
+        }
+    }
+
     for(const auto& str : included_paths) {
         bool included = false;
-        for(const auto& pattern : include) {
-            if(fmatch::match(str, pattern)) {
-                included = true;
-                break;
+
+        // Check non-pattern includes first
+        if(non_pattern_includes.count(str) > 0) {
+            included = true;
+        } else {
+            // Check pattern includes
+            for (const auto& pattern : pattern_includes) {
+                if(fmatch::match(str, pattern)) {
+                    included = true;
+                    break;
+                }
             }
         }
 
         if(included) {
             bool excluded = false;
-            for(const auto& pattern : exclude) {
-                if(fmatch::match(str, pattern)) {
-                    excluded = true;
-                    break;
+
+            // Check non-pattern excludes first
+            if(non_pattern_excludes.count(str) > 0) {
+                excluded = true;
+            } else {
+                // Check pattern excludes
+                for(const auto& pattern : pattern_excludes) {
+                    if(fmatch::match(str, pattern)) {
+                        excluded = true;
+                        break;
+                    }
                 }
             }
 
