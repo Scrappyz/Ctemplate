@@ -8,3 +8,5 @@
 !test/**
 test/bin
 test/bin/**
+!docs/
+!docs/** 

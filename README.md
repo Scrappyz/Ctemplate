@@ -1,5 +1,3 @@
 ## Ctemplate
-A lightweight C++ program that initialize projects from saved templates.
+Project template manager in the command-line.
 
-## TBA
-UNDER DEVELOPMENT
