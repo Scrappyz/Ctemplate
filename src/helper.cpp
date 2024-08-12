@@ -31,12 +31,22 @@ void showConfig(const json& config)
 
 void setConfigValue(json& config, const std::vector<std::string>& config_key_values)
 {
+    std::unordered_set<std::string> path_configs = {"templateDirectory"};
+
     for(int i = 0; i < config_key_values.size(); i++) {
         std::vector<std::string> keyval = split(config_key_values[i], "=");
 
         if(!config.contains(keyval[0])) {
-            std::cout << "[WARNING] Key \"" << keyval[0] << "\" does not exist" << std::endl;
+            std::cout << "[ERROR] Key \"" << keyval[0] << "\" does not exist" << std::endl;
+            return;
+        }
+
+        if(keyval.size() < 2) {
             continue;
+        }
+
+        if(path_configs.count(keyval[0]) > 0) {
+            keyval[1] = path::joinPath(path::currentPath(), keyval[1]);
         }
 
         config[keyval[0]] = keyval[1];

@@ -86,6 +86,11 @@ int main(int argc, char** argv)
     // For "list" subcommand
     CLI::App* list = app.add_subcommand("list", "List all templates");
 
+    // For "info" subcommand
+    CLI::App* info = app.add_subcommand("info", "Info about templates");
+    std::string info_template;
+    info->add_option("template", info_template, "Template to get info from")->required();
+
     // For "config" subcommand
     CLI::App* config = app.add_subcommand("config", "Show config");
 
@@ -93,11 +98,6 @@ int main(int argc, char** argv)
     CLI::App* set = config->add_subcommand("set", "Set config values");
     std::vector<std::string> config_set_values;
     set->add_option("keyvalue", config_set_values, "Config values to change (eg: \"key=value\")");
-
-    // For "info" subcommand
-    CLI::App* info = app.add_subcommand("info", "Info about templates");
-    std::string info_template;
-    info->add_option("template", info_template, "Template to get info from")->required();
 
     CLI11_PARSE(app, argc, argv);
 
@@ -117,6 +117,8 @@ int main(int argc, char** argv)
         removeTemplates(template_dir, remove_template_names);
     } else if(*list) { // "list" subcommand
         listTemplates(template_dir, container_name);
+    } else if(*info) { // "into" subcommand
+        printTemplateInfo(template_dir, info_template, container_name);
     } else if(*config) { // "config" subcommand
         if(*set) { // "set" subcommand
             setConfigValue(app_config, config_set_values);
@@ -125,8 +127,6 @@ int main(int argc, char** argv)
         }
         std::cout << "Configuration:" << std::endl;
         showConfig(app_config);
-    } else if(*info) { // "into" subcommand
-        printTemplateInfo(template_dir, info_template, container_name);
     } else {
         CLI::CallForHelp();
     }
