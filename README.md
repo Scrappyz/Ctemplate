@@ -48,6 +48,21 @@ Ctemplate works as a standalone executable so all you need to do is download it 
 | :--- | :--- |
 | [ctemplate.exe]() | Windows standalone executable (recommended for **Windows**) |
 
+It is recommended to place the executable inside an empty directory.
+
+## Setup
+Upon first running the program, a `config.json` file will generate inside the directory. Open it with your preferred text editor then modify the `templateDirectory` to where you want your templates to be stored. 
+
+<img src="docs/resources/images/config_json.png" alt="config" width="800" height="400"/>
+
+<br>
+
+Changing this configuration can also be achieved using the `config set` subcommand.
+
+```
+ctemplate config set templateDirectory="path/to/template/dir"
+```
+
 ## Usage
 ```
 ctemplate [OPTIONS] [SUBCOMMAND]
@@ -63,17 +78,65 @@ info                        Show info about a template
 config                      Show config
 ```
 
-### Initializing A Template
-This is achieved using the `init` subcommand. 
+### Adding a template
+This is achieved using the `add` subcommand.
+
 ```
+Usage: ctemplate add [OPTIONS] [path]
+
 Positionals:
-  name TEXT REQUIRED          Name of the template to initialize
+  path TEXT                   Root project directory of
+                              the template to be added
+                              (defaults to the current path)
 
 Options:
   -h,--help                   Print this help message and exit
-  -p,--path TEXT              Path to initialize to
-  -f,--force                  Force overwrite directory
-  -v,--variables TEXT ...     Initialize variables
-  -i,--include TEXT ...       Include paths
-  -e,--exclude TEXT ...       Exclude paths
+  -n,--name TEXT REQUIRED     Name of the new template
+  -a,--author TEXT            Author of the new template
+  -d,--desc TEXT              Description of the new template
 ```
+
+Create your template project then navigate to that projects root directory. Run the `add` subcommand then supply a name for the template with the `-n,--name` option. You can also add an author and description to that template with the `-a,--author` and `-d,--desc` respectively. The template will be then copied to your template directory (configured in the `config.json` file) with a new folder inside it (defaults as `.ctemplate`). This folder is where all the information about the template is stored.
+
+#### Example
+<img src="https://media.giphy.com/media/vFKqnCdLPNOKc/giphy.gif" width="500" height="500" />
+
+### Listing Templates
+This is achieved with the `list` subcommand.
+
+```
+Usage: ctemplate list [OPTIONS]
+
+Options:
+  -h,--help                   Print this help message and exit
+```
+
+If you followed the steps correctly in the [Adding a template](#adding-a-template) section. The template you added should appear in the listed templates.
+
+### Initializing a template
+This is achieved using the `init` subcommand. 
+
+```
+Usage: ctemplate init [OPTIONS] name
+
+Positionals:
+  name TEXT REQUIRED          Name of the template to initialize.
+                              Use the 'list' subcommand to see available templates
+
+Options:
+  -h,--help                   Print this help message and exit
+  -p,--path TEXT              Path to initialize the template to
+                              (defaults to the current path)
+  -f,--force                  Overwrites the entire directory
+                              with the template
+  -v,--variables TEXT ...     Set variable values
+                              (E.g: projectName="Hello World")
+  -i,--include TEXT ...       Paths to include in the
+                              template when initializing
+                              (E.g: "project/main.py")
+  -e,--exclude TEXT ...       Paths to exclude in the
+                              template when initializing
+                              (E.g: "project/main.py")
+```
+
+Use the `-v,--variable` option to set the variables of the template you want to initialize.

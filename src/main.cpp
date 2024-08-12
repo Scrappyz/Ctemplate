@@ -60,12 +60,12 @@ int main(int argc, char** argv)
     std::vector<std::string> init_keyval;
     std::vector<std::string> init_includes = {"**"};
     std::vector<std::string> init_excludes;
-    init->add_option("name", init_template_name, "Name of the template to initialize")->required();
+    init->add_option("name", init_template_name, "Name of the template to initialize.\nUse the 'list' subcommand to see available templates")->required();
     init->add_option("-p, --path", init_path, "Path to initialize the template to\n(defaults to the current path)")->expected(1);
     init->add_flag("-f,--force", init_force_overwrite, "Overwrites the entire directory\nwith the template");
-    init->add_option("-v, --variables", init_keyval, "Set variable values\n(eg: projectName=\"Hello World\")");
-    init->add_option("-i,--include", init_includes, "Paths to include in the\ntemplate when initializing\n(eg: \"project/main.py\")");
-    init->add_option("-e,--exclude", init_excludes, "Paths to exclude in the\ntemplate when initializing\n(eg: \"project/main.py\")");
+    init->add_option("-v, --variables", init_keyval, "Set variable values.\n(E.g: projectName=\"Hello World\")\nUse the 'info' subcommand to see the variables of a template");
+    init->add_option("-i,--include", init_includes, "Paths to include in the\ntemplate when initializing\n(E.g: \"project/main.py\")");
+    init->add_option("-e,--exclude", init_excludes, "Paths to exclude in the\ntemplate when initializing\n(E.g: \"project/main.py\")");
     
     // For "add" subcommand
     CLI::App* add = app.add_subcommand("add", "Add a new template");
@@ -89,7 +89,7 @@ int main(int argc, char** argv)
     // For "info" subcommand
     CLI::App* info = app.add_subcommand("info", "Show info about a template");
     std::string info_template;
-    info->add_option("template", info_template, "Template to get info from")->required();
+    info->add_option("template", info_template, "Template to get info from.\nUse the 'list' subcommand to see available templates")->required();
 
     // For "config" subcommand
     CLI::App* config = app.add_subcommand("config", "Show config");
