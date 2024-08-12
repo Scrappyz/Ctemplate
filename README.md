@@ -7,9 +7,11 @@ Project template manager in the command-line.
    - [Features](#features)
 
 ## About The Project
-This program was created because I hated how I had to configure my projects manually.
+This program was created to simplify the process of configuring projects. Ctemplate was designed to quickly initialize project templates, making them ready to use right away.
 
 ### Features
+- **Lightweight:** Only uses up 5MB at most.
 - **Versatile:** Works with any programming language.
 - **Self-Contained:** Works as a standalone executable.
 - **User-Friendly:** No programming/scripting needed. Only basic JSON knowledge is required.
+- **Parameterization:** Customize your template generation with variables.
