@@ -62,3 +62,18 @@ list                        List all templates
 info                        Show info about a template
 config                      Show config
 ```
+
+### Initializing A Template
+This is achieved using the `init` subcommand. 
+```
+Positionals:
+  name TEXT REQUIRED          Name of the template to initialize
+
+Options:
+  -h,--help                   Print this help message and exit
+  -p,--path TEXT              Path to initialize to
+  -f,--force                  Force overwrite directory
+  -v,--variables TEXT ...     Initialize variables
+  -i,--include TEXT ...       Include paths
+  -e,--exclude TEXT ...       Exclude paths
+```

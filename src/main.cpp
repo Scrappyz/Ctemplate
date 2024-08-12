@@ -61,27 +61,27 @@ int main(int argc, char** argv)
     std::vector<std::string> init_includes = {"**"};
     std::vector<std::string> init_excludes;
     init->add_option("name", init_template_name, "Name of the template to initialize")->required();
-    init->add_option("-p, --path", init_path, "Path to initialize to")->expected(1);
-    init->add_flag("-f,--force", init_force_overwrite, "Force overwrite directory");
-    init->add_option("-v, --variables", init_keyval, "Initialize variables");
-    init->add_option("-i,--include", init_includes, "Include paths");
-    init->add_option("-e,--exclude", init_excludes, "Exclude paths");
+    init->add_option("-p, --path", init_path, "Path to initialize the template to\n(defaults to the current path)")->expected(1);
+    init->add_flag("-f,--force", init_force_overwrite, "Overwrites the entire directory\nwith the template");
+    init->add_option("-v, --variables", init_keyval, "Set variable values\n(eg: projectName=\"Hello World\")");
+    init->add_option("-i,--include", init_includes, "Paths to include in the\ntemplate when initializing\n(eg: \"project/main.py\")");
+    init->add_option("-e,--exclude", init_excludes, "Paths to exclude in the\ntemplate when initializing\n(eg: \"project/main.py\")");
     
     // For "add" subcommand
     CLI::App* add = app.add_subcommand("add", "Add a new template");
     std::string add_path;
-    add->add_option("path", add_path, "Root project directory of template to be added")->expected(1);
+    add->add_option("path", add_path, "Root project directory of\nthe template to be added\n(defaults to the current path)")->expected(1);
     std::string add_template_name;
-    add->add_option("-n,--name", add_template_name, "Name of new template")->expected(1)->required();
+    add->add_option("-n,--name", add_template_name, "Name of the new template")->expected(1)->required();
     std::string add_template_author;
-    add->add_option("-a,--author", add_template_author, "Author of new template")->expected(0, 1);
+    add->add_option("-a,--author", add_template_author, "Author of the new template")->expected(0, 1);
     std::string add_template_desc;
-    add->add_option("-d,--desc", add_template_desc, "Description of new template")->expected(0, 1);
+    add->add_option("-d,--desc", add_template_desc, "Description of the new template")->expected(0, 1);
 
     // For "remove" subcommand
     CLI::App* remove = app.add_subcommand("remove", "Remove an existing template");
     std::vector<std::string> remove_template_names;
-    remove->add_option("names", remove_template_names, "Name of template to be removed");
+    remove->add_option("names", remove_template_names, "Name of the template to be removed");
 
     // For "list" subcommand
     CLI::App* list = app.add_subcommand("list", "List all templates");
@@ -97,7 +97,7 @@ int main(int argc, char** argv)
     // For "config set" subcommand
     CLI::App* set = config->add_subcommand("set", "Set config values");
     std::vector<std::string> config_set_values;
-    set->add_option("keyvalue", config_set_values, "Config values to change (eg: \"key=value\")");
+    set->add_option("keyvalue", config_set_values, "Config values to change\n(eg: \"key=value\")");
 
     CLI11_PARSE(app, argc, argv);
 
