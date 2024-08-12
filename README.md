@@ -15,3 +15,10 @@ This program was created to simplify the process of configuring projects. Ctempl
 - **Self-Contained:** Works as a standalone executable.
 - **User-Friendly:** No programming/scripting needed. Only basic JSON knowledge is required.
 - **Parameterization:** Customize your template generation with variables.
+
+### Built With
+- [CLI11](https://github.com/CLIUtils/CLI11.git) - for parsing command-line arguments.
+- [json](https://github.com/nlohmann/json.git) - for parsing and manipulating JSON files.
+- [OS](https://github.com/Scrappyz/OS.git) - for file operations.
+- [fmatch](https://github.com/Scrappyz/fmatch.git) - for pattern matching.
+- [format](https://github.com/Scrappyz/format.git) - for formatting strings.
