@@ -87,7 +87,7 @@ int main(int argc, char** argv)
     CLI::App* list = app.add_subcommand("list", "List all templates");
 
     // For "info" subcommand
-    CLI::App* info = app.add_subcommand("info", "Info about templates");
+    CLI::App* info = app.add_subcommand("info", "Show info about a template");
     std::string info_template;
     info->add_option("template", info_template, "Template to get info from")->required();
 

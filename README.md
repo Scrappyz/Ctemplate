@@ -1,10 +1,27 @@
 ## Ctemplate
 Project template manager in the command-line.
 
-## Table Of Contents
-
-1. [About The Project](#about-the-project)
-   - [Features](#features)
+<details>
+   <summary>Table Of Contents</summary>
+   <ol>
+      <li>
+         <a href="#about-the-project">About The Project</a>
+         <ul>
+            <li><a href="#features">Features</a></li>
+            <li><a href="#built-with">Built With</a></li>
+         </ul>
+      </li>
+      <li>
+         <a href="#installation">Installation</a>
+         <ul>
+            <li><a href="#release-files">Release Files</a></li>
+         </ul>
+      </li>
+      <li>
+         <a href="#usage">Usage</a>
+      </li>
+   </ol>
+</details>
 
 ## About The Project
 This program was created to simplify the process of configuring projects. Ctemplate was designed to quickly initialize project templates, making them ready to use right away.
@@ -21,4 +38,27 @@ This program was created to simplify the process of configuring projects. Ctempl
 - [json](https://github.com/nlohmann/json.git) - for parsing and manipulating JSON files.
 - [OS](https://github.com/Scrappyz/OS.git) - for file operations.
 - [fmatch](https://github.com/Scrappyz/fmatch.git) - for pattern matching.
-- [format](https://github.com/Scrappyz/format.git) - for formatting strings.
+- [format](https://github.com/Scrappyz/format.git) - for formatting strings into tables.
+
+## Installation
+Ctemplate works as a standalone executable so all you need to do is download it then run it in your preferred terminal.
+
+### Release Files
+| File | Description |
+| :--- | :--- |
+| [ctemplate.exe]() | Windows standalone executable (recommended for **Windows**) |
+
+## Usage
+```
+ctemplate [OPTIONS] [SUBCOMMAND]
+```
+
+### Subcommands
+```
+init                        Initialize a template
+add                         Add a new template
+remove                      Remove an existing template
+list                        List all templates
+info                        Show info about a template
+config                      Show config
+```
