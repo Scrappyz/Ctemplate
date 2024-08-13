@@ -17,8 +17,22 @@ Create projects quickly and easily with this command-line utility.
             <li><a href="#release-files">Release Files</a></li>
          </ul>
       </li>
+      <li><a href="#setup">Setup</a></li>
       <li>
          <a href="#usage">Usage</a>
+         <ul>
+            <li><a href="#subcommands">Subcommands</a></li>
+            <li><a href="#adding-a-template">Adding a template</a></li>
+            <li><a href="#listing-templates">Listing templates</a></li>
+            <li>
+               <a href="#modifying-a-template">Modifying a template</a>
+               <ul>
+                  <li><a href="#template-configuration-functions">Template Configuration Functions</a></li>
+               </ul>
+            </li>
+            <li><a href="#checking-templates">Checking templates</a></li>
+            <li><a href="#initializing-a-template">Initializing a template</a></li>
+         </ul>
       </li>
    </ol>
 </details>
@@ -114,7 +128,7 @@ Create your template project then navigate to that projects root directory. Run 
   <img src="https://media.giphy.com/media/vFKqnCdLPNOKc/giphy.gif" width="500" height="500" />
 </p>
 
-### Listing Templates
+### Listing templates
 This is achieved with the `list` subcommand.
 
 ```
@@ -177,7 +191,7 @@ A text has also been changed inside the used to be `main.py`. All of these varia
 - Wildcards such as `*` are supported when adding paths.
 - Variables need both a prefix and a suffix so `variablePrefix` and `variableSuffix` cannot be empty.
 
-### Checking Templates
+### Checking templates
 This is achieved with the `info` subcommand.
 ```
 Usage: ctemplate info [OPTIONS] template
