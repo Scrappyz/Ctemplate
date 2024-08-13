@@ -1,5 +1,5 @@
 ## Ctemplate
-Project template manager in the command-line.
+Create projects quickly and easily with this command-line utility.
 
 <details>
    <summary>Table Of Contents</summary>
@@ -24,7 +24,13 @@ Project template manager in the command-line.
 </details>
 
 ## About The Project
-This program was created to simplify the process of configuring projects. Ctemplate was designed to quickly initialize project templates, making them ready to use right away.
+
+<p align="center">
+  <img src="https://media.giphy.com/media/vFKqnCdLPNOKc/giphy.gif" width="500" height="500" />
+</p>
+
+
+This program was created to simplify the process of creating and configuring projects. Ctemplate was designed to quickly initialize project templates, making them ready to use right away.
 
 ### Features
 - **Lightweight:** Only uses up 5MB at most.
@@ -53,15 +59,20 @@ It is recommended to place the executable inside an empty directory.
 ## Setup
 Upon first running the program, a `config.json` file will generate inside the directory. Open it with your preferred text editor then modify the `templateDirectory` to where you want your templates to be stored. 
 
-<img src="docs/resources/images/config_json.png" alt="config" width="800" height="400"/>
+<p align="center">
+  <img src="docs/resources/images/config_json.png" alt="config" width="800" height="400"/>
+</p>
 
-In my case, I want my templates to be stored in the `D:\My Files\Codes\templates` folder.
+In my case, I want my templates to be stored in the `D:\My Files\Codes\templates` folder. It is recommended to use an absolute path in the `templateDirectory`.
 
 Changing this configuration can also be achieved using the `config set` subcommand.
 
 ```
 ctemplate config set templateDirectory="D:\My Files\Codes\templates"
 ```
+
+#### Notes
+- If a relative path is used in `templateDirectory`, the path to the template directory is relative to the executable.
 
 ## Usage
 ```
@@ -99,7 +110,9 @@ Options:
 Create your template project then navigate to that projects root directory. Run the `add` subcommand then supply a name for the template with the `-n,--name` option. You can also add an author and description to that template with the `-a,--author` and `-d,--desc` respectively. The template will be then copied to your template directory (configured in the `config.json` file) with a new folder inside it (defaults as `.ctemplate`). This folder is where all the information about the template is stored.
 
 #### Example
-<img src="https://media.giphy.com/media/vFKqnCdLPNOKc/giphy.gif" width="500" height="500" />
+<p align="center">
+  <img src="https://media.giphy.com/media/vFKqnCdLPNOKc/giphy.gif" width="500" height="500" />
+</p>
 
 ### Listing Templates
 This is achieved with the `list` subcommand.
@@ -114,27 +127,35 @@ Options:
 If you followed the steps correctly in the "[Adding a template](#adding-a-template)" section. The template you added should appear in the listed templates.
 
 ### Modifying a template
-To modify a template, you need to go to your template directory (Use the `config` subcommand or go to your `config.json` to see).
+To modify a template, you need to go to your template directory (Use the `config` subcommand or go to your `config.json` to see your template directory).
 
-<img src="docs/resources/images/templates.png" width="300" height="400" />
+<p align="center">
+  <img src="docs/resources/images/templates.png" width="300" height="400" />
+</p>
 
 In the image above, I have two templates in my template directory: `cpp` and `python`. Open the template you want to edit, then go to the `.ctemplate` folder. The `.ctemplate` folder is where all the information about the template, such as its author, description, variables, etc., is stored. Each template inside the template directory should have its own `.ctemplate` folder to be recognized as a template.
 
 <br>
 
-<img src="docs/resources/images/ctemplate_folder.png" width="300" />
+<p align="center">
+  <img src="docs/resources/images/ctemplate_folder.png" width="300" />
+</p>
 
 In the `.ctemplate` folder, there will be a few files inside it. There will be a `info.json` and a `variables.json`. The `info.json` is where we store the templates author and description. The `variables.json` is where we store information about the template's variables, such as where to search for them, what variable prefix and suffix to use, and what variables are valid.
 
 <br>
 
-<img src="docs/resources/images/variables_json.png" width="700" />
+<p align="center">
+  <img src="docs/resources/images/variables_json.png" width="700" />
+</p>
 
 The `variables.json` will have these keys and values. With these settings, ctemplate will look for variables with the prefix and suffix of `!` (E.g: `!project!`) in the listed paths in `searchPaths`. To add a variable, place in a valid variable inside (in this case `project`) inside a file or filename then surround it with the prefix and suffix. I have already configured the `python` template to these settings by changing the `project` directory name to `!project!` or changing the `test/test_main.py` name to `test/test_!project!.py`. 
 
 <br>
 
-<img src="docs/resources/images/variables_file.png" width="700" />
+<p align="center">
+  <img src="docs/resources/images/variables_file.png" width="800" />
+</p>
 
 A text has also been changed inside the used to be `main.py`. All of these variables will be replaced upon template initialization.
 
@@ -155,6 +176,25 @@ A text has also been changed inside the used to be `main.py`. All of these varia
 - All paths should be relative to the template project's root directory.
 - Wildcards such as `*` are supported when adding paths.
 - Variables need both a prefix and a suffix so `variablePrefix` and `variableSuffix` cannot be empty.
+
+### Checking Templates
+This is achieved with the `info` subcommand.
+```
+Usage: ctemplate info [OPTIONS] template
+
+Positionals:
+  template TEXT REQUIRED      Template to get info from.
+                              Use the 'list' subcommand to see available templates
+
+Options:
+  -h,--help                   Print this help message and exit
+```
+
+To check information about a template use:
+```
+ctemplate info "template_name"
+```
+Try replacing the "template_name" with a template in your template list.
 
 ### Initializing a template
 This is achieved using the `init` subcommand. 
@@ -182,4 +222,16 @@ Options:
                               (E.g: "project/main.py")
 ```
 
-Use the `-v,--variable` option to set the variables of the template you want to initialize.
+If you have followed the previous sections correctly, you are now ready to initialize your template.
+
+Use the `list` subcommand to see the templates you added. Then use the `info` subcommand to check its valid variables. To initialize it, use:
+```
+ctemplate init "template_name" -v var="your value"
+```
+Replace `template_name` with the name of your template then replace `var` with a valid variable. Every instance of that variable in the paths that has been listed in the `variables.json` file will be replaced with the value. If your template has multiple variables, `-v,--variable` is capable of multiple inputs (E.g: `-v var1="val1" var2="val2" var3="val3"`).
+
+#### Example
+
+<p align="center">
+  <img src="https://media.giphy.com/media/vFKqnCdLPNOKc/giphy.gif" width="500" height="500" />
+</p>
