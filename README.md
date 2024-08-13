@@ -55,12 +55,12 @@ Upon first running the program, a `config.json` file will generate inside the di
 
 <img src="docs/resources/images/config_json.png" alt="config" width="800" height="400"/>
 
-<br>
+In my case, I want my templates to be stored in the `D:\My Files\Codes\templates` folder.
 
 Changing this configuration can also be achieved using the `config set` subcommand.
 
 ```
-ctemplate config set templateDirectory="path/to/template/dir"
+ctemplate config set templateDirectory="D:\My Files\Codes\templates"
 ```
 
 ## Usage
@@ -111,7 +111,50 @@ Options:
   -h,--help                   Print this help message and exit
 ```
 
-If you followed the steps correctly in the [Adding a template](#adding-a-template) section. The template you added should appear in the listed templates.
+If you followed the steps correctly in the "[Adding a template](#adding-a-template)" section. The template you added should appear in the listed templates.
+
+### Modifying a template
+To modify a template, you need to go to your template directory (Use the `config` subcommand or go to your `config.json` to see).
+
+<img src="docs/resources/images/templates.png" width="300" height="400" />
+
+In the image above, I have two templates in my template directory: `cpp` and `python`. Open the template you want to edit, then go to the `.ctemplate` folder. The `.ctemplate` folder is where all the information about the template, such as its author, description, variables, etc., is stored. Each template inside the template directory should have its own `.ctemplate` folder to be recognized as a template.
+
+<br>
+
+<img src="docs/resources/images/ctemplate_folder.png" width="300" />
+
+In the `.ctemplate` folder, there will be a few files inside it. There will be a `info.json` and a `variables.json`. The `info.json` is where we store the templates author and description. The `variables.json` is where we store information about the template's variables, such as where to search for them, what variable prefix and suffix to use, and what variables are valid.
+
+<br>
+
+<img src="docs/resources/images/variables_json.png" width="700" />
+
+The `variables.json` will have these keys and values. With these settings, ctemplate will look for variables with the prefix and suffix of `!` (E.g: `!project!`) in the listed paths in `searchPaths`. To add a variable, place in a valid variable inside (in this case `project`) inside a file or filename then surround it with the prefix and suffix. I have already configured the `python` template to these settings by changing the `project` directory name to `!project!` or changing the `test/test_main.py` name to `test/test_!project!.py`. 
+
+<br>
+
+<img src="docs/resources/images/variables_file.png" width="700" />
+
+A text has also been changed inside the used to be `main.py`. All of these variables will be replaced upon template initialization.
+
+
+#### Template Configuration Functions
+1. `info.json`
+   - `author`: Author of the template.
+   - `description`: Description about the template.
+2. `variables.json`
+   - `variables`: These are the variables to look for. They can also be supplied with a description.
+   - `variablePrefix`: The prefix to use for variables.
+   - `variableSuffix`: The suffix to use for variables.
+   - `searchPaths`: Paths where ctemplate will look for variables.
+     - `filenames`: Paths where ctemplate will look for variables in filenames such as `!project!` or `"test/test_!project!.py"`.
+     - `files`: Paths where ctemplate will look for variables inside files.
+
+##### Notes
+- All paths should be relative to the template project's root directory.
+- Wildcards such as `*` are supported when adding paths.
+- Variables need both a prefix and a suffix so `variablePrefix` and `variableSuffix` cannot be empty.
 
 ### Initializing a template
 This is achieved using the `init` subcommand. 
