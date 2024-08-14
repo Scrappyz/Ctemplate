@@ -39,9 +39,9 @@ Create projects quickly and easily with this command-line utility.
 
 ## About The Project
 
-<p align="center">
+<!-- <p align="center">
   <img src="https://media.giphy.com/media/vFKqnCdLPNOKc/giphy.gif" width="500" height="500" />
-</p>
+</p> -->
 
 
 This program was created to simplify the process of creating and configuring projects. Ctemplate was designed to quickly initialize project templates, making them ready to use right away.
@@ -66,7 +66,7 @@ Ctemplate works as a standalone executable so all you need to do is download it 
 ### Release Files
 | File | Description |
 | :--- | :--- |
-| [ctemplate.exe]() | Windows standalone executable (recommended for **Windows**) |
+| [ctemplate.exe](https://github.com/Scrappyz/Ctemplate/releases/download/v1.0.0-beta.1/ctemplate.exe) | Windows standalone executable (recommended for **Windows**) |
 
 It is recommended to place the executable inside an empty directory.
 
@@ -121,12 +121,12 @@ Options:
   -d,--desc TEXT              Description of the new template
 ```
 
-Create your template project then navigate to that projects root directory. Run the `add` subcommand then supply a name for the template with the `-n,--name` option. You can also add an author and description to that template with the `-a,--author` and `-d,--desc` respectively. The template will be then copied to your template directory (configured in the `config.json` file) with a new folder inside it (defaults as `.ctemplate`). This folder is where all the information about the template is stored.
+Create your template project then navigate to that project's root directory. Run the `add` subcommand then supply a name for the template with the `-n,--name` option. You can also add an author and description to that template with the `-a,--author` and `-d,--desc` respectively. The template will be then copied to your template directory (configured in the `config.json` file) with a new folder inside it (defaults as `.ctemplate`). This folder is where all the information about the template is stored.
 
-#### Example
+<!-- #### Example
 <p align="center">
   <img src="https://media.giphy.com/media/vFKqnCdLPNOKc/giphy.gif" width="500" height="500" />
-</p>
+</p> -->
 
 ### Listing templates
 This is achieved with the `list` subcommand.
@@ -244,8 +244,8 @@ ctemplate init "template_name" -v var="your value"
 ```
 Replace `template_name` with the name of your template then replace `var` with a valid variable. Every instance of that variable in the paths that has been listed in the `variables.json` file will be replaced with the value. If your template has multiple variables, `-v,--variable` is capable of multiple inputs (E.g: `-v var1="val1" var2="val2" var3="val3"`).
 
-#### Example
+<!-- #### Example
 
 <p align="center">
   <img src="https://media.giphy.com/media/vFKqnCdLPNOKc/giphy.gif" width="500" height="500" />
-</p>
+</p> -->
