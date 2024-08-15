@@ -9,4 +9,6 @@
 test/bin
 test/bin/**
 !docs/
-!docs/** 
+!docs/**
+!.github/
+!.github/**
