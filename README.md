@@ -40,7 +40,7 @@ Create projects quickly and easily with this command-line utility.
 ## About The Project
 
 <p align="center">
-  <img src="docs/resources/gifs/demo.gif" alt="config" width="650"/>
+  <img src="docs/resources/gifs/demo.gif" alt="config" width="600"/>
 </p>
 
 This program was created to simplify the process of creating and configuring projects. Ctemplate was designed to quickly initialize project templates, making them ready to use right away.
