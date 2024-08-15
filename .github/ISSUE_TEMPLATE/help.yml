@@ -1,0 +1,12 @@
+name: Help
+description: What would you like help with regarding the software?
+title: "[Help]: "
+labels: ["help"]
+body:
+  - type: textarea
+    id: help
+    attributes:
+      label: What do you need help with?
+      placeholder: Tell us!
+    validations:
+      required: true
