@@ -39,10 +39,9 @@ Create projects quickly and easily with this command-line utility.
 
 ## About The Project
 
-<!-- <p align="center">
-  <img src="https://media.giphy.com/media/vFKqnCdLPNOKc/giphy.gif" width="500" height="500" />
-</p> -->
-
+<p align="center">
+  <img src="docs/resources/gifs/demo.gif" alt="config" width="650"/>
+</p>
 
 This program was created to simplify the process of creating and configuring projects. Ctemplate was designed to quickly initialize project templates, making them ready to use right away.
 
@@ -123,11 +122,6 @@ Options:
 
 Create your template project then navigate to that project's root directory. Run the `add` subcommand then supply a name for the template with the `-n,--name` option. You can also add an author and description to that template with the `-a,--author` and `-d,--desc` respectively. The template will be then copied to your template directory (configured in the `config.json` file) with a new folder inside it (defaults as `.ctemplate`). This folder is where all the information about the template is stored.
 
-<!-- #### Example
-<p align="center">
-  <img src="https://media.giphy.com/media/vFKqnCdLPNOKc/giphy.gif" width="500" height="500" />
-</p> -->
-
 ### Listing templates
 This is achieved with the `list` subcommand.
 
@@ -155,7 +149,7 @@ In the image above, I have two templates in my template directory: `cpp` and `py
   <img src="docs/resources/images/ctemplate_folder.png" width="300" />
 </p>
 
-In the `.ctemplate` folder, there will be a few files inside it. There will be a `info.json` and a `variables.json`. The `info.json` is where we store the templates author and description. The `variables.json` is where we store information about the template's variables, such as where to search for them, what variable prefix and suffix to use, and what variables are valid.
+In the `.ctemplate` folder, there will be a few files inside it. There will be a `info.json` and a `variables.json`. The `info.json` is where we store the template's author and description. The `variables.json` is where we store information about the template's variables, such as where to search for them, what variable prefix and suffix to use, and what variables are valid.
 
 <br>
 
@@ -163,7 +157,7 @@ In the `.ctemplate` folder, there will be a few files inside it. There will be a
   <img src="docs/resources/images/variables_json.png" width="700" />
 </p>
 
-The `variables.json` will have these keys and values. With these settings, ctemplate will look for variables with the prefix and suffix of `!` (E.g: `!project!`) in the listed paths in `searchPaths`. To add a variable, place in a valid variable inside (in this case `project`) inside a file or filename then surround it with the prefix and suffix. I have already configured the `python` template to these settings by changing the `project` directory name to `!project!` or changing the `test/test_main.py` name to `test/test_!project!.py`. 
+The `variables.json` will have these keys and values. With these settings, ctemplate will look for variables with the prefix and suffix of `!` (E.g: `!project!`) in the listed paths in `searchPaths`. To add a variable, place in a valid variable inside (in this case `project`) inside a file or filename then surround it with the prefix and suffix.
 
 <br>
 
@@ -171,7 +165,7 @@ The `variables.json` will have these keys and values. With these settings, ctemp
   <img src="docs/resources/images/variables_file.png" width="800" />
 </p>
 
-A text has also been changed inside the used to be `main.py`. All of these variables will be replaced upon template initialization.
+I have already configured the `python` template to these settings by changing the `project` directory name to `!project!` or changing the `test/test_main.py` name to `test/test_!project!.py`. A text has also been changed inside the used to be `main.py`. All of these variables will be replaced upon template initialization.
 
 
 #### Template Configuration Functions
@@ -243,9 +237,3 @@ Use the `list` subcommand to see the templates you added. Then use the `info` su
 ctemplate init "template_name" -v var="your value"
 ```
 Replace `template_name` with the name of your template then replace `var` with a valid variable. Every instance of that variable in the paths that has been listed in the `variables.json` file will be replaced with the value. If your template has multiple variables, `-v,--variable` is capable of multiple inputs (E.g: `-v var1="val1" var2="val2" var3="val3"`).
-
-<!-- #### Example
-
-<p align="center">
-  <img src="https://media.giphy.com/media/vFKqnCdLPNOKc/giphy.gif" width="500" height="500" />
-</p> -->
