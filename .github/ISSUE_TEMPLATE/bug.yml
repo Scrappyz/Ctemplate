@@ -1,7 +1,7 @@
 name: Bug
 description: File a bug report.
 title: "[Bug]: "
-labels: ["bug"]
+labels: ["Bug"]
 body:
   - type: dropdown
     id: severity
@@ -66,3 +66,5 @@ body:
         - Linux
         - MacOS
       default: 0
+    validations:
+      required: true

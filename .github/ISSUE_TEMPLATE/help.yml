@@ -1,7 +1,7 @@
 name: Help
 description: What would you like help with regarding the software?
 title: "[Help]: "
-labels: ["help"]
+labels: ["Help"]
 body:
   - type: textarea
     id: help
