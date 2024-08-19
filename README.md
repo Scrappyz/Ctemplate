@@ -35,6 +35,7 @@ Create projects quickly and easily with this command-line utility.
             </li>
          </ul>
       </li>
+      <li><a href="#templates">Templates</li>
    </ol>
 </details>
 
@@ -240,3 +241,6 @@ Replace `template_name` with the name of your template then replace `var` with a
 - All paths should be relative to the template project's root directory.
 - Wildcards such as `*` are supported when adding paths.
 - Variables need both a prefix and a suffix so `variablePrefix` and `variableSuffix` cannot be empty.
+
+## Templates
+See some of my pre-made templates [here](https://github.com/Scrappyz/templates.git)
