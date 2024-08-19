@@ -7,23 +7,26 @@ body:
     id: severity
     attributes:
       label: Severity
-      description: How severe does this affect the usability of the software?
+      description: How severely does this affect the usability of the software?
       multiple: false
       options:
         - MINOR
         - MAJOR
+      default: 0
   - type: textarea
     id: result
     attributes:
       label: What happened?
-      placeholder: Tell us what happened!
+      description: What was the problem and what were you doing when it occured?
+      placeholder: Tell us what happened.
     validations:
       required: true
   - type: textarea
     id: expected
     attributes:
       label: What should have happened?
-      placeholder: Tell us what did you expect to happen?
+      description: What was the behaviour you were expecting?
+      placeholder: Tell us what you expected to happen.
     validations:
       required: true
   - type: textarea
@@ -34,11 +37,19 @@ body:
       placeholder: Telling us how to reproduce the problem will help us alot.
     validations:
       required: true
+  - type: textarea
+    id: insights
+    attributes:
+      label: Any insights?
+      description: Do you have an idea why this problem is happening?
+      placeholder: Tell us your thoughts.
+    validations:
+      required: false
   - type: dropdown
     id: version
     attributes:
       label: Version
-      description: What version of the software are you running?
+      description: What version of the software were you using?
       options:
         - 1.0.0-beta.1
       default: 0
@@ -47,7 +58,8 @@ body:
   - type: dropdown
     id: os
     attributes:
-      label: What operating system are you seeing the problem on?
+      label: OS
+      description: What operating system were you using when this problem occured?
       multiple: false
       options:
         - Windows
