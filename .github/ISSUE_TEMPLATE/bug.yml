@@ -3,20 +3,35 @@ description: File a bug report.
 title: "[Bug]: "
 labels: ["bug"]
 body:
+  - type: dropdown
+    id: severity
+    attributes:
+      label: Severity
+      description: How severe does this affect the usability of the software?
+      multiple: false
+      options:
+        - MINOR
+        - MAJOR
   - type: textarea
     id: result
     attributes:
-      label: Result
-      description: What happened?
+      label: What happened?
       placeholder: Tell us what happened!
     validations:
       required: true
   - type: textarea
     id: expected
     attributes:
-      label: Expected
-      description: What did you expect to happen?
-      placeholder: Tell us what should have happened!
+      label: What should have happened?
+      placeholder: Tell us what did you expect to happen?
+    validations:
+      required: true
+  - type: textarea
+    id: reproduce
+    attributes:
+      label: How to reproduce the problem?
+      description: Give us a step-by-step instruction how to reproduce the problem.
+      placeholder: Telling us how to reproduce the problem will help us alot.
     validations:
       required: true
   - type: dropdown

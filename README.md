@@ -24,14 +24,15 @@ Create projects quickly and easily with this command-line utility.
             <li><a href="#subcommands">Subcommands</a></li>
             <li><a href="#adding-a-template">Adding a template</a></li>
             <li><a href="#listing-templates">Listing templates</a></li>
-            <li>
-               <a href="#modifying-a-template">Modifying a template</a>
-               <ul>
-                  <li><a href="#template-configuration-functions">Template Configuration Functions</a></li>
-               </ul>
-            </li>
+            <li><a href="#modifying-a-template">Modifying a template</a></li>
             <li><a href="#checking-templates">Checking templates</a></li>
             <li><a href="#initializing-a-template">Initializing a template</a></li>
+            <li>
+              <a href="#configuration">Configuration</a>
+              <ul>
+                <li><a href="#functions">Functions</a></li>
+              </ul>
+            </li>
          </ul>
       </li>
    </ol>
@@ -157,7 +158,7 @@ In the `.ctemplate` folder, there will be a few files inside it. There will be a
   <img src="docs/resources/images/variables_json.png" width="700" />
 </p>
 
-The `variables.json` will have these keys and values. With these settings, ctemplate will look for variables with the prefix and suffix of `!` (E.g: `!project!`) in the listed paths in `searchPaths`. To add a variable, place in a valid variable inside (in this case `project`) inside a file or filename then surround it with the prefix and suffix.
+The `variables.json` will have these keys and values. With these settings, ctemplate will look for variables with the prefix and suffix of `!` (E.g: `!project!`) in the listed paths in `searchPaths`. To add a variable, place in a valid variable (in this case `project`) inside a file or filename then surround it with the prefix and suffix.
 
 <br>
 
@@ -167,23 +168,7 @@ The `variables.json` will have these keys and values. With these settings, ctemp
 
 I have already configured the `python` template to these settings by changing the `project` directory name to `!project!` or changing the `test/test_main.py` name to `test/test_!project!.py`. A text has also been changed inside the used to be `main.py`. All of these variables will be replaced upon template initialization.
 
-
-#### Template Configuration Functions
-1. `info.json`
-   - `author`: Author of the template.
-   - `description`: Description about the template.
-2. `variables.json`
-   - `variables`: These are the variables to look for. They can also be supplied with a description.
-   - `variablePrefix`: The prefix to use for variables.
-   - `variableSuffix`: The suffix to use for variables.
-   - `searchPaths`: Paths where ctemplate will look for variables.
-     - `filenames`: Paths where ctemplate will look for variables in filenames such as `!project!` or `"test/test_!project!.py"`.
-     - `files`: Paths where ctemplate will look for variables inside files.
-
-##### Notes
-- All paths should be relative to the template project's root directory.
-- Wildcards such as `*` are supported when adding paths.
-- Variables need both a prefix and a suffix so `variablePrefix` and `variableSuffix` cannot be empty.
+See more of what each key in the configuration does [here](#configuration).
 
 ### Checking templates
 This is achieved with the `info` subcommand.
@@ -237,3 +222,21 @@ Use the `list` subcommand to see the templates you added. Then use the `info` su
 ctemplate init "template_name" -v var="your value"
 ```
 Replace `template_name` with the name of your template then replace `var` with a valid variable. Every instance of that variable in the paths that has been listed in the `variables.json` file will be replaced with the value. If your template has multiple variables, `-v,--variable` is capable of multiple inputs (E.g: `-v var1="val1" var2="val2" var3="val3"`).
+
+### Configuration
+#### Functions
+1. `info.json`
+   - `author`: Author of the template.
+   - `description`: Description about the template.
+2. `variables.json`
+   - `variables`: These are the variables to look for. They can also be supplied with a description.
+   - `variablePrefix`: The prefix to use for variables.
+   - `variableSuffix`: The suffix to use for variables.
+   - `searchPaths`: Paths where ctemplate will look for variables.
+     - `filenames`: Paths where ctemplate will look for variables in filenames such as `!project!` or `"test/test_!project!.py"`.
+     - `files`: Paths where ctemplate will look for variables inside files.
+
+#### Notes
+- All paths should be relative to the template project's root directory.
+- Wildcards such as `*` are supported when adding paths.
+- Variables need both a prefix and a suffix so `variablePrefix` and `variableSuffix` cannot be empty.
