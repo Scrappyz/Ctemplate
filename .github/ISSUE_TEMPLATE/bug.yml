@@ -58,7 +58,8 @@ body:
   - type: dropdown
     id: os
     attributes:
-      label: What operating system are you seeing the problem on?
+      label: OS
+      description: What operating system were you using when this problem occured?
       multiple: false
       options:
         - Windows
