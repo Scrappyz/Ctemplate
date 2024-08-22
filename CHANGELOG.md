@@ -9,6 +9,14 @@ All notable changes to `Project-Template` will be documented here.
 - Multi-line values for variables.
 - Proper indentation for multi-line variable values.
 
+## [1.0.0-beta.2]
+
+### To be added
+- Cache for search paths.
+
+### To be fixed
+- Fixed pattern matching
+
 ## [1.0.0-beta.1]
 
 ### Added
