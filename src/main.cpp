@@ -30,9 +30,9 @@ int main(int argc, char** argv)
 
     // if config file exists, read from it. Else, use default settings then create the config file.
     if(path::exists(config_file_path)) {
-        app_config = readJsonFromFile(config_file_path);
+        app_config = helper::readJsonFromFile(config_file_path);
     } else {
-        writeJsonToFile(app_config, config_file_path, 4);
+        helper::writeJsonToFile(app_config, config_file_path, 4);
     }
 
     // Directory where templates are stored
@@ -106,10 +106,10 @@ int main(int argc, char** argv)
     if(*init) { // "init" subcommand
         std::string init_to = path::joinPath(path::currentPath(), init_path);
         std::string template_path_to_init = path::joinPath(template_dir, init_template_name);
-        std::set<std::string> paths = matchPaths(getPaths(template_path_to_init, template_path_to_init),
-                                       arrayToSet(init_includes), arrayToSet(init_excludes));
+        std::set<std::string> paths = helper::matchPaths(helper::getPaths(template_path_to_init, template_path_to_init),
+                                       helper::arrayToSet(init_includes), helper::arrayToSet(init_excludes));
         initTemplate(template_dir, init_template_name, 
-                    paths, container_name, init_to, mapKeyValues(init_keyval), init_force_overwrite);
+                    paths, container_name, init_to, helper::mapKeyValues(init_keyval), init_force_overwrite);
     } else if(*add) { // "add" subcommand
         std::string path_to_add = path::joinPath(path::currentPath(), add_path);
         addTemplate(template_dir, path_to_add, add_template_name, add_template_author, add_template_desc, container_name);
@@ -121,12 +121,12 @@ int main(int argc, char** argv)
         printTemplateInfo(template_dir, info_template, container_name);
     } else if(*config) { // "config" subcommand
         if(*set) { // "set" subcommand
-            setConfigValue(app_config, config_set_values);
-            writeJsonToFile(app_config, config_file_path, 4);
+            helper::setConfigValue(app_config, config_set_values);
+            helper::writeJsonToFile(app_config, config_file_path, 4);
             return 0;
         }
         std::cout << "Configuration:" << std::endl;
-        showConfig(app_config);
+        helper::showConfig(app_config);
     } else {
         CLI::CallForHelp();
     }
