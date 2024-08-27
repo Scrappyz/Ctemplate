@@ -14,7 +14,7 @@ All notable changes to `Project-Template` will be documented here.
 ### To be added
 - Cache for search paths.
 
-### To be fixed
+### Fixed
 - Fixed pattern matching
 
 ## [1.0.0-beta.1]
