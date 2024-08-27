@@ -352,35 +352,11 @@ namespace helper {
         return paths;
     }
 
-    std::set<std::string> matchPaths(const std::set<std::string>& included_paths, const std::set<std::string>& include, const std::set<std::string>& exclude)
+    std::set<std::string> matchPaths(const std::set<std::string>& included_paths, const std::set<std::string>& pattern_includes,
+                                     const std::set<std::string>& pattern_excludes, const std::unordered_set<std::string>& non_pattern_includes,
+                                     const std::unordered_set<std::string>& non_pattern_excludes)
     {
         std::set<std::string> matched;
-        std::string pattern_char = "*?";
-
-        std::unordered_set<std::string> non_pattern_includes;
-        std::set<std::string> pattern_includes;
-        std::unordered_set<std::string> non_pattern_excludes;
-        std::set<std::string> pattern_excludes;
-
-        // Separate patterns from non-patterns
-        for(const auto& pattern : include) {
-            std::string normalized_pattern = path::normalizePath(pattern);
-            if(pattern.find_first_of(pattern_char) != std::string::npos) {
-                pattern_includes.insert(normalized_pattern);
-            } else {
-                non_pattern_includes.insert(normalized_pattern);
-            }
-        }
-
-        for(const auto& pattern : exclude) {
-            std::string normalized_pattern = path::normalizePath(pattern);
-            if(pattern.find_first_of(pattern_char) != std::string::npos) {
-                pattern_excludes.insert(normalized_pattern);
-            } else {
-                non_pattern_excludes.insert(normalized_pattern);
-            }
-        }
-
         for(const auto& str : included_paths) {
             bool included = false;
 
@@ -420,5 +396,65 @@ namespace helper {
         }
 
         return matched;
+    }
+
+    std::set<std::string> matchPaths(const std::set<std::string>& included_paths, const std::set<std::string>& include, const std::set<std::string>& exclude)
+    {
+        std::string pattern_char = "*?";
+
+        std::unordered_set<std::string> non_pattern_includes;
+        std::set<std::string> pattern_includes;
+        std::unordered_set<std::string> non_pattern_excludes;
+        std::set<std::string> pattern_excludes;
+
+        // Separate patterns from non-patterns
+        for(const auto& pattern : include) {
+            std::string normalized_pattern = path::normalizePath(pattern);
+            if(pattern.find_first_of(pattern_char) != std::string::npos) {
+                pattern_includes.insert(normalized_pattern);
+            } else {
+                non_pattern_includes.insert(normalized_pattern);
+            }
+        }
+
+        for(const auto& pattern : exclude) {
+            std::string normalized_pattern = path::normalizePath(pattern);
+            if(pattern.find_first_of(pattern_char) != std::string::npos) {
+                pattern_excludes.insert(normalized_pattern);
+            } else {
+                non_pattern_excludes.insert(normalized_pattern);
+            }
+        }
+
+        return matchPaths(included_paths, pattern_includes, pattern_excludes, non_pattern_includes, non_pattern_excludes);
+    }
+
+    void makeCacheForSearchPaths(const std::string& cache_path, const nlohmann::json& search_paths, const std::set<std::string>& included_files,
+                                 const std::set<std::string>& included_filenames)
+    {
+        if(!path::exists(cache_path)) {
+            path::createDirectory(cache_path);
+        }
+
+        std::string search_path_cache = path::joinPath(cache_path, "search_paths.json");
+        std::string included_paths_cache = path::joinPath(cache_path, "included_search_paths.json");
+
+        writeJsonToFile(search_paths, search_path_cache, 4);
+        nlohmann::json includes = json::parse(R"(
+            {
+                "files": [],
+                "filenames": []
+            }
+        )");
+
+        for(const auto& i : included_files) {
+            includes.at("files").push_back(i);
+        }
+
+        for(const auto& i : included_filenames) {
+            includes.at("filenames").push_back(i);
+        }
+
+        writeJsonToFile(includes, included_paths_cache, 4);
     }
 }

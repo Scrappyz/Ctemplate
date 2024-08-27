@@ -74,5 +74,10 @@ namespace helper {
                                 const std::string& prefix, const std::string& suffix);
 
     std::set<std::string> getPaths(const std::string& path, const std::string& relative_to = "");
+    std::set<std::string> matchPaths(const std::set<std::string>& included_paths, const std::set<std::string>& pattern_includes,
+                                     const std::set<std::string>& pattern_excludes, const std::unordered_set<std::string>& non_pattern_includes,
+                                     const std::unordered_set<std::string>& non_pattern_excludes);
     std::set<std::string> matchPaths(const std::set<std::string>& paths, const std::set<std::string>& include, const std::set<std::string>& exclude);
+    void makeCacheForSearchPaths(const std::string& container_path, const nlohmann::json& search_paths, const std::set<std::string>& included_files,
+                                 const std::set<std::string>& included_filenames);
 }
