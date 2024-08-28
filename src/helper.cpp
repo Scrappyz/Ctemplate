@@ -352,6 +352,7 @@ namespace helper {
         return paths;
     }
 
+    // <patterns, non_patterns>
     std::pair<std::set<std::string>, std::unordered_set<std::string>> splitPatterns(const std::set<std::string>& patterns, const std::string& pattern_chars)
     {
         std::pair<std::set<std::string>, std::unordered_set<std::string>> result;
@@ -382,7 +383,7 @@ namespace helper {
                 included = true;
             } else {
                 // Check pattern includes
-                for (const auto& pattern : pattern_includes) {
+                for(const auto& pattern : pattern_includes) {
                     if(fmatch::match(str, pattern)) {
                         included = true;
                         break;
@@ -415,6 +416,12 @@ namespace helper {
         return matched;
     }
 
+    std::set<std::string> matchPaths(const std::set<std::string>& included_paths, const std::pair<std::set<std::string>, std::unordered_set<std::string>>& pattern_includes,
+                                     const std::pair<std::set<std::string>, std::unordered_set<std::string>>& pattern_excludes)
+    {
+        return matchPaths(included_paths, pattern_includes.first, pattern_excludes.first, pattern_includes.second, pattern_excludes.second);
+    }
+
     std::set<std::string> matchPaths(const std::set<std::string>& included_paths, const std::set<std::string>& include, const std::set<std::string>& exclude)
     {
         std::string pattern_char = "*?";
@@ -422,7 +429,7 @@ namespace helper {
         std::pair<std::set<std::string>, std::unordered_set<std::string>> pattern_includes = splitPatterns(include, pattern_char);
         std::pair<std::set<std::string>, std::unordered_set<std::string>> pattern_excludes = splitPatterns(exclude, pattern_char);
 
-        return matchPaths(included_paths, pattern_includes.first, pattern_excludes.first, pattern_includes.second, pattern_excludes.second);
+        return matchPaths(included_paths, pattern_includes, pattern_excludes);
     }
 
     void makeCacheForSearchPaths(const std::string& cache_path, const nlohmann::json& search_paths, const std::set<std::string>& included_files,
@@ -436,6 +443,7 @@ namespace helper {
         std::string included_paths_cache = path::joinPath(cache_path, "included_search_paths.json");
 
         writeJsonToFile(search_paths, search_path_cache, 4);
+
         nlohmann::json includes = json::parse(R"(
             {
                 "files": [],

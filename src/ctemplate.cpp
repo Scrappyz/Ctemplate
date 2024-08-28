@@ -48,10 +48,21 @@ void initTemplate(const std::string& template_to_init, const std::set<std::strin
     std::string container_path = path::joinPath(template_to_init, template_files_container_name);
     std::string cache_path = path::joinPath(container_path, "cache");
 
-    std::set<std::string> includes_files = helper::jsonListToSet(vars.at("searchPaths").at("files").at("include"));
-    std::set<std::string> excludes_files = helper::jsonListToSet(vars.at("searchPaths").at("files").at("exclude"));
-    std::set<std::string> includes_filenames = helper::jsonListToSet(vars.at("searchPaths").at("filenames").at("include"));
-    std::set<std::string> excludes_filenames = helper::jsonListToSet(vars.at("searchPaths").at("filenames").at("exclude"));
+    std::pair<std::set<std::string>, std::unordered_set<std::string>> files_include = helper::splitPatterns(
+        helper::jsonListToSet(vars.at("searchPaths").at("files").at("include")), "*?"
+    );
+
+    std::pair<std::set<std::string>, std::unordered_set<std::string>> files_exclude = helper::splitPatterns(
+        helper::jsonListToSet(vars.at("searchPaths").at("files").at("exclude")), "*?"
+    );
+
+    std::pair<std::set<std::string>, std::unordered_set<std::string>> filenames_include = helper::splitPatterns(
+        helper::jsonListToSet(vars.at("searchPaths").at("filenames").at("include")), "*?"
+    );
+
+    std::pair<std::set<std::string>, std::unordered_set<std::string>> filenames_exclude = helper::splitPatterns(
+        helper::jsonListToSet(vars.at("searchPaths").at("filenames").at("exclude")), "*?"
+    );
 
     std::string var_prefix = vars.at("variablePrefix");
     std::string var_suffix = vars.at("variableSuffix");
@@ -60,23 +71,40 @@ void initTemplate(const std::string& template_to_init, const std::set<std::strin
     std::set<std::string> included_filenames;
 
     bool cache_exist = path::exists(cache_path);
-    if(cache_exist) {
+    int max_patterns = std::max({files_include.first.size(), files_exclude.first.size(), filenames_include.first.size(), filenames_exclude.first.size()});
+    if(cache_exist && max_patterns > 0) {
         json search_paths_cache = helper::readJsonFromFile(path::joinPath(cache_path, "search_paths.json"));
         
-        std::set<std::string> includes_files_cache = helper::jsonListToSet(search_paths_cache.at("files").at("include"));
-        std::set<std::string> excludes_files_cache = helper::jsonListToSet(search_paths_cache.at("files").at("exclude"));
-        std::set<std::string> includes_filenames_cache = helper::jsonListToSet(search_paths_cache.at("filenames").at("include"));
-        std::set<std::string> excludes_filenames_cache = helper::jsonListToSet(search_paths_cache.at("filenames").at("exclude"));
+        std::pair<std::set<std::string>, std::unordered_set<std::string>> files_include_cache = helper::splitPatterns(
+            helper::jsonListToSet(search_paths_cache.at("files").at("include")), "*?"
+        );
 
-        if(includes_files == includes_files_cache && excludes_files == excludes_files_cache &&
-           includes_filenames == includes_filenames_cache && excludes_filenames == excludes_filenames_cache) {
-            json included_paths_cache = helper::readJsonFromFile(path::joinPath(cache_path, "included_search_paths.json"));
-            included_files = helper::jsonListToSet(included_paths_cache.at("files"));
-            included_filenames = helper::jsonListToSet(included_paths_cache.at("filenames"));
+        std::pair<std::set<std::string>, std::unordered_set<std::string>> files_exclude_cache = helper::splitPatterns(
+            helper::jsonListToSet(search_paths_cache.at("files").at("exclude")), "*?"
+        );
+
+        std::pair<std::set<std::string>, std::unordered_set<std::string>> filenames_include_cache = helper::splitPatterns(
+            helper::jsonListToSet(search_paths_cache.at("filenames").at("include")), "*?"
+        );
+
+        std::pair<std::set<std::string>, std::unordered_set<std::string>> filenames_exclude_cache = helper::splitPatterns(
+            helper::jsonListToSet(search_paths_cache.at("filenames").at("exclude")), "*?"
+        );
+
+        if(files_include == files_include_cache && files_exclude == files_exclude_cache &&
+           filenames_include == filenames_include_cache && filenames_exclude == filenames_exclude_cache) {
+            
+            json paths = helper::readJsonFromFile(path::joinPath(cache_path, "included_search_paths.json"));
+            included_files = helper::jsonListToSet(paths.at("files"));
+            included_filenames = helper::jsonListToSet(paths.at("filenames"));
+        } else {
+            included_files = helper::matchPaths(paths, files_include_cache, files_exclude_cache);
+            included_filenames = helper::matchPaths(paths, filenames_include_cache, filenames_exclude_cache);
         }
+        
     } else {
-        included_files = helper::matchPaths(paths, includes_files, excludes_files);
-        included_filenames = helper::matchPaths(paths, includes_filenames, excludes_filenames);
+        included_files = helper::matchPaths(paths, files_include, files_exclude);
+        included_filenames = helper::matchPaths(paths, filenames_include, filenames_exclude);
     }
 
     helper::replaceVariablesInAllFiles(path_to_init_template_to, included_files, keyval, var_prefix, var_suffix);
