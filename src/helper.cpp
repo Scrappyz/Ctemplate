@@ -54,6 +54,12 @@ namespace helper {
         }
     }
 
+    /*
+        Reads a text file into a string.
+
+        Parameters:
+        `file_path`: Path to the text file.
+    */
     std::string readTextFromFile(const std::string& file_path)
     {
         std::ifstream file(file_path);
@@ -64,6 +70,12 @@ namespace helper {
         return ss.str();
     }
 
+    /*
+        Reads the content of a json file into a `json` object.
+
+        Parameter:
+        `file`: Path to the json file.
+    */
     json readJsonFromFile(const std::string& file)
     {
         json j;
@@ -74,6 +86,13 @@ namespace helper {
         return j;
     }
 
+    /*
+        Write a string to a text file.
+
+        Parameters:
+        `str`: String to write.
+        `file_path`: Path to the file to write to.
+    */
     void writeTextToFile(const std::string& str, const std::string& file_path)
     {
         std::ofstream o(file_path);
@@ -81,6 +100,14 @@ namespace helper {
         o.close();
     }
 
+    /*
+        Writes a `json` object to a file.
+
+        Parameter:
+        `j`: `json` object to write.
+        `file`: Path to the file to write to.
+        `indent`: Number of indentions.
+    */
     void writeJsonToFile(const json& j, const std::string& file, int indent)
     {
         std::ofstream o(file);
@@ -88,6 +115,14 @@ namespace helper {
         o.close();
     }
 
+    /*
+        Writes a `json` object to a file.
+
+        Parameter:
+        `j`: `json` object to write.
+        `file`: Path to the file to write to.
+        `indent`: Number of indentions.
+    */
     void writeJsonToFile(const nlohmann::ordered_json& j, const std::string& file, int indent)
     {
         std::ofstream o(file);
@@ -160,6 +195,7 @@ namespace helper {
         return s;
     }
 
+    // Split a string into a vector with the given separators
     std::vector<std::string> split(const std::string& str, const std::string& separators)
     {
         std::vector<std::string> v;
@@ -191,6 +227,7 @@ namespace helper {
         return v;
     }
 
+    // Make {"var1=val1", "var2=val2"} to {{"var1", "val1"}, {"var2", "val2"}}
     std::unordered_map<std::string, std::string> mapKeyValues(const std::vector<std::string>& keyvals)
     {
         std::unordered_map<std::string, std::string> m;
@@ -207,6 +244,14 @@ namespace helper {
         return m;
     }
 
+    /*
+        Check if all variables in `keyvals` are in `j`.
+
+        Parameters:
+        `j`: List of valid variables.
+        `keyvals`: Variables and their values.
+        `error_message`: Set to `true` to output error message.
+    */
     bool equalVariables(const nlohmann::json& j, const std::unordered_map<std::string, std::string>& keyvals, bool error_message)
     {
         std::unordered_set<std::string> vars = jsonListToUnorderedSet(j);
@@ -235,6 +280,15 @@ namespace helper {
         return false;
     }
 
+    /*
+        Replaces all variables in a given string.
+
+        Parameters:
+        `str`: Given string.
+        `keyval`: Variables and their values.
+        `prefix`: Variable prefix.
+        `suffix`: Variable suffix.
+    */
     std::string replaceVariables(const std::string& str, 
                                 const std::unordered_map<std::string, std::string>& keyval, 
                                 const std::string& prefix, const std::string& suffix)
@@ -294,6 +348,15 @@ namespace helper {
         return new_str;
     }
 
+    /*
+        Replaces all variables in the given path.
+
+        Parameters:
+        `file_path`: Path to the file.
+        `keyval`: Variables and their values.
+        `prefix`: Variable prefix.
+        `suffix`: Variable suffix.
+    */
     void replaceVariablesInFile(const std::string& file_path, 
                                 const std::unordered_map<std::string, std::string>& keyval, 
                                 const std::string& prefix, const std::string& suffix)
@@ -302,6 +365,16 @@ namespace helper {
         writeTextToFile(str, file_path);
     }
 
+    /*
+        Replaces all variables in the given paths.
+
+        Parameters:
+        `root_path`: Root path of the project directory.
+        `paths`: Paths to replace the variables.
+        `keyval`: Variables and their values.
+        `prefix`: Variable prefix.
+        `suffix`: Variable suffix.
+    */
     void replaceVariablesInAllFiles(const std::string& root_path, const std::set<std::string>& paths,
                                 const std::unordered_map<std::string, std::string>& keyval, 
                                 const std::string& prefix, const std::string& suffix)
@@ -317,6 +390,16 @@ namespace helper {
         }
     }
 
+    /*
+        Replaces all variables in the filenames of the given paths.
+
+        Parameters:
+        `root_path`: Root path of the project directory.
+        `paths`: Paths to replace the filenames.
+        `keyval`: Variables and their values.
+        `prefix`: Variable prefix.
+        `suffix`: Variable suffix.
+    */
     void replaceVariablesInAllFilenames(const std::string& root_path, const std::set<std::string>& paths,
                                 const std::unordered_map<std::string, std::string>& keyval,
                                 const std::string& prefix, const std::string& suffix)
@@ -341,6 +424,13 @@ namespace helper {
         }
     }
 
+    /*
+        Get all the paths in a given path.
+
+        Parameters:
+        `path`: Path to get all the paths.
+        `relative_to`: Get the paths to relative to this path.
+    */
     std::set<std::string> getPaths(const std::string& path, const std::string& relative_to)
     {
         std::set<std::string> paths;
@@ -352,7 +442,13 @@ namespace helper {
         return paths;
     }
 
-    // <patterns, non_patterns>
+    /*
+        Split pattern strings and non-pattern strings into a pair of <patterns, non-patterns> for more efficient matching in `matchPaths()`.
+
+        Parameters:
+        `patterns`: Pattern strings to split.
+        `pattern_chars`: Pattern characters to use to detect if a string is a pattern string.
+    */
     std::pair<std::set<std::string>, std::unordered_set<std::string>> splitPatterns(const std::set<std::string>& patterns, const std::string& pattern_chars)
     {
         std::pair<std::set<std::string>, std::unordered_set<std::string>> result;
@@ -370,6 +466,16 @@ namespace helper {
         return result;
     }
 
+    /*
+        Match a set of include patterns and exclude patterns with a given set of paths.
+
+        Parameters:
+        `included_paths`: Set of paths to match to.
+        `pattern_includes`: Set of include pattern strings.
+        `pattern_excludes`: Set of exclude pattern strings.
+        `non_pattern_includes`: Set of non-pattern string includes.
+        `non_pattern_excludes`: Set of non-pattern string excludes.
+    */
     std::set<std::string> matchPaths(const std::set<std::string>& included_paths, const std::set<std::string>& pattern_includes,
                                      const std::set<std::string>& pattern_excludes, const std::unordered_set<std::string>& non_pattern_includes,
                                      const std::unordered_set<std::string>& non_pattern_excludes)
@@ -422,6 +528,14 @@ namespace helper {
         return matchPaths(included_paths, pattern_includes.first, pattern_excludes.first, pattern_includes.second, pattern_excludes.second);
     }
 
+    /*
+        Match a set of include patterns and exclude patterns with a given set of paths.
+
+        Parameters:
+        `included_paths`: Set of paths to match to.
+        `include`: Set of include patterns.
+        `exclude`: Set of exclude patterns.
+    */
     std::set<std::string> matchPaths(const std::set<std::string>& included_paths, const std::set<std::string>& include, const std::set<std::string>& exclude)
     {
         std::string pattern_char = "*?";
@@ -432,6 +546,15 @@ namespace helper {
         return matchPaths(included_paths, pattern_includes, pattern_excludes);
     }
 
+    /*
+        Create a cache for search paths so initialization is faster next time around.
+
+        Parameters:
+        `cache_path`: Path to the cache folder.
+        `search_paths`: `json` object of the search paths.
+        `included_files`: Included file paths during initialization.
+        `included_filenames`: Included filename paths during initialization.
+    */
     void makeCacheForSearchPaths(const std::string& cache_path, const nlohmann::json& search_paths, const std::set<std::string>& included_files,
                                  const std::set<std::string>& included_filenames)
     {

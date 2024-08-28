@@ -34,12 +34,12 @@ void initTemplate(const std::string& template_to_init, const std::set<std::strin
         return;
     }
 
-    // Directory separator to only copy the content
     path::copy(template_to_init, paths, path_to_init_template_to, path::CopyOption::OverwriteAll);
 
     // Remove ctemplate container from the initialized template
     path::remove(path::joinPath(path_to_init_template_to, template_files_container_name));
 
+    // End function early if there are no variables to initialize
     if(keyval.empty()) {
         std::cout << "[SUCCESS] Template \"" << path::filename(template_to_init) << "\" has been initialized." << std::endl;
         return;
@@ -47,21 +47,23 @@ void initTemplate(const std::string& template_to_init, const std::set<std::strin
 
     std::string container_path = path::joinPath(template_to_init, template_files_container_name);
     std::string cache_path = path::joinPath(container_path, "cache");
+    std::string pattern_chars = "*?";
 
+    // Split patterns and non-patterns
     std::pair<std::set<std::string>, std::unordered_set<std::string>> files_include = helper::splitPatterns(
-        helper::jsonListToSet(vars.at("searchPaths").at("files").at("include")), "*?"
+        helper::jsonListToSet(vars.at("searchPaths").at("files").at("include")), pattern_chars
     );
 
     std::pair<std::set<std::string>, std::unordered_set<std::string>> files_exclude = helper::splitPatterns(
-        helper::jsonListToSet(vars.at("searchPaths").at("files").at("exclude")), "*?"
+        helper::jsonListToSet(vars.at("searchPaths").at("files").at("exclude")), pattern_chars
     );
 
     std::pair<std::set<std::string>, std::unordered_set<std::string>> filenames_include = helper::splitPatterns(
-        helper::jsonListToSet(vars.at("searchPaths").at("filenames").at("include")), "*?"
+        helper::jsonListToSet(vars.at("searchPaths").at("filenames").at("include")), pattern_chars
     );
 
     std::pair<std::set<std::string>, std::unordered_set<std::string>> filenames_exclude = helper::splitPatterns(
-        helper::jsonListToSet(vars.at("searchPaths").at("filenames").at("exclude")), "*?"
+        helper::jsonListToSet(vars.at("searchPaths").at("filenames").at("exclude")), pattern_chars
     );
 
     std::string var_prefix = vars.at("variablePrefix");
@@ -70,25 +72,24 @@ void initTemplate(const std::string& template_to_init, const std::set<std::strin
     std::set<std::string> included_files;
     std::set<std::string> included_filenames;
 
-    bool cache_exist = path::exists(cache_path);
-    int max_patterns = std::max({files_include.first.size(), files_exclude.first.size(), filenames_include.first.size(), filenames_exclude.first.size()});
-    if(cache_exist && max_patterns > 0) {
+    bool cache_exist = path::exists(path::joinPath(cache_path, "search_paths.json")) && path::exists(path::joinPath(cache_path, "included_search_paths.json"));
+    if(cache_exist) {
         json search_paths_cache = helper::readJsonFromFile(path::joinPath(cache_path, "search_paths.json"));
         
         std::pair<std::set<std::string>, std::unordered_set<std::string>> files_include_cache = helper::splitPatterns(
-            helper::jsonListToSet(search_paths_cache.at("files").at("include")), "*?"
+            helper::jsonListToSet(search_paths_cache.at("files").at("include")), pattern_chars
         );
 
         std::pair<std::set<std::string>, std::unordered_set<std::string>> files_exclude_cache = helper::splitPatterns(
-            helper::jsonListToSet(search_paths_cache.at("files").at("exclude")), "*?"
+            helper::jsonListToSet(search_paths_cache.at("files").at("exclude")), pattern_chars
         );
 
         std::pair<std::set<std::string>, std::unordered_set<std::string>> filenames_include_cache = helper::splitPatterns(
-            helper::jsonListToSet(search_paths_cache.at("filenames").at("include")), "*?"
+            helper::jsonListToSet(search_paths_cache.at("filenames").at("include")), pattern_chars
         );
 
         std::pair<std::set<std::string>, std::unordered_set<std::string>> filenames_exclude_cache = helper::splitPatterns(
-            helper::jsonListToSet(search_paths_cache.at("filenames").at("exclude")), "*?"
+            helper::jsonListToSet(search_paths_cache.at("filenames").at("exclude")), pattern_chars
         );
 
         if(files_include == files_include_cache && files_exclude == files_exclude_cache &&
@@ -111,6 +112,7 @@ void initTemplate(const std::string& template_to_init, const std::set<std::strin
 
     helper::replaceVariablesInAllFilenames(path_to_init_template_to, included_filenames, keyval, var_prefix, var_suffix);
 
+    // Make cache for for quicker initialization next time
     helper::makeCacheForSearchPaths(cache_path, vars.at("searchPaths"), included_files, included_filenames);
 
     std::cout << "[SUCCESS] Template \"" << path::filename(template_to_init) << "\" has been initialized." << std::endl;
