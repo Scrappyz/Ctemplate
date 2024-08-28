@@ -1,0 +1,15 @@
+{
+    "filenames": {
+        "exclude": [],
+        "include": [
+            "!project!",
+            "!project!/**"
+        ]
+    },
+    "files": {
+        "exclude": [],
+        "include": [
+            "!project!/**"
+        ]
+    }
+}

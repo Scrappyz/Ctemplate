@@ -45,8 +45,8 @@ TEST(initTemplate, working_on_empty_dir)
 
     ASSERT_TRUE(!path::exists(path::joinPath(t_path, ".ctemplate")));
 
-    std::string actual_file_content = readTextFromFile(path::joinPath(t_path, "hello_world/hello_world.py"));
-    std::string expected_file_content = readTextFromFile(path::joinPath(tmp_path, "test.py"));
+    std::string actual_file_content = helper::readTextFromFile(path::joinPath(t_path, "hello_world/hello_world.py"));
+    std::string expected_file_content = helper::readTextFromFile(path::joinPath(tmp_path, "test.py"));
 
     EXPECT_EQ(actual_file_content, expected_file_content);
 
@@ -73,8 +73,8 @@ TEST(initTemplate, overwrite_all)
 
     ASSERT_TRUE(!path::exists(path::joinPath(t_path, ".ctemplate")));
 
-    std::string actual_file_content = readTextFromFile(path::joinPath(t_path, "hello_world/hello_world.py"));
-    std::string expected_file_content = readTextFromFile(path::joinPath(tmp_path, "test.py"));
+    std::string actual_file_content = helper::readTextFromFile(path::joinPath(t_path, "hello_world/hello_world.py"));
+    std::string expected_file_content = helper::readTextFromFile(path::joinPath(tmp_path, "test.py"));
 
     EXPECT_EQ(actual_file_content, expected_file_content);
 
@@ -105,7 +105,7 @@ TEST(initTemplate, custom_includes)
     std::string t_path = path::joinPath(test_path, "testing/init_template/test");
     std::string tmp_path = path::joinPath(test_path, "testing/init_template/temp");
     std::unordered_map<std::string, std::string> keyval = {{"project", "hello_world"}, {"name", "User"}};
-    std::set<std::string> paths = matchPaths(getPaths(tp, tp), {"!project!", "!project!/**"}, {});
+    std::set<std::string> paths = helper::matchPaths(helper::getPaths(tp, tp), {"!project!", "!project!/**"}, {});
      
     initTemplate(tp, paths, ".ctemplate", t_path, keyval);
 
@@ -115,8 +115,8 @@ TEST(initTemplate, custom_includes)
     ASSERT_TRUE(!path::exists(path::joinPath(t_path, ".ctemplate")));
     ASSERT_TRUE(!path::exists(path::joinPath(t_path, "test")));
 
-    std::string actual_file_content = readTextFromFile(path::joinPath(t_path, "hello_world/hello_world.py"));
-    std::string expected_file_content = readTextFromFile(path::joinPath(tmp_path, "test.py"));
+    std::string actual_file_content = helper::readTextFromFile(path::joinPath(t_path, "hello_world/hello_world.py"));
+    std::string expected_file_content = helper::readTextFromFile(path::joinPath(tmp_path, "test.py"));
 
     EXPECT_EQ(actual_file_content, expected_file_content);
 
@@ -143,37 +143,13 @@ TEST(initTemplate, strange_case)
 
     ASSERT_TRUE(!path::exists(path::joinPath(t_path, ".ctemplate")));
 
-    std::string actual_file_content = readTextFromFile(path::joinPath(t_path, "project_world/project_world.py"));
-    std::string expected_file_content = readTextFromFile(path::joinPath(tmp_path, "test.py"));
+    std::string actual_file_content = helper::readTextFromFile(path::joinPath(t_path, "project_world/project_world.py"));
+    std::string expected_file_content = helper::readTextFromFile(path::joinPath(tmp_path, "test.py"));
 
     EXPECT_EQ(actual_file_content, expected_file_content);
 
     path::remove(t_path + path::directorySeparator());
 }
-
-// TEST(initTemplate, custom_includes_no_parent)
-// {
-//     std::string tp = path::joinPath(template_path, "py");
-//     std::string t_path = path::joinPath(test_path, "testing/init_template/test");
-//     std::string tmp_path = path::joinPath(test_path, "testing/init_template/temp");
-//     std::unordered_map<std::string, std::string> keyval = {{"project", "hello_world"}, {"name", "User"}};
-//     std::set<std::string> paths = matchPaths(getPaths(tp, tp), {"!project!/**"}, {});
-     
-//     initTemplate(tp, paths, ".ctemplate", t_path, keyval);
-
-//     ASSERT_TRUE(path::exists(path::joinPath(t_path, "hello_world")));
-//     ASSERT_TRUE(path::exists(path::joinPath(t_path, "hello_world/hello_world.py")));
-
-//     ASSERT_TRUE(!path::exists(path::joinPath(t_path, ".ctemplate")));
-//     ASSERT_TRUE(!path::exists(path::joinPath(t_path, "test")));
-
-//     std::string actual_file_content = readTextFromFile(path::joinPath(t_path, "hello_world/hello_world.py"));
-//     std::string expected_file_content = readTextFromFile(path::joinPath(tmp_path, "test.py"));
-
-//     EXPECT_EQ(actual_file_content, expected_file_content);
-
-//     path::remove(t_path + path::directorySeparator());
-// }
 
 TEST(addTemplate, adding)
 {
@@ -240,14 +216,14 @@ TEST(removeTemplates, removing)
 
 TEST(split, splitting)
 {
-    std::vector<std::string> s = split("key=value", "=");
+    std::vector<std::string> s = helper::split("key=value", "=");
     EXPECT_EQ(s, std::vector<std::string>({"key", "value"}));
 }
 
 TEST(mapKeyValues, mapping)
 {
     std::vector<std::string> s = {"project=hello", "name=johnny sins", "order=asc", "something"};
-    std::unordered_map<std::string, std::string> m = mapKeyValues(s);
+    std::unordered_map<std::string, std::string> m = helper::mapKeyValues(s);
     std::unordered_map<std::string, std::string> expected_m = {{"project", "hello"}, {"name", "johnny sins"}, {"order", "asc"}};
     EXPECT_EQ(m, expected_m);
 }
@@ -259,7 +235,7 @@ TEST(replaceVariables, replacing)
     std::string suffix = "!";
     std::unordered_map<std::string, std::string> keyvals = {{"name", "John"}, {"age", "12"}};
 
-    std::string actual = replaceVariables(str, keyvals, prefix, suffix);
+    std::string actual = helper::replaceVariables(str, keyvals, prefix, suffix);
     std::string expected = "My name is John and I am 12 years old.";
     EXPECT_EQ(actual, expected);
 }
@@ -271,7 +247,7 @@ TEST(replaceVariables, longer_prefix_and_suffix)
     std::string suffix = "!}";
     std::unordered_map<std::string, std::string> keyvals = {{"name", "John"}, {"age", "12"}};
 
-    std::string actual = replaceVariables(str, keyvals, prefix, suffix);
+    std::string actual = helper::replaceVariables(str, keyvals, prefix, suffix);
     std::string expected = "My name is John and I am 12 years old.";
     EXPECT_EQ(actual, expected);
 }
@@ -283,7 +259,7 @@ TEST(replaceVariables, uneven_prefix_and_suffix)
     std::string suffix = "!}]";
     std::unordered_map<std::string, std::string> keyvals = {{"name", "John"}, {"age", "12"}};
 
-    std::string actual = replaceVariables(str, keyvals, prefix, suffix);
+    std::string actual = helper::replaceVariables(str, keyvals, prefix, suffix);
     std::string expected = "My name is John and I am 12 years old.";
     EXPECT_EQ(actual, expected);
 }
@@ -295,7 +271,7 @@ TEST(replaceVariables, missing_prefix)
     std::string suffix = "!}]";
     std::unordered_map<std::string, std::string> keyvals = {{"name", "John"}, {"age", "12"}};
 
-    std::string actual = replaceVariables(str, keyvals, prefix, suffix);
+    std::string actual = helper::replaceVariables(str, keyvals, prefix, suffix);
     std::string expected = "My name is name!}] and I am age!}] years old.";
     EXPECT_EQ(actual, expected);
 }
@@ -307,7 +283,7 @@ TEST(replaceVariables, missing_suffix)
     std::string suffix = "!}]";
     std::unordered_map<std::string, std::string> keyvals = {{"name", "John"}, {"age", "12"}};
 
-    std::string actual = replaceVariables(str, keyvals, prefix, suffix);
+    std::string actual = helper::replaceVariables(str, keyvals, prefix, suffix);
     std::string expected = "My name is {!name and I am {!age years old.";
     EXPECT_EQ(actual, expected);
 }
@@ -319,7 +295,7 @@ TEST(replaceVariables, missing_variables)
     std::string suffix = "!";
     std::unordered_map<std::string, std::string> keyvals = {{"name", "John"}, {"age", "12"}};
 
-    std::string actual = replaceVariables(str, keyvals, prefix, suffix);
+    std::string actual = helper::replaceVariables(str, keyvals, prefix, suffix);
     std::string expected = "My name is John and";
     EXPECT_EQ(actual, expected);
 }
@@ -331,7 +307,7 @@ TEST(replaceVariables, endlines_in_str)
     std::string suffix = "!}";
     std::unordered_map<std::string, std::string> keyvals = {{"name", "John"}, {"age", "12"}};
 
-    std::string actual = replaceVariables(str, keyvals, prefix, suffix);
+    std::string actual = helper::replaceVariables(str, keyvals, prefix, suffix);
     std::string expected = "My name is John\nand I am\n12 years old.";
     EXPECT_EQ(actual, expected);
 }
@@ -343,7 +319,7 @@ TEST(replaceVariables, endlines_in_var)
     std::string suffix = "!}";
     std::unordered_map<std::string, std::string> keyvals = {{"name", "John\nWick"}, {"age", "12\nteen"}};
 
-    std::string actual = replaceVariables(str, keyvals, prefix, suffix);
+    std::string actual = helper::replaceVariables(str, keyvals, prefix, suffix);
     std::string expected = "My name is John\nWick and I am 12\nteen years old.";
     EXPECT_EQ(actual, expected);
 }
@@ -355,7 +331,7 @@ TEST(replaceVariables, edge_cases)
     std::string suffix = ""; // no suffix
     std::unordered_map<std::string, std::string> keyvals = {{"name", "John"}, {"age", "12"}};
 
-    std::string actual = replaceVariables(str, keyvals, prefix, suffix);
+    std::string actual = helper::replaceVariables(str, keyvals, prefix, suffix);
     std::string expected = "My name is !name! and I am !age! years old.";
     EXPECT_EQ(actual, expected);
 }
@@ -363,7 +339,7 @@ TEST(replaceVariables, edge_cases)
 TEST(matchPaths, work)
 {
     std::string template_p = path::joinPath(template_path, "cpp-test");
-    std::set<std::string> actual = matchPaths(getPaths(template_p, template_p), {"include", "include/**"}, {"include/*1.hpp"});
+    std::set<std::string> actual = helper::matchPaths(helper::getPaths(template_p, template_p), {"include", "include/**"}, {"include/*1.hpp"});
     std::set<std::string> expected = {"include/stuff.hpp", "include"};
     expected = normalizePaths(expected, template_p);
 
@@ -373,7 +349,7 @@ TEST(matchPaths, work)
 TEST(matchPaths, empty_includes_with_excludes)
 {
     std::string template_p = path::joinPath(template_path, "cpp-test");
-    std::set<std::string> actual = matchPaths(getPaths(template_p, template_p), {}, {"src/**", "test/*", "include/stuff.hpp"});
+    std::set<std::string> actual = helper::matchPaths(helper::getPaths(template_p, template_p), {}, {"src/**", "test/*", "include/stuff.hpp"});
     std::set<std::string> expected = {};
     expected = normalizePaths(expected, template_p);
 
@@ -383,7 +359,7 @@ TEST(matchPaths, empty_includes_with_excludes)
 TEST(matchPaths, includes_with_empty_excludes)
 {
     std::string template_p = path::joinPath(template_path, "cpp-test");
-    std::set<std::string> actual = matchPaths(getPaths(template_p, template_p), {"test/**", "include", "src/*"}, {});
+    std::set<std::string> actual = helper::matchPaths(helper::getPaths(template_p, template_p), {"test/**", "include", "src/*"}, {});
     std::set<std::string> expected = {"test/test_path", "test/test_path/test4.cpp", "test/test1.cpp", "test/test2.cpp", "test/test3.cpp",
         "src/main.cpp", "src/temp.cpp", "include"};
     expected = normalizePaths(expected, template_p);
@@ -394,7 +370,7 @@ TEST(matchPaths, includes_with_empty_excludes)
 TEST(matchPaths, includes_and_excludes)
 {
     std::string template_p = path::joinPath(template_path, "cpp-test");
-    std::set<std::string> actual = matchPaths(getPaths(template_p, template_p), {"test/**", "include", "src/*"}, {"test/test*", "src/temp.cpp"});
+    std::set<std::string> actual = helper::matchPaths(helper::getPaths(template_p, template_p), {"test/**", "include", "src/*"}, {"test/test*", "src/temp.cpp"});
     std::set<std::string> expected = {"test/test_path/test4.cpp", "src/main.cpp", "include"};
     expected = normalizePaths(expected, template_p);
 
@@ -404,7 +380,7 @@ TEST(matchPaths, includes_and_excludes)
 TEST(matchPaths, include_all)
 {
     std::string template_p = path::joinPath(template_path, "cpp-test");
-    std::set<std::string> actual = matchPaths(getPaths(template_p, template_p), {"**"}, {});
+    std::set<std::string> actual = helper::matchPaths(helper::getPaths(template_p, template_p), {"**"}, {});
     std::set<std::string> expected = {"include", "include/stuff.hpp", "include/stuff1.hpp", "src", "src/main.cpp", "src/temp.cpp",
      "test", "test/test_path", "test/test_path/test4.cpp", "test/test1.cpp", "test/test2.cpp", "test/test3.cpp", "CMakeLists.txt"};
     expected = normalizePaths(expected, template_p);
@@ -415,7 +391,7 @@ TEST(matchPaths, include_all)
 TEST(matchPaths, include_all_exclude_all)
 {
     std::string template_p = path::joinPath(template_path, "cpp-test");
-    std::set<std::string> actual = matchPaths(getPaths(template_p, template_p), {"**"}, {"**"});
+    std::set<std::string> actual = helper::matchPaths(helper::getPaths(template_p, template_p), {"**"}, {"**"});
     std::set<std::string> expected = {};
     expected = normalizePaths(expected, template_p);
 
@@ -425,7 +401,7 @@ TEST(matchPaths, include_all_exclude_all)
 TEST(matchPaths, include_non_patterns)
 {
     std::string template_p = path::joinPath(template_path, "cpp-test");
-    std::set<std::string> actual = matchPaths(getPaths(template_p, template_p), {"src/main.cpp", "src/temp.cpp", "test"}, {});
+    std::set<std::string> actual = helper::matchPaths(helper::getPaths(template_p, template_p), {"src/main.cpp", "src/temp.cpp", "test"}, {});
     std::set<std::string> expected = {"src/main.cpp", "src/temp.cpp", "test"};
     expected = normalizePaths(expected, template_p);
 
@@ -435,7 +411,7 @@ TEST(matchPaths, include_non_patterns)
 TEST(matchPaths, include_and_exclude_non_patterns)
 {
     std::string template_p = path::joinPath(template_path, "cpp-test");
-    std::set<std::string> actual = matchPaths(getPaths(template_p, template_p), {"src/main.cpp", "src/temp.cpp", "test"}, {"src/main.cpp", "test"});
+    std::set<std::string> actual = helper::matchPaths(helper::getPaths(template_p, template_p), {"src/main.cpp", "src/temp.cpp", "test"}, {"src/main.cpp", "test"});
     std::set<std::string> expected = {"src/temp.cpp"};
     expected = normalizePaths(expected, template_p);
 
@@ -448,7 +424,7 @@ TEST(replaceVariablesInAllFilenames, working)
     std::set<std::string> paths = {"!project!", "!project!/!project!.py"};
     std::unordered_map<std::string, std::string> keyval = {{"project", "pypy"}, {"unused", "var"}};
 
-    replaceVariablesInAllFilenames(testing_path, paths, keyval, "!", "!");
+    helper::replaceVariablesInAllFilenames(testing_path, paths, keyval, "!", "!");
 
     ASSERT_TRUE(!path::exists(path::joinPath(testing_path, "!project!")));
     ASSERT_TRUE(path::exists(path::joinPath(testing_path, "pypy")));
@@ -465,13 +441,13 @@ TEST(replaceVariablesInAllFilenames, working_includes_and_excludes)
     std::string testing_path = path::joinPath(test_path, "testing/replace_filenames");
     std::set<std::string> includes = {"!project!", "!project!/**"};
     std::set<std::string> excludes = {"!project!/temp*"};
-    std::set<std::string> paths = matchPaths(getPaths(testing_path, testing_path), includes, excludes);
+    std::set<std::string> paths = helper::matchPaths(helper::getPaths(testing_path, testing_path), includes, excludes);
 
     EXPECT_EQ(paths, normalizePaths(std::set<std::string>({"!project!", "!project!/!project!.py"})));
 
     std::unordered_map<std::string, std::string> keyval = {{"project", "pypy"}, {"unused", "var"}};
 
-    replaceVariablesInAllFilenames(testing_path, paths, keyval, "!", "!");
+    helper::replaceVariablesInAllFilenames(testing_path, paths, keyval, "!", "!");
 
     ASSERT_TRUE(!path::exists(path::joinPath(testing_path, "!project!")));
     ASSERT_TRUE(path::exists(path::joinPath(testing_path, "pypy")));

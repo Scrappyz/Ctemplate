@@ -27,40 +27,93 @@ void initTemplate(const std::string& template_to_init, const std::set<std::strin
         return;
     }
 
-    json vars = readJsonFromFile(path::joinPath({template_to_init, template_files_container_name, "variables.json"}));
+    json vars = helper::readJsonFromFile(path::joinPath({template_to_init, template_files_container_name, "variables.json"}));
     json var_list = vars.at("variables");
 
-    if(!equalVariables(var_list, keyval, true)) {
+    if(!helper::equalVariables(var_list, keyval, true)) {
         return;
     }
 
-    // Directory separator to only copy the content
     path::copy(template_to_init, paths, path_to_init_template_to, path::CopyOption::OverwriteAll);
 
     // Remove ctemplate container from the initialized template
     path::remove(path::joinPath(path_to_init_template_to, template_files_container_name));
 
+    // End function early if there are no variables to initialize
     if(keyval.empty()) {
         std::cout << "[SUCCESS] Template \"" << path::filename(template_to_init) << "\" has been initialized." << std::endl;
         return;
     }
 
-    std::set<std::string> includes = jsonListToSet(vars.at("searchPaths").at("files").at("include"));
-    std::set<std::string> excludes = jsonListToSet(vars.at("searchPaths").at("files").at("exclude"));
+    std::string container_path = path::joinPath(template_to_init, template_files_container_name);
+    std::string cache_path = path::joinPath(container_path, "cache");
+    std::string pattern_chars = "*?";
 
-    std::set<std::string> included_files = matchPaths(paths, includes, excludes);
+    // Split patterns and non-patterns
+    std::pair<std::set<std::string>, std::unordered_set<std::string>> files_include = helper::splitPatterns(
+        helper::jsonListToSet(vars.at("searchPaths").at("files").at("include")), pattern_chars
+    );
+
+    std::pair<std::set<std::string>, std::unordered_set<std::string>> files_exclude = helper::splitPatterns(
+        helper::jsonListToSet(vars.at("searchPaths").at("files").at("exclude")), pattern_chars
+    );
+
+    std::pair<std::set<std::string>, std::unordered_set<std::string>> filenames_include = helper::splitPatterns(
+        helper::jsonListToSet(vars.at("searchPaths").at("filenames").at("include")), pattern_chars
+    );
+
+    std::pair<std::set<std::string>, std::unordered_set<std::string>> filenames_exclude = helper::splitPatterns(
+        helper::jsonListToSet(vars.at("searchPaths").at("filenames").at("exclude")), pattern_chars
+    );
 
     std::string var_prefix = vars.at("variablePrefix");
     std::string var_suffix = vars.at("variableSuffix");
 
-    replaceVariablesInAllFiles(path_to_init_template_to, included_files, keyval, var_prefix, var_suffix);
+    std::set<std::string> included_files;
+    std::set<std::string> included_filenames;
 
-    includes = jsonListToSet(vars.at("searchPaths").at("filenames").at("include"));
-    excludes = jsonListToSet(vars.at("searchPaths").at("filenames").at("exclude"));
+    bool cache_exist = path::exists(path::joinPath(cache_path, "search_paths.json")) && path::exists(path::joinPath(cache_path, "included_search_paths.json"));
+    if(cache_exist) {
+        json search_paths_cache = helper::readJsonFromFile(path::joinPath(cache_path, "search_paths.json"));
+        
+        std::pair<std::set<std::string>, std::unordered_set<std::string>> files_include_cache = helper::splitPatterns(
+            helper::jsonListToSet(search_paths_cache.at("files").at("include")), pattern_chars
+        );
 
-    included_files = matchPaths(paths, includes, excludes);
+        std::pair<std::set<std::string>, std::unordered_set<std::string>> files_exclude_cache = helper::splitPatterns(
+            helper::jsonListToSet(search_paths_cache.at("files").at("exclude")), pattern_chars
+        );
 
-    replaceVariablesInAllFilenames(path_to_init_template_to, included_files, keyval, var_prefix, var_suffix);
+        std::pair<std::set<std::string>, std::unordered_set<std::string>> filenames_include_cache = helper::splitPatterns(
+            helper::jsonListToSet(search_paths_cache.at("filenames").at("include")), pattern_chars
+        );
+
+        std::pair<std::set<std::string>, std::unordered_set<std::string>> filenames_exclude_cache = helper::splitPatterns(
+            helper::jsonListToSet(search_paths_cache.at("filenames").at("exclude")), pattern_chars
+        );
+
+        if(files_include == files_include_cache && files_exclude == files_exclude_cache &&
+           filenames_include == filenames_include_cache && filenames_exclude == filenames_exclude_cache) {
+            
+            json paths = helper::readJsonFromFile(path::joinPath(cache_path, "included_search_paths.json"));
+            included_files = helper::jsonListToSet(paths.at("files"));
+            included_filenames = helper::jsonListToSet(paths.at("filenames"));
+        } else {
+            included_files = helper::matchPaths(paths, files_include_cache, files_exclude_cache);
+            included_filenames = helper::matchPaths(paths, filenames_include_cache, filenames_exclude_cache);
+        }
+        
+    } else {
+        included_files = helper::matchPaths(paths, files_include, files_exclude);
+        included_filenames = helper::matchPaths(paths, filenames_include, filenames_exclude);
+    }
+
+    helper::replaceVariablesInAllFiles(path_to_init_template_to, included_files, keyval, var_prefix, var_suffix);
+
+    helper::replaceVariablesInAllFilenames(path_to_init_template_to, included_filenames, keyval, var_prefix, var_suffix);
+
+    // Make cache for for quicker initialization next time
+    helper::makeCacheForSearchPaths(cache_path, vars.at("searchPaths"), included_files, included_filenames);
 
     std::cout << "[SUCCESS] Template \"" << path::filename(template_to_init) << "\" has been initialized." << std::endl;
 }
@@ -77,7 +130,7 @@ void initTemplate(const std::string& template_to_init, const std::string& templa
                   const std::string& path_to_init_template_to, const std::unordered_map<std::string, std::string>& keyval,
                   bool force_overwrite)
 {
-    return initTemplate(template_to_init, getPaths(template_to_init, template_to_init), template_files_container_name, 
+    return initTemplate(template_to_init, helper::getPaths(template_to_init, template_to_init), template_files_container_name, 
                         path_to_init_template_to, keyval, force_overwrite);
 }
 
@@ -86,7 +139,7 @@ void initTemplate(const std::string& template_dir, const std::string& template_n
                   const std::unordered_map<std::string, std::string>& keyval, bool force_overwrite)
 {
     std::string template_to_init = path::joinPath(template_dir, template_name);
-    return initTemplate(template_to_init, getPaths(template_to_init, template_to_init), 
+    return initTemplate(template_to_init, helper::getPaths(template_to_init, template_to_init), 
                         template_files_container_name, path_to_init_template_to, keyval, force_overwrite);
 }
 
@@ -150,8 +203,8 @@ void addTemplate(const std::string& template_dir, const std::string& path_to_add
         }
     )");
 
-    writeJsonToFile(info, path::joinPath(new_container_path, "info.json"), 4);
-    writeJsonToFile(variables, path::joinPath(new_container_path, "variables.json"), 4);
+    helper::writeJsonToFile(info, path::joinPath(new_container_path, "info.json"), 4);
+    helper::writeJsonToFile(variables, path::joinPath(new_container_path, "variables.json"), 4);
 
     std::cout << "[SUCCESS] Template \"" << name << "\" has been added" << std::endl;
 }
@@ -217,7 +270,7 @@ void listTemplates(const std::string& template_dir, const std::string& container
             continue;
         }
 
-        json info = readJsonFromFile(info_file);
+        json info = helper::readJsonFromFile(info_file);
         
         if(info.contains("author")) {
             temp.push_back(info.at("author"));
@@ -256,8 +309,8 @@ void printTemplateInfo(const std::string& template_dir, const std::string& templ
         return;
     }
 
-    json info = readJsonFromFile(path::joinPath(container_path, "info.json"));
-    json var_info = readJsonFromFile(path::joinPath(container_path, "variables.json"));
+    json info = helper::readJsonFromFile(path::joinPath(container_path, "info.json"));
+    json var_info = helper::readJsonFromFile(path::joinPath(container_path, "variables.json"));
 
     std::vector<std::string> header;
     std::vector<std::string> values;
