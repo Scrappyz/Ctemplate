@@ -83,7 +83,7 @@ void initTemplate(const std::string& template_to_init, const std::set<std::strin
 
     helper::replaceVariablesInAllFilenames(path_to_init_template_to, included_filenames, keyval, var_prefix, var_suffix);
 
-    helper::makeCacheForSearchPaths(cache_path, included_files, included_filenames);
+    helper::makeCacheForSearchPaths(cache_path, vars.at("searchPaths"), included_files, included_filenames);
 
     std::cout << "[SUCCESS] Template \"" << path::filename(template_to_init) << "\" has been initialized." << std::endl;
 }

@@ -74,6 +74,9 @@ namespace helper {
                                 const std::string& prefix, const std::string& suffix);
 
     std::set<std::string> getPaths(const std::string& path, const std::string& relative_to = "");
+    void splitPatterns(const std::set<std::string>& patterns, const std::string& pattern_chars,
+                       std::set<std::string>& pattern_includes, std::set<std::string>& pattern_excludes,
+                       std::unordered_set<std::string>& non_pattern_includes, std::unordered_set<std::string>& non_pattern_excludes);
     std::set<std::string> matchPaths(const std::set<std::string>& included_paths, const std::set<std::string>& pattern_includes,
                                      const std::set<std::string>& pattern_excludes, const std::unordered_set<std::string>& non_pattern_includes,
                                      const std::unordered_set<std::string>& non_pattern_excludes);

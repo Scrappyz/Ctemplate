@@ -352,6 +352,23 @@ namespace helper {
         return paths;
     }
 
+    std::pair<std::set<std::string>, std::unordered_set<std::string>> splitPatterns(const std::set<std::string>& patterns, const std::string& pattern_chars)
+    {
+        std::pair<std::set<std::string>, std::unordered_set<std::string>> result;
+
+        // Separate patterns from non-patterns
+        for(const auto& pattern : patterns) {
+            std::string normalized_pattern = path::normalizePath(pattern);
+            if(pattern.find_first_of(pattern_chars) != std::string::npos) {
+                result.first.insert(normalized_pattern);
+            } else {
+                result.second.insert(normalized_pattern);
+            }
+        }
+
+        return result;
+    }
+
     std::set<std::string> matchPaths(const std::set<std::string>& included_paths, const std::set<std::string>& pattern_includes,
                                      const std::set<std::string>& pattern_excludes, const std::unordered_set<std::string>& non_pattern_includes,
                                      const std::unordered_set<std::string>& non_pattern_excludes)
@@ -402,31 +419,10 @@ namespace helper {
     {
         std::string pattern_char = "*?";
 
-        std::unordered_set<std::string> non_pattern_includes;
-        std::set<std::string> pattern_includes;
-        std::unordered_set<std::string> non_pattern_excludes;
-        std::set<std::string> pattern_excludes;
+        std::pair<std::set<std::string>, std::unordered_set<std::string>> pattern_includes = splitPatterns(include, pattern_char);
+        std::pair<std::set<std::string>, std::unordered_set<std::string>> pattern_excludes = splitPatterns(exclude, pattern_char);
 
-        // Separate patterns from non-patterns
-        for(const auto& pattern : include) {
-            std::string normalized_pattern = path::normalizePath(pattern);
-            if(pattern.find_first_of(pattern_char) != std::string::npos) {
-                pattern_includes.insert(normalized_pattern);
-            } else {
-                non_pattern_includes.insert(normalized_pattern);
-            }
-        }
-
-        for(const auto& pattern : exclude) {
-            std::string normalized_pattern = path::normalizePath(pattern);
-            if(pattern.find_first_of(pattern_char) != std::string::npos) {
-                pattern_excludes.insert(normalized_pattern);
-            } else {
-                non_pattern_excludes.insert(normalized_pattern);
-            }
-        }
-
-        return matchPaths(included_paths, pattern_includes, pattern_excludes, non_pattern_includes, non_pattern_excludes);
+        return matchPaths(included_paths, pattern_includes.first, pattern_excludes.first, pattern_includes.second, pattern_excludes.second);
     }
 
     void makeCacheForSearchPaths(const std::string& cache_path, const nlohmann::json& search_paths, const std::set<std::string>& included_files,
