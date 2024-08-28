@@ -5,13 +5,14 @@ All notable changes to `Project-Template` will be documented here.
 
 ### To be added
 - Automatic text-wrapping in descriptions.
-- Default values for variables.
+- Extra attributes for variables such as `defaultValue` and `required`.
+- Recursive variable initialization. (E.g: `sentence="My name is !name!"`, `name="Jimmy"`)
 - Multi-line values for variables.
 - Proper indentation for multi-line variable values.
 
 ## [1.0.0-beta.2]
 
-### To be added
+### Added
 - Cache for search paths.
 
 ### Fixed
