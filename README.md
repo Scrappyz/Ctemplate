@@ -67,9 +67,9 @@ Ctemplate works as a standalone executable so all you need to do is download it 
 ### Release Files
 | File | Description |
 | :--- | :--- |
-| [ctemplate.exe](https://github.com/Scrappyz/Ctemplate/releases/download/v1.0.0-beta.1/ctemplate.exe) | Windows standalone executable (recommended for **Windows**) |
+| [ctemplate.exe](https://github.com/Scrappyz/Ctemplate/releases/download/v1.0.0-beta.2/ctemplate.exe) | Windows standalone executable (recommended for **Windows**) |
 
-It is recommended to place the executable inside an empty directory.
+It is recommended to place the executable inside an empty directory. Also try adding the executable into your `PATH` environment variable or set up an [alias](https://learn.microsoft.com/en-us/powershell/module/microsoft.powershell.utility/set-alias?view=powershell-7.4) in your preferred terminal so you can call the executable from anywhere.
 
 ## Setup
 Upon first running the program, a `config.json` file will generate inside the directory. Open it with your preferred text editor then modify the `templateDirectory` to where you want your templates to be stored. 
