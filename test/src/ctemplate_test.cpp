@@ -50,7 +50,7 @@ TEST(resetConfig, app_config)
 
 TEST(resetConfig, template_config)
 {
-    std::string suite_path = path::joinPath(test_path, "testing/reset_config");
+    std::string suite_path = path::joinPath(test_path, "test_suites/reset_config");
     std::string suite_template_path = path::joinPath(suite_path, "templates");
 
     std::vector<std::string> templates = {"py"};
@@ -66,8 +66,8 @@ TEST(resetConfig, template_config)
 TEST(initTemplate, working_on_empty_dir)
 {
     std::string tp = path::joinPath(template_path, "py");
-    std::string t_path = path::joinPath(test_path, "testing/init_template/test");
-    std::string tmp_path = path::joinPath(test_path, "testing/init_template/temp");
+    std::string t_path = path::joinPath(test_path, "test_suites/init_template/test");
+    std::string tmp_path = path::joinPath(test_path, "test_suites/init_template/temp");
     std::unordered_map<std::string, std::string> keyval = {{"project", "hello_world"}, {"name", "User"}};
      
     initTemplate(tp, ".ctemplate", t_path, keyval);
@@ -88,8 +88,8 @@ TEST(initTemplate, working_on_empty_dir)
 TEST(initTemplate, overwrite_all)
 {
     std::string tp = path::joinPath(template_path, "py");
-    std::string t_path = path::joinPath(test_path, "testing/init_template/test");
-    std::string tmp_path = path::joinPath(test_path, "testing/init_template/temp");
+    std::string t_path = path::joinPath(test_path, "test_suites/init_template/test");
+    std::string tmp_path = path::joinPath(test_path, "test_suites/init_template/temp");
     std::unordered_map<std::string, std::string> keyval = {{"project", "hello_world"}, {"name", "User"}};
     std::string t_file = path::joinPath(t_path, "test.txt");
     path::createFile(t_file, "test data");
@@ -116,8 +116,8 @@ TEST(initTemplate, overwrite_all)
 TEST(initTemplate, overwrite_all_cancel)
 {
     std::string tp = path::joinPath(template_path, "py");
-    std::string t_path = path::joinPath(test_path, "testing/init_template/test");
-    std::string tmp_path = path::joinPath(test_path, "testing/init_template/temp");
+    std::string t_path = path::joinPath(test_path, "test_suites/init_template/test");
+    std::string tmp_path = path::joinPath(test_path, "test_suites/init_template/temp");
     std::unordered_map<std::string, std::string> keyval = {{"project", "hello_world"}, {"name", "User"}};
     std::string t_file = path::joinPath(t_path, "test.txt");
     path::createFile(t_file, "test data");
@@ -134,8 +134,8 @@ TEST(initTemplate, overwrite_all_cancel)
 TEST(initTemplate, custom_includes)
 {
     std::string tp = path::joinPath(template_path, "py");
-    std::string t_path = path::joinPath(test_path, "testing/init_template/test");
-    std::string tmp_path = path::joinPath(test_path, "testing/init_template/temp");
+    std::string t_path = path::joinPath(test_path, "test_suites/init_template/test");
+    std::string tmp_path = path::joinPath(test_path, "test_suites/init_template/temp");
     std::unordered_map<std::string, std::string> keyval = {{"project", "hello_world"}, {"name", "User"}};
     std::set<std::string> paths = helper::matchPaths(helper::getPaths(tp, tp), {"!project!", "!project!/**"}, {});
      
@@ -158,8 +158,8 @@ TEST(initTemplate, custom_includes)
 TEST(initTemplate, strange_case)
 {
     std::string tp = path::joinPath(template_path, "py");
-    std::string t_path = path::joinPath(test_path, "testing/init_template/test");
-    std::string tmp_path = path::joinPath(test_path, "testing/init_template/temp");
+    std::string t_path = path::joinPath(test_path, "test_suites/init_template/test");
+    std::string tmp_path = path::joinPath(test_path, "test_suites/init_template/temp");
     std::unordered_map<std::string, std::string> keyval = {{"project", "project_world"}, {"name", "User"}};
     std::string t_file = path::joinPath(t_path, "test.txt");
     path::createFile(t_file, "test data");
@@ -186,13 +186,13 @@ TEST(initTemplate, strange_case)
 TEST(addTemplate, adding)
 {
     std::string add_path = path::joinPath(template_path, "t1");
-    std::string name = "testing";
+    std::string name = "test_suites";
     std::string author = "scrap";
     std::string desc = "wassup boi";
     std::string container_name = ".ctemplate";
     addTemplate(template_path, add_path, name, author, desc, container_name);
 
-    std::string new_template = path::joinPath(template_path, "testing");
+    std::string new_template = path::joinPath(template_path, "test_suites");
     ASSERT_TRUE(path::exists(new_template));
     ASSERT_TRUE(path::exists(path::joinPath(new_template, container_name)));
     
@@ -202,7 +202,7 @@ TEST(addTemplate, adding)
 TEST(addTemplate, empty_name)
 {
     std::string add_path = path::joinPath(template_path, "t1");
-    std::string name = "testing";
+    std::string name = "test_suites";
     std::string author = "scrap";
     std::string desc = "wassup boi";
     std::string container_name = ".ctemplate";
@@ -214,13 +214,13 @@ TEST(addTemplate, empty_name)
 TEST(addTemplate, existing_container)
 {
     std::string add_path = path::joinPath(template_path, "t1");
-    std::string name = "testing";
+    std::string name = "test_suites";
     std::string author = "scrap";
     std::string desc = "wassup boi";
     std::string container_name = ".ctemplate";
     addTemplate(template_path, add_path, name, author, desc, container_name);
 
-    std::string new_template = path::joinPath(template_path, "testing");
+    std::string new_template = path::joinPath(template_path, "test_suites");
     std::string new_container = path::joinPath(new_template, ".ctemplate");
     ASSERT_TRUE(path::exists(path::joinPath(new_container, "info.json")));
     ASSERT_TRUE(path::exists(path::joinPath(new_container, "variables.json")));
@@ -452,7 +452,7 @@ TEST(matchPaths, include_and_exclude_non_patterns)
 
 TEST(replaceVariablesInAllFilenames, working)
 {
-    std::string testing_path = path::joinPath(test_path, "testing/replace_filenames");
+    std::string testing_path = path::joinPath(test_path, "test_suites/replace_filenames");
     std::set<std::string> paths = {"!project!", "!project!/!project!.py"};
     std::unordered_map<std::string, std::string> keyval = {{"project", "pypy"}, {"unused", "var"}};
 
@@ -470,7 +470,7 @@ TEST(replaceVariablesInAllFilenames, working)
 
 TEST(replaceVariablesInAllFilenames, working_includes_and_excludes)
 {
-    std::string testing_path = path::joinPath(test_path, "testing/replace_filenames");
+    std::string testing_path = path::joinPath(test_path, "test_suites/replace_filenames");
     std::set<std::string> includes = {"!project!", "!project!/**"};
     std::set<std::string> excludes = {"!project!/temp*"};
     std::set<std::string> paths = helper::matchPaths(helper::getPaths(testing_path, testing_path), includes, excludes);
