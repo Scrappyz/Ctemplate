@@ -99,6 +99,11 @@ int main(int argc, char** argv)
     std::vector<std::string> config_set_values;
     set->add_option("keyvalue", config_set_values, "Config values to change\n(eg: \"key=value\")");
 
+    // For "config reset" subcommand
+    CLI::App* reset = config->add_subcommand("reset", "Reset config");
+    std::vector<std::string> config_reset_values;
+    reset->add_option("template", config_reset_values, "Template to reset config");
+
     CLI11_PARSE(app, argc, argv);
 
     // print(init_includes);
@@ -108,8 +113,8 @@ int main(int argc, char** argv)
         std::string template_path_to_init = path::joinPath(template_dir, init_template_name);
         std::set<std::string> paths = helper::matchPaths(helper::getPaths(template_path_to_init, template_path_to_init),
                                        helper::arrayToSet(init_includes), helper::arrayToSet(init_excludes));
-        initTemplate(template_dir, init_template_name, 
-                    paths, container_name, init_to, helper::mapKeyValues(init_keyval), init_force_overwrite);
+        initTemplate(template_dir, init_template_name, paths, container_name, 
+                     init_to, helper::mapKeyValues(init_keyval), init_force_overwrite);
     } else if(*add) { // "add" subcommand
         std::string path_to_add = path::joinPath(path::currentPath(), add_path);
         addTemplate(template_dir, path_to_add, add_template_name, add_template_author, add_template_desc, container_name);
@@ -124,8 +129,14 @@ int main(int argc, char** argv)
             helper::setConfigValue(app_config, config_set_values);
             helper::writeJsonToFile(app_config, config_file_path, 4);
             return 0;
+        } else if(*reset) { // "reset" subcommand
+            if(config_reset_values.empty()) {
+                helper::resetConfig(config_file_path);
+            } else {
+                helper::resetConfig(template_dir, container_name, config_reset_values);
+            }
+            return 0;
         }
-        std::cout << "Configuration:" << std::endl;
         helper::showConfig(app_config);
     } else {
         CLI::CallForHelp();
