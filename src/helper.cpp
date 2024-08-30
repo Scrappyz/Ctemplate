@@ -2,6 +2,7 @@
 #include "helper.hpp"
 #include "fmatch.hpp"
 #include "format.hpp"
+#include "global.hpp"
 #include <fstream>
 #include <iostream>
 #include <unordered_set>
@@ -67,10 +68,7 @@ namespace helper {
             config_file = path::joinPath(path::sourcePath(), "config.json");
         }
 
-        json config = {
-            {"templateDirectory", path::joinPath(path::sourcePath(), "templates")},
-            {"containerName", ".ctemplate"}
-        };
+        json config = global::app_config;
 
         writeJsonToFile(config, config_file, 4);
     }
@@ -101,28 +99,9 @@ namespace helper {
             std::string info_file = path::joinPath(container_path, "info.json");
             std::string var_file = path::joinPath(container_path, "variables.json");
 
-            json info = {
-                {"author", ""},
-                {"description", ""}
-            };
+            json info = global::template_info_config;
 
-            json variables = json::parse(R"(
-                {
-                    "searchPaths": {
-                        "files": {
-                            "include": [],
-                            "exclude": []
-                        },
-                        "filenames": {
-                            "include": [],
-                            "exclude": []
-                        }
-                    },
-                    "variablePrefix": "!",
-                    "variableSuffix": "!",
-                    "variables": {}
-                }
-            )");
+            json variables = global::template_variables_config;
 
             writeJsonToFile(info, info_file, 4);
             writeJsonToFile(variables, var_file, 4);

@@ -3,6 +3,7 @@
 #include "json.hpp"
 #include "format.hpp"
 #include "helper.hpp"
+#include "global.hpp"
 #include <iostream>
 #include <fstream>
 #include <unordered_set>
@@ -185,23 +186,7 @@ void addTemplate(const std::string& template_dir, const std::string& path_to_add
         {"author", author},
         {"description", desc}
     };
-    json variables = json::parse(R"(
-        {
-            "searchPaths": {
-                "files": {
-                    "include": [],
-                    "exclude": []
-                },
-                "filenames": {
-                    "include": [],
-                    "exclude": []
-                }
-            },
-            "variablePrefix": "!",
-            "variableSuffix": "!",
-            "variables": {}
-        }
-    )");
+    json variables = global::template_variables_config;
 
     helper::writeJsonToFile(info, path::joinPath(new_container_path, "info.json"), 4);
     helper::writeJsonToFile(variables, path::joinPath(new_container_path, "variables.json"), 4);

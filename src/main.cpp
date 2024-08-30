@@ -2,6 +2,7 @@
 #include "CLI11.hpp"
 #include "helper.hpp"
 #include "ctemplate.hpp"
+#include "global.hpp"
 #include <unordered_set>
 
 using json = nlohmann::json;
@@ -18,13 +19,10 @@ void print(const std::vector<std::string>& v)
 int main(int argc, char** argv)
 {
     CLI::App app("Ctemplate");
-    app.set_version_flag("-v,--version", "v1.0.0-beta.3");
+    app.set_version_flag("-v,--version", global::app_version);
 
     // Default settings
-    json app_config = {
-        {"templateDirectory", path::joinPath(path::sourcePath(), "templates")},
-        {"containerName", ".ctemplate"}
-    };
+    json app_config = global::app_config;
 
     std::string config_file_path = path::joinPath(path::sourcePath(), "config.json");
 
