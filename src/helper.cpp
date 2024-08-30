@@ -281,6 +281,24 @@ namespace helper {
     }
 
     /*
+        Checks if the given path is a template.
+
+        Parameters:
+        `template_path`: Path to check.
+        `container_name`: Name of the container where all the template config files are stored.
+    */
+    bool isTemplate(const std::string& template_path, const std::string& container_name)
+    {
+        if(!path::isDirectory(template_path)) return false;
+
+        std::string container_path = path::joinPath(template_path, container_name);
+
+        if(!path::exists(container_path)) return false;
+
+        return true;
+    }
+
+    /*
         Replaces all variables in a given string.
 
         Parameters:

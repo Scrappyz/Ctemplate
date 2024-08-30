@@ -199,7 +199,7 @@ void addTemplate(const std::string& template_dir, const std::string& path_to_add
             },
             "variablePrefix": "!",
             "variableSuffix": "!",
-            "variables": []
+            "variables": {}
         }
     )");
 
@@ -245,23 +245,16 @@ void listTemplates(const std::string& template_dir, const std::string& container
     // Iterate through the whole template directory
     for(const auto& i : fs::directory_iterator(template_dir)) {
         std::vector<std::string> temp; // Row for the table
+        std::string template_path = i.path().string();
         std::string template_name = i.path().filename().string();
 
-        if(template_name.empty()) {
-            continue;
-        }
+        if(template_name.empty() || template_name[0] == '.') continue;
 
-        if(template_name[0] == '.') {
-            continue;
-        }
+        if(!helper::isTemplate(template_path, container_name)) continue;
 
         temp.push_back(template_name);
-        std::string container_path = path::joinPath(i.path(), container_name);
 
-        if(!path::exists(container_path)) {
-            continue;
-        }
-
+        std::string container_path = path::joinPath(template_path, container_name);
         std::string info_file = path::joinPath(container_path, "info.json");
 
         // Check if info.json exists

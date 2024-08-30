@@ -10,7 +10,13 @@ All notable changes to `Project-Template` will be documented here.
 - Multi-line values for variables.
 - Proper indentation for multi-line variable values.
 
-## [1.0.0-beta.2]
+## [1.0.0-beta.3] - Unreleased
+
+### To be added
+- `config reset` option to bring back config to default settings.
+- `config reset <template>` option to bring back template config to default settings. (Useful when the template breaks)
+
+## [1.0.0-beta.2] - 2024/08/29
 
 ### Added
 - Cache for search paths.
@@ -18,7 +24,7 @@ All notable changes to `Project-Template` will be documented here.
 ### Fixed
 - Fixed pattern matching
 
-## [1.0.0-beta.1]
+## [1.0.0-beta.1] - 2024/08/14
 
 ### Added
 - Parameterized template initialization.
