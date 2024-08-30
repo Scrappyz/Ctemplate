@@ -4,6 +4,7 @@
 #include "os.hpp"
 
 namespace path = os::path;
+using json = nlohmann::json;
 
 std::string test_path = path::joinPath(path::sourcePath(), "../test_path");
 std::string template_path = path::joinPath(test_path, "templates");
@@ -29,6 +30,37 @@ std::set<std::string> normalizePaths(const std::set<std::string>& s, const std::
     }
 
     return n;
+}
+
+TEST(resetConfig, app_config)
+{
+    std::string config_file = path::joinPath(path::sourcePath(), "config.json");
+    json temp = helper::readJsonFromFile(config_file);
+    json expected = {
+        {"templateDirectory", path::joinPath(path::sourcePath(), "templates")},
+        {"containerName", ".ctemplate"}
+    };
+
+    helper::resetConfig();
+
+    EXPECT_EQ(expected, helper::readJsonFromFile(config_file));
+
+    helper::writeJsonToFile(temp, config_file, 4);
+}
+
+TEST(resetConfig, template_config)
+{
+    std::string suite_path = path::joinPath(test_path, "testing/reset_config");
+    std::string suite_template_path = path::joinPath(suite_path, "templates");
+
+    std::vector<std::string> templates = {"py"};
+    
+    std::string container_path = path::joinPath(suite_template_path, "py/.ctemplate");
+    ASSERT_FALSE(path::exists(container_path));
+
+    helper::resetConfig(suite_template_path, ".ctemplate", templates);
+
+    path::remove(container_path);
 }
 
 TEST(initTemplate, working_on_empty_dir)

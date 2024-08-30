@@ -59,7 +59,7 @@ namespace helper {
         Resets config to default settings.
 
         Parameters:
-        `config_file`: Path to the app config file.
+        `config_file`: Path to the app config file. (Defaults to app config)
     */
     void resetConfig(std::string config_file)
     {
