@@ -18,7 +18,7 @@ void print(const std::vector<std::string>& v)
 int main(int argc, char** argv)
 {
     CLI::App app("Ctemplate");
-    app.set_version_flag("-v,--version", "v1.0.0-beta.2");
+    app.set_version_flag("-v,--version", "v1.0.0-beta.3");
 
     // Default settings
     json app_config = {

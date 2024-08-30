@@ -56,7 +56,8 @@ namespace helper {
     std::vector<std::string> split(const std::string& str, const std::string& delimiter);
     std::unordered_map<std::string, std::string> mapKeyValues(const std::vector<std::string>& keyvals);
     bool equalVariables(const nlohmann::json& j, const std::unordered_map<std::string, std::string>& keyvals, bool error_message = false);
-
+    bool isTemplate(const std::string& template_path, const std::string& container_name);
+    
     std::string replaceVariables(const std::string& str, 
                                 const std::unordered_map<std::string, std::string>& keyval, 
                                 const std::string& prefix, const std::string& suffix);
