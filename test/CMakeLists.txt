@@ -4,7 +4,7 @@ cmake_minimum_required(VERSION 3.14)
 FetchContent_Declare(
     GTest
     GIT_REPOSITORY https://github.com/google/googletest.git
-    GIT_TAG v1.14.0
+    GIT_TAG v1.15.2
 )
 
 # Make the framework available for the project
