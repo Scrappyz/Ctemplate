@@ -65,11 +65,11 @@ TEST(resetConfig, template_config)
 
 TEST(initTemplate, working_on_empty_dir)
 {
-    std::string tp = path::joinPath(template_path, "py");
+    std::string tp = path::joinPath(test_path, "test_suites/init_template/test_templates/py");
     std::string t_path = path::joinPath(test_path, "test_suites/init_template/test");
     std::string tmp_path = path::joinPath(test_path, "test_suites/init_template/temp");
     std::unordered_map<std::string, std::string> keyval = {{"project", "hello_world"}, {"name", "User"}};
-    std::cout << t_path << std::endl;
+
     initTemplate(tp, ".ctemplate", t_path, keyval);
 
     ASSERT_TRUE(path::exists(path::joinPath(t_path, "hello_world")));
@@ -87,7 +87,7 @@ TEST(initTemplate, working_on_empty_dir)
 
 TEST(initTemplate, overwrite_all)
 {
-    std::string tp = path::joinPath(template_path, "py");
+    std::string tp = path::joinPath(test_path, "test_suites/init_template/test_templates/py");
     std::string t_path = path::joinPath(test_path, "test_suites/init_template/test");
     std::string tmp_path = path::joinPath(test_path, "test_suites/init_template/temp");
     std::unordered_map<std::string, std::string> keyval = {{"project", "hello_world"}, {"name", "User"}};
@@ -115,7 +115,7 @@ TEST(initTemplate, overwrite_all)
 
 TEST(initTemplate, overwrite_all_cancel)
 {
-    std::string tp = path::joinPath(template_path, "py");
+    std::string tp = path::joinPath(test_path, "test_suites/init_template/test_templates/py");
     std::string t_path = path::joinPath(test_path, "test_suites/init_template/test");
     std::string tmp_path = path::joinPath(test_path, "test_suites/init_template/temp");
     std::unordered_map<std::string, std::string> keyval = {{"project", "hello_world"}, {"name", "User"}};
@@ -133,7 +133,7 @@ TEST(initTemplate, overwrite_all_cancel)
 
 TEST(initTemplate, custom_includes)
 {
-    std::string tp = path::joinPath(template_path, "py");
+    std::string tp = path::joinPath(test_path, "test_suites/init_template/test_templates/py");
     std::string t_path = path::joinPath(test_path, "test_suites/init_template/test");
     std::string tmp_path = path::joinPath(test_path, "test_suites/init_template/temp");
     std::unordered_map<std::string, std::string> keyval = {{"project", "hello_world"}, {"name", "User"}};
@@ -157,7 +157,7 @@ TEST(initTemplate, custom_includes)
 
 TEST(initTemplate, strange_case)
 {
-    std::string tp = path::joinPath(template_path, "py");
+    std::string tp = path::joinPath(test_path, "test_suites/init_template/test_templates/py");
     std::string t_path = path::joinPath(test_path, "test_suites/init_template/test");
     std::string tmp_path = path::joinPath(test_path, "test_suites/init_template/temp");
     std::unordered_map<std::string, std::string> keyval = {{"project", "project_world"}, {"name", "User"}};

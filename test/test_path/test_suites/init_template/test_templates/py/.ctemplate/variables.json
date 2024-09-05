@@ -2,7 +2,7 @@
     "searchPaths": {
         "files": {
             "include": [
-                "!project!/**"
+                "!project!/!project!.py"
             ],
             "exclude": [
                 
@@ -10,7 +10,7 @@
         },
         "filenames": {
             "include": [
-                
+                "**/*!*!*"
             ],
             "exclude": [
                 

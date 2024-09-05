@@ -1,0 +1,14 @@
+{
+    "filenames": {
+        "exclude": [],
+        "include": [
+            "**/*!*!*"
+        ]
+    },
+    "files": {
+        "exclude": [],
+        "include": [
+            "!project!/!project!.py"
+        ]
+    }
+}
