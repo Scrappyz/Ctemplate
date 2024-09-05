@@ -94,6 +94,8 @@ namespace helper {
 
             if(!path::exists(container_path)) {
                 path::createDirectory(container_path);
+            } else {
+                path::remove(container_path + path::directorySeparator());
             }
 
             std::string info_file = path::joinPath(container_path, "info.json");
