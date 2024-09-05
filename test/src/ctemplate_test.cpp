@@ -69,7 +69,7 @@ TEST(initTemplate, working_on_empty_dir)
     std::string t_path = path::joinPath(test_path, "test_suites/init_template/test");
     std::string tmp_path = path::joinPath(test_path, "test_suites/init_template/temp");
     std::unordered_map<std::string, std::string> keyval = {{"project", "hello_world"}, {"name", "User"}};
-     
+    std::cout << t_path << std::endl;
     initTemplate(tp, ".ctemplate", t_path, keyval);
 
     ASSERT_TRUE(path::exists(path::joinPath(t_path, "hello_world")));

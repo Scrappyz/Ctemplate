@@ -281,7 +281,7 @@ namespace os {
                 GetModuleFileName(NULL, path, MAX_PATH);
                 source_path = path;
             #elif defined(__linux__) || defined(__apple__)
-                source_path = filesystem::canonical("/proc/self/exe");
+                source_path = std::filesystem::canonical("/proc/self/exe");
             #else
                 throw std::runtime_error(_private::errorMessage(__func__, "Unknown Operating System"));
             #endif
