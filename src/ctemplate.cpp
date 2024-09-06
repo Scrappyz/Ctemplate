@@ -47,7 +47,7 @@ void initTemplate(const std::string& template_to_init, const std::set<std::strin
     }
 
     std::string container_path = path::joinPath(template_to_init, template_files_container_name);
-    std::string cache_path = path::joinPath(container_path, "cache");
+    std::string cache_path = path::joinPath(container_path, global::cache_container_name);
     std::string pattern_chars = "*?";
 
     // Split patterns and non-patterns

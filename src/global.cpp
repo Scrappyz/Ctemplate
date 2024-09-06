@@ -36,4 +36,5 @@ namespace global {
         }
     )");
     
+    std::string cache_container_name = ".cache";
 }
