@@ -4,10 +4,13 @@
 #include "os.hpp"
 
 namespace path = os::path;
+using json = nlohmann::json;
 
 std::string test_path = path::joinPath(path::sourcePath(), "../test_path");
 std::string template_path = path::joinPath(test_path, "templates");
 std::string temp_path = path::joinPath(test_path, "temp");
+std::string container_name = ".ctemplate";
+std::string cache_container_name = ".cache";
 
 std::unordered_set<std::string> normalizePaths(const std::unordered_set<std::string>& s, const std::string& relative_to = "")
 {
@@ -31,47 +34,74 @@ std::set<std::string> normalizePaths(const std::set<std::string>& s, const std::
     return n;
 }
 
+TEST(resetConfig, app_config)
+{
+    std::string config_file = path::joinPath(path::sourcePath(), "config.json");
+    json temp = helper::readJsonFromFile(config_file);
+    json expected = {
+        {"templateDirectory", path::joinPath(path::sourcePath(), "templates")},
+        {"containerName", container_name}
+    };
+
+    helper::resetConfig();
+
+    EXPECT_EQ(expected, helper::readJsonFromFile(config_file));
+
+    helper::writeJsonToFile(temp, config_file, 4);
+}
+
+TEST(resetConfig, template_config)
+{
+    std::string suite_path = path::joinPath(test_path, "test_suites/reset_config");
+    std::string suite_template_path = path::joinPath(suite_path, "templates");
+
+    std::vector<std::string> templates = {"py"};
+    
+    std::string container_path = path::joinPath(suite_template_path, "py/.ctemplate");
+    ASSERT_FALSE(path::exists(container_path));
+
+    helper::resetConfig(suite_template_path, container_name, templates);
+
+    path::remove(container_path);
+}
+
 TEST(initTemplate, working_on_empty_dir)
 {
-    std::string tp = path::joinPath(template_path, "py");
-    std::string t_path = path::joinPath(test_path, "testing/init_template/test");
-    std::string tmp_path = path::joinPath(test_path, "testing/init_template/temp");
+    std::string test_template_path = path::joinPath(test_path, "test_suites/init_template/test_templates/py");
+    std::string t_path = path::joinPath(test_path, "test_suites/init_template/test");
+    std::string tmp_path = path::joinPath(test_path, "test_suites/init_template/temp");
     std::unordered_map<std::string, std::string> keyval = {{"project", "hello_world"}, {"name", "User"}};
-     
-    initTemplate(tp, ".ctemplate", t_path, keyval);
+    std::string t_file = path::joinPath(t_path, "junk.txt");
+    ASSERT_TRUE(path::createFile(t_file, "test data"));
 
-    ASSERT_TRUE(path::exists(path::joinPath(t_path, "hello_world")));
-    ASSERT_TRUE(path::exists(path::joinPath(t_path, "hello_world/hello_world.py")));
+    ASSERT_TRUE(path::exists(t_file));
 
-    ASSERT_TRUE(!path::exists(path::joinPath(t_path, ".ctemplate")));
+    initTemplate(test_template_path, container_name, t_path, keyval);
 
-    std::string actual_file_content = helper::readTextFromFile(path::joinPath(t_path, "hello_world/hello_world.py"));
-    std::string expected_file_content = helper::readTextFromFile(path::joinPath(tmp_path, "test.py"));
-
-    EXPECT_EQ(actual_file_content, expected_file_content);
+    ASSERT_TRUE(path::exists(t_file));
 
     path::remove(t_path + path::directorySeparator());
 }
 
 TEST(initTemplate, overwrite_all)
 {
-    std::string tp = path::joinPath(template_path, "py");
-    std::string t_path = path::joinPath(test_path, "testing/init_template/test");
-    std::string tmp_path = path::joinPath(test_path, "testing/init_template/temp");
+    std::string test_template_path = path::joinPath(test_path, "test_suites/init_template/test_templates/py");
+    std::string t_path = path::joinPath(test_path, "test_suites/init_template/test");
+    std::string tmp_path = path::joinPath(test_path, "test_suites/init_template/temp");
     std::unordered_map<std::string, std::string> keyval = {{"project", "hello_world"}, {"name", "User"}};
     std::string t_file = path::joinPath(t_path, "test.txt");
     path::createFile(t_file, "test data");
 
     ASSERT_TRUE(path::exists(t_file));
      
-    initTemplate(tp, ".ctemplate", t_path, keyval, true);
+    initTemplate(test_template_path, container_name, t_path, keyval, true);
 
     ASSERT_TRUE(!path::exists(t_file));
 
     ASSERT_TRUE(path::exists(path::joinPath(t_path, "hello_world")));
     ASSERT_TRUE(path::exists(path::joinPath(t_path, "hello_world/hello_world.py")));
 
-    ASSERT_TRUE(!path::exists(path::joinPath(t_path, ".ctemplate")));
+    ASSERT_TRUE(!path::exists(path::joinPath(t_path, container_name)));
 
     std::string actual_file_content = helper::readTextFromFile(path::joinPath(t_path, "hello_world/hello_world.py"));
     std::string expected_file_content = helper::readTextFromFile(path::joinPath(tmp_path, "test.py"));
@@ -83,16 +113,16 @@ TEST(initTemplate, overwrite_all)
 
 TEST(initTemplate, overwrite_all_cancel)
 {
-    std::string tp = path::joinPath(template_path, "py");
-    std::string t_path = path::joinPath(test_path, "testing/init_template/test");
-    std::string tmp_path = path::joinPath(test_path, "testing/init_template/temp");
+    std::string test_template_path = path::joinPath(test_path, "test_suites/init_template/test_templates/py");
+    std::string t_path = path::joinPath(test_path, "test_suites/init_template/test");
+    std::string tmp_path = path::joinPath(test_path, "test_suites/init_template/temp");
     std::unordered_map<std::string, std::string> keyval = {{"project", "hello_world"}, {"name", "User"}};
     std::string t_file = path::joinPath(t_path, "test.txt");
     path::createFile(t_file, "test data");
 
     ASSERT_TRUE(path::exists(t_file));
      
-    initTemplate(tp, ".ctemplate", t_path, keyval);
+    initTemplate(test_template_path, container_name, t_path, keyval);
 
     ASSERT_TRUE(path::exists(t_file));
 
@@ -101,18 +131,18 @@ TEST(initTemplate, overwrite_all_cancel)
 
 TEST(initTemplate, custom_includes)
 {
-    std::string tp = path::joinPath(template_path, "py");
-    std::string t_path = path::joinPath(test_path, "testing/init_template/test");
-    std::string tmp_path = path::joinPath(test_path, "testing/init_template/temp");
+    std::string test_template_path = path::joinPath(test_path, "test_suites/init_template/test_templates/py");
+    std::string t_path = path::joinPath(test_path, "test_suites/init_template/test");
+    std::string tmp_path = path::joinPath(test_path, "test_suites/init_template/temp");
     std::unordered_map<std::string, std::string> keyval = {{"project", "hello_world"}, {"name", "User"}};
-    std::set<std::string> paths = helper::matchPaths(helper::getPaths(tp, tp), {"!project!", "!project!/**"}, {});
+    std::set<std::string> paths = helper::matchPaths(helper::getPaths(test_template_path, test_template_path), {"!project!", "!project!/**"}, {});
      
-    initTemplate(tp, paths, ".ctemplate", t_path, keyval);
+    initTemplate(test_template_path, paths, container_name, t_path, keyval);
 
     ASSERT_TRUE(path::exists(path::joinPath(t_path, "hello_world")));
     ASSERT_TRUE(path::exists(path::joinPath(t_path, "hello_world/hello_world.py")));
 
-    ASSERT_TRUE(!path::exists(path::joinPath(t_path, ".ctemplate")));
+    ASSERT_TRUE(!path::exists(path::joinPath(t_path, container_name)));
     ASSERT_TRUE(!path::exists(path::joinPath(t_path, "test")));
 
     std::string actual_file_content = helper::readTextFromFile(path::joinPath(t_path, "hello_world/hello_world.py"));
@@ -125,23 +155,23 @@ TEST(initTemplate, custom_includes)
 
 TEST(initTemplate, strange_case)
 {
-    std::string tp = path::joinPath(template_path, "py");
-    std::string t_path = path::joinPath(test_path, "testing/init_template/test");
-    std::string tmp_path = path::joinPath(test_path, "testing/init_template/temp");
+    std::string test_template_path = path::joinPath(test_path, "test_suites/init_template/test_templates/py");
+    std::string t_path = path::joinPath(test_path, "test_suites/init_template/test");
+    std::string tmp_path = path::joinPath(test_path, "test_suites/init_template/temp");
     std::unordered_map<std::string, std::string> keyval = {{"project", "project_world"}, {"name", "User"}};
     std::string t_file = path::joinPath(t_path, "test.txt");
     path::createFile(t_file, "test data");
 
     ASSERT_TRUE(path::exists(t_file));
      
-    initTemplate(tp, ".ctemplate", t_path, keyval, true);
+    initTemplate(test_template_path, container_name, t_path, keyval, true);
 
     ASSERT_TRUE(!path::exists(t_file));
 
     ASSERT_TRUE(path::exists(path::joinPath(t_path, "project_world")));
     ASSERT_TRUE(path::exists(path::joinPath(t_path, "project_world/project_world.py")));
 
-    ASSERT_TRUE(!path::exists(path::joinPath(t_path, ".ctemplate")));
+    ASSERT_TRUE(!path::exists(path::joinPath(t_path, container_name)));
 
     std::string actual_file_content = helper::readTextFromFile(path::joinPath(t_path, "project_world/project_world.py"));
     std::string expected_file_content = helper::readTextFromFile(path::joinPath(tmp_path, "test.py"));
@@ -151,16 +181,63 @@ TEST(initTemplate, strange_case)
     path::remove(t_path + path::directorySeparator());
 }
 
+TEST(initTemplate, cache_generate)
+{
+    std::string test_template_path = path::joinPath(test_path, "test_suites/init_template/test_templates/py");
+    std::string t_path = path::joinPath(test_path, "test_suites/init_template/test");
+    std::string tmp_path = path::joinPath(test_path, "test_suites/init_template/temp");
+    std::unordered_map<std::string, std::string> keyval = {{"project", "project_world"}, {"name", "User"}};
+    std::string cache_path = path::joinPath(test_template_path, ".ctemplate/.cache");
+     
+    initTemplate(test_template_path, container_name, t_path, keyval, true);
+
+    ASSERT_TRUE(path::exists(cache_path));
+
+    path::remove(t_path + path::directorySeparator());
+}
+
+TEST(initTemplate, cache_rewrite)
+{
+    std::string test_template_path = path::joinPath(test_path, "test_suites/init_template/test_templates/py");
+    std::string t_path = path::joinPath(test_path, "test_suites/init_template/test");
+    std::string tmp_path = path::joinPath(test_path, "test_suites/init_template/temp");
+    std::unordered_map<std::string, std::string> keyval = {{"project", "project_world"}, {"name", "User"}};
+    std::string cache_path = path::joinPath(test_template_path, ".ctemplate/.cache");
+    std::string vars_path = path::joinPath(cache_path, "../variables.json");
+    std::string paths_cache_path = path::joinPath(cache_path, "included_search_paths.json");
+
+    ASSERT_TRUE(path::exists(cache_path));
+
+    json vars = helper::readJsonFromFile(vars_path);
+    json paths_cache = helper::readJsonFromFile(paths_cache_path);
+
+    EXPECT_EQ(paths_cache.at("files")[0], path::normalizePath(vars.at("searchPaths").at("files").at("include")[0]));
+
+    vars.at("searchPaths").at("files")["include"] = {};
+    helper::writeJsonToFile(vars, vars_path, 4);
+     
+    initTemplate(test_template_path, container_name, t_path, keyval, true);
+
+    paths_cache = helper::readJsonFromFile(paths_cache_path);
+
+    EXPECT_EQ(paths_cache.at("files"), json::parse("[]"));
+
+    vars.at("searchPaths").at("files")["include"] = {"!project!/!project!.py"};
+    helper::writeJsonToFile(vars, vars_path, 4);
+
+    path::remove(t_path + path::directorySeparator());
+    path::remove(cache_path);
+}
+
 TEST(addTemplate, adding)
 {
     std::string add_path = path::joinPath(template_path, "t1");
-    std::string name = "testing";
+    std::string name = "test_suites";
     std::string author = "scrap";
     std::string desc = "wassup boi";
-    std::string container_name = ".ctemplate";
     addTemplate(template_path, add_path, name, author, desc, container_name);
 
-    std::string new_template = path::joinPath(template_path, "testing");
+    std::string new_template = path::joinPath(template_path, "test_suites");
     ASSERT_TRUE(path::exists(new_template));
     ASSERT_TRUE(path::exists(path::joinPath(new_template, container_name)));
     
@@ -170,10 +247,9 @@ TEST(addTemplate, adding)
 TEST(addTemplate, empty_name)
 {
     std::string add_path = path::joinPath(template_path, "t1");
-    std::string name = "testing";
+    std::string name = "test_suites";
     std::string author = "scrap";
     std::string desc = "wassup boi";
-    std::string container_name = ".ctemplate";
     addTemplate(template_path, add_path, "", author, desc, container_name);
 
     ASSERT_TRUE(!path::exists(name));
@@ -182,14 +258,13 @@ TEST(addTemplate, empty_name)
 TEST(addTemplate, existing_container)
 {
     std::string add_path = path::joinPath(template_path, "t1");
-    std::string name = "testing";
+    std::string name = "test_suites";
     std::string author = "scrap";
     std::string desc = "wassup boi";
-    std::string container_name = ".ctemplate";
     addTemplate(template_path, add_path, name, author, desc, container_name);
 
-    std::string new_template = path::joinPath(template_path, "testing");
-    std::string new_container = path::joinPath(new_template, ".ctemplate");
+    std::string new_template = path::joinPath(template_path, "test_suites");
+    std::string new_container = path::joinPath(new_template, container_name);
     ASSERT_TRUE(path::exists(path::joinPath(new_container, "info.json")));
     ASSERT_TRUE(path::exists(path::joinPath(new_container, "variables.json")));
 
@@ -420,7 +495,7 @@ TEST(matchPaths, include_and_exclude_non_patterns)
 
 TEST(replaceVariablesInAllFilenames, working)
 {
-    std::string testing_path = path::joinPath(test_path, "testing/replace_filenames");
+    std::string testing_path = path::joinPath(test_path, "test_suites/replace_filenames");
     std::set<std::string> paths = {"!project!", "!project!/!project!.py"};
     std::unordered_map<std::string, std::string> keyval = {{"project", "pypy"}, {"unused", "var"}};
 
@@ -438,7 +513,7 @@ TEST(replaceVariablesInAllFilenames, working)
 
 TEST(replaceVariablesInAllFilenames, working_includes_and_excludes)
 {
-    std::string testing_path = path::joinPath(test_path, "testing/replace_filenames");
+    std::string testing_path = path::joinPath(test_path, "test_suites/replace_filenames");
     std::set<std::string> includes = {"!project!", "!project!/**"};
     std::set<std::string> excludes = {"!project!/temp*"};
     std::set<std::string> paths = helper::matchPaths(helper::getPaths(testing_path, testing_path), includes, excludes);

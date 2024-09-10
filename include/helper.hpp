@@ -10,6 +10,8 @@ namespace helper {
     void printKeyval(const std::unordered_map<std::string, std::string>& keyval);
     void showConfig(const nlohmann::json& config);
     void setConfigValue(nlohmann::json& config, const std::vector<std::string>& config_key_values);
+    void resetConfig(std::string config_file = "");
+    void resetConfig(const std::string& template_dir, const std::string& container_name, const std::vector<std::string>& templates);
     std::string readTextFromFile(const std::string& file_path);
     nlohmann::json readJsonFromFile(const std::string& file);
     void writeTextToFile(const std::string& str, const std::string& file_path);

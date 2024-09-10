@@ -1,7 +1,9 @@
 #include "os.hpp"
 #include "CLI11.hpp"
+#include "updater.hpp"
 #include "helper.hpp"
 #include "ctemplate.hpp"
+#include "global.hpp"
 #include <unordered_set>
 
 using json = nlohmann::json;
@@ -15,16 +17,52 @@ void print(const std::vector<std::string>& v)
     }
 }
 
+int update(const std::string& current_version, std::string tag, const std::string& asset_name, bool allow_pre_release)
+{
+    if(current_version == tag) {
+        std::cout << "[SUCCESS] Software is up to date." << std::endl;
+        return 0;
+    }
+    
+    if(!updater::isCurlInstalled()) {
+        std::cout << "[ERROR] cURL not found." << std::endl;
+        std::cout << "        Install cURL or update manually in " << global::github_url << std::endl;
+        return 1;
+    }
+
+    std::cout << "[INFO] Checking for updates..." << std::endl;
+    json release_info = tag.empty() ? updater::getLatestReleaseJson(global::github_url, allow_pre_release)
+                                    : updater::getReleaseJson(global::github_url, tag);
+
+    if(release_info.empty()) {
+        std::cout << "[ERROR] Could not get release info." << std::endl;
+        return 1;
+    }
+
+    tag = release_info.at("tag_name");
+
+    if(current_version == tag) {
+        std::cout << "[SUCCESS] Software is up to date." << std::endl;
+        return 0;
+    }
+
+    if(updater::updateApp(release_info, asset_name)) {
+        std::cout << "[SUCCESS] Updated to " << tag << std::endl;
+    } else {
+        std::cout << "[ERROR] Update not found." << std::endl;
+        return 1;
+    }
+
+    return 0;
+}
+
 int main(int argc, char** argv)
 {
     CLI::App app("Ctemplate");
-    app.set_version_flag("-v,--version", "v1.0.0-beta.3");
+    app.set_version_flag("-v,--version", global::app_version);
 
     // Default settings
-    json app_config = {
-        {"templateDirectory", path::joinPath(path::sourcePath(), "templates")},
-        {"containerName", ".ctemplate"}
-    };
+    json app_config = global::app_config;
 
     std::string config_file_path = path::joinPath(path::sourcePath(), "config.json");
 
@@ -50,7 +88,12 @@ int main(int argc, char** argv)
 
     std::string container_name = app_config.at("containerName");
 
+    // For main command
     bool list_template = false;
+    std::string tag;
+    bool allow_pre_release = false;
+    CLI::Option* update_opt = app.add_option("-U,--update", tag, "Update application to new version.\n(Updates to latest if no tag is specified)")->expected(0, 1);
+    app.add_flag("-p", allow_pre_release, "Allow pre-release versions to be installed.")->needs(update_opt);
 
     // For "init" subcommand
     CLI::App* init = app.add_subcommand("init", "Initialize a template");
@@ -99,17 +142,26 @@ int main(int argc, char** argv)
     std::vector<std::string> config_set_values;
     set->add_option("keyvalue", config_set_values, "Config values to change\n(eg: \"key=value\")");
 
+    // For "config reset" subcommand
+    CLI::App* reset = config->add_subcommand("reset", "Reset config");
+    std::vector<std::string> config_reset_values;
+    reset->add_option("template", config_reset_values, "Template to reset config");
+
     CLI11_PARSE(app, argc, argv);
 
     // print(init_includes);
+
+    if(update_opt->count() > 0) {
+        return update(global::app_version, tag, "ctemplate.exe", allow_pre_release);
+    }
 
     if(*init) { // "init" subcommand
         std::string init_to = path::joinPath(path::currentPath(), init_path);
         std::string template_path_to_init = path::joinPath(template_dir, init_template_name);
         std::set<std::string> paths = helper::matchPaths(helper::getPaths(template_path_to_init, template_path_to_init),
                                        helper::arrayToSet(init_includes), helper::arrayToSet(init_excludes));
-        initTemplate(template_dir, init_template_name, 
-                    paths, container_name, init_to, helper::mapKeyValues(init_keyval), init_force_overwrite);
+        initTemplate(template_dir, init_template_name, paths, container_name, 
+                     init_to, helper::mapKeyValues(init_keyval), init_force_overwrite);
     } else if(*add) { // "add" subcommand
         std::string path_to_add = path::joinPath(path::currentPath(), add_path);
         addTemplate(template_dir, path_to_add, add_template_name, add_template_author, add_template_desc, container_name);
@@ -124,8 +176,14 @@ int main(int argc, char** argv)
             helper::setConfigValue(app_config, config_set_values);
             helper::writeJsonToFile(app_config, config_file_path, 4);
             return 0;
+        } else if(*reset) { // "reset" subcommand
+            if(config_reset_values.empty()) {
+                helper::resetConfig(config_file_path);
+            } else {
+                helper::resetConfig(template_dir, container_name, config_reset_values);
+            }
+            return 0;
         }
-        std::cout << "Configuration:" << std::endl;
         helper::showConfig(app_config);
     } else {
         CLI::CallForHelp();

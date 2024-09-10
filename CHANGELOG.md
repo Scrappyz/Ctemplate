@@ -12,9 +12,13 @@ All notable changes to `Project-Template` will be documented here.
 
 ## [1.0.0-beta.3] - Unreleased
 
-### To be added
+### Added
+- Added update option with `-U,--update`.
 - `config reset` option to bring back config to default settings.
-- `config reset <template>` option to bring back template config to default settings. (Useful when the template breaks)
+- `config reset <template>` option to bring back template config to default settings.
+
+### Fixed
+- Fixed issue with cache not updating.
 
 ## [1.0.0-beta.2] - 2024/08/29
 

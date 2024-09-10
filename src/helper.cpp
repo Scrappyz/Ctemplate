@@ -2,6 +2,7 @@
 #include "helper.hpp"
 #include "fmatch.hpp"
 #include "format.hpp"
+#include "global.hpp"
 #include <fstream>
 #include <iostream>
 #include <unordered_set>
@@ -11,6 +12,7 @@ namespace path = os::path;
 namespace fs = std::filesystem;
 
 namespace helper {
+
     void printKeyval(const std::unordered_map<std::string, std::string>& keyval)
     {
         for(const auto& i : keyval) {
@@ -51,6 +53,60 @@ namespace helper {
             }
 
             config[keyval[0]] = keyval[1];
+        }
+    }
+
+    /*
+        Resets config to default settings.
+
+        Parameters:
+        `config_file`: Path to the app config file. (Defaults to app config)
+    */
+    void resetConfig(std::string config_file)
+    {
+        if(config_file.empty()) {
+            config_file = path::joinPath(path::sourcePath(), "config.json");
+        }
+
+        json config = global::app_config;
+
+        writeJsonToFile(config, config_file, 4);
+    }
+
+    /*
+        Resets config of a template to the default settings.
+
+        Parameters:
+        `template_dir`: Directory where templates are stored.
+        `container_name`: Name of the container where all the template config files are stored.
+        `templates`: List of templates to reset.
+    */
+    void resetConfig(const std::string& template_dir, const std::string& container_name, const std::vector<std::string>& templates)
+    {
+        std::unordered_set<std::string> visited;
+        for(const auto& i : templates) {
+            std::string template_path = path::joinPath(template_dir, i);
+            std::string container_path = path::joinPath(template_path, container_name);
+
+            if(!path::exists(template_path) || visited.count(i) > 0) continue;
+
+            visited.insert(i);
+
+            if(!path::exists(container_path)) {
+                path::createDirectory(container_path);
+            } else {
+                path::remove(container_path + path::directorySeparator());
+            }
+
+            std::string info_file = path::joinPath(container_path, "info.json");
+            std::string var_file = path::joinPath(container_path, "variables.json");
+
+            json info = global::template_info_config;
+
+            json variables = global::template_variables_config;
+
+            writeJsonToFile(info, info_file, 4);
+            writeJsonToFile(variables, var_file, 4);
         }
     }
 

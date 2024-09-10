@@ -3,6 +3,7 @@
 #include "json.hpp"
 #include "format.hpp"
 #include "helper.hpp"
+#include "global.hpp"
 #include <iostream>
 #include <fstream>
 #include <unordered_set>
@@ -46,7 +47,7 @@ void initTemplate(const std::string& template_to_init, const std::set<std::strin
     }
 
     std::string container_path = path::joinPath(template_to_init, template_files_container_name);
-    std::string cache_path = path::joinPath(container_path, "cache");
+    std::string cache_path = path::joinPath(container_path, global::cache_container_name);
     std::string pattern_chars = "*?";
 
     // Split patterns and non-patterns
@@ -99,21 +100,19 @@ void initTemplate(const std::string& template_to_init, const std::set<std::strin
             included_files = helper::jsonListToSet(paths.at("files"));
             included_filenames = helper::jsonListToSet(paths.at("filenames"));
         } else {
-            included_files = helper::matchPaths(paths, files_include_cache, files_exclude_cache);
-            included_filenames = helper::matchPaths(paths, filenames_include_cache, filenames_exclude_cache);
+            included_files = helper::matchPaths(paths, files_include, files_exclude);
+            included_filenames = helper::matchPaths(paths, filenames_include, filenames_exclude);
+            helper::makeCacheForSearchPaths(cache_path, vars.at("searchPaths"), included_files, included_filenames);
         }
         
     } else {
         included_files = helper::matchPaths(paths, files_include, files_exclude);
         included_filenames = helper::matchPaths(paths, filenames_include, filenames_exclude);
+        helper::makeCacheForSearchPaths(cache_path, vars.at("searchPaths"), included_files, included_filenames);
     }
 
     helper::replaceVariablesInAllFiles(path_to_init_template_to, included_files, keyval, var_prefix, var_suffix);
-
     helper::replaceVariablesInAllFilenames(path_to_init_template_to, included_filenames, keyval, var_prefix, var_suffix);
-
-    // Make cache for for quicker initialization next time
-    helper::makeCacheForSearchPaths(cache_path, vars.at("searchPaths"), included_files, included_filenames);
 
     std::cout << "[SUCCESS] Template \"" << path::filename(template_to_init) << "\" has been initialized." << std::endl;
 }
@@ -185,23 +184,7 @@ void addTemplate(const std::string& template_dir, const std::string& path_to_add
         {"author", author},
         {"description", desc}
     };
-    json variables = json::parse(R"(
-        {
-            "searchPaths": {
-                "files": {
-                    "include": [],
-                    "exclude": []
-                },
-                "filenames": {
-                    "include": [],
-                    "exclude": []
-                }
-            },
-            "variablePrefix": "!",
-            "variableSuffix": "!",
-            "variables": {}
-        }
-    )");
+    json variables = global::template_variables_config;
 
     helper::writeJsonToFile(info, path::joinPath(new_container_path, "info.json"), 4);
     helper::writeJsonToFile(variables, path::joinPath(new_container_path, "variables.json"), 4);

@@ -67,7 +67,7 @@ Ctemplate works as a standalone executable so all you need to do is download it 
 ### Release Files
 | File | Description |
 | :--- | :--- |
-| [ctemplate.exe](https://github.com/Scrappyz/Ctemplate/releases/download/v1.0.0-beta.2/ctemplate.exe) | Windows standalone executable (recommended for **Windows**) |
+| [ctemplate.exe](https://github.com/Scrappyz/Ctemplate/releases) | Windows standalone executable (recommended for **Windows**) |
 
 It is recommended to place the executable inside an empty directory. Also try adding the executable into your `PATH` environment variable or set up an [alias](https://learn.microsoft.com/en-us/powershell/module/microsoft.powershell.utility/set-alias?view=powershell-7.4) in your preferred terminal so you can call the executable from anywhere.
 
@@ -92,6 +92,13 @@ ctemplate config set templateDirectory="D:\My Files\Codes\templates"
 ## Usage
 ```
 ctemplate [OPTIONS] [SUBCOMMAND]
+
+Options:
+  -h,--help                   Print this help message and exit
+  -v,--version                Display program version information and exit
+  -U,--update TEXT            Update application to new version.
+                              (Updates to latest if no tag is specified)
+  -p Needs: --update          Allow pre-release versions to be installed.
 ```
 
 ### Subcommands
