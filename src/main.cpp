@@ -25,7 +25,8 @@ int update(const std::string& current_version, std::string tag, const std::strin
     }
     
     if(!updater::isCurlInstalled()) {
-        std::cout << "[ERROR] Curl not found." << std::endl;
+        std::cout << "[ERROR] cURL not found." << std::endl;
+        std::cout << "        Install cURL or update manually in " << global::github_url << std::endl;
         return 1;
     }
 

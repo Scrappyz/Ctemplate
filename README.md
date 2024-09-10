@@ -92,6 +92,13 @@ ctemplate config set templateDirectory="D:\My Files\Codes\templates"
 ## Usage
 ```
 ctemplate [OPTIONS] [SUBCOMMAND]
+
+Options:
+  -h,--help                   Print this help message and exit
+  -v,--version                Display program version information and exit
+  -U,--update TEXT            Update application to new version.
+                              (Updates to latest if no tag is specified)
+  -p Needs: --update          Allow pre-release versions to be installed.
 ```
 
 ### Subcommands
