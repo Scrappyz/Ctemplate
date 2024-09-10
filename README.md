@@ -68,6 +68,7 @@ Ctemplate works as a standalone executable so all you need to do is download it 
 | File | Description |
 | :--- | :--- |
 | [ctemplate.exe](https://github.com/Scrappyz/Ctemplate/releases) | Windows standalone executable (recommended for **Windows**) |
+| [ctemplate](https://github.com/Scrappyz/Ctemplate/releases) | Linux binary (recommended for **Linux**) |
 
 It is recommended to place the executable inside an empty directory. Also try adding the executable into your `PATH` environment variable or set up an [alias](https://learn.microsoft.com/en-us/powershell/module/microsoft.powershell.utility/set-alias?view=powershell-7.4) in your preferred terminal so you can call the executable from anywhere.
 
