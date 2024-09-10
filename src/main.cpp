@@ -1,5 +1,6 @@
 #include "os.hpp"
 #include "CLI11.hpp"
+#include "updater.hpp"
 #include "helper.hpp"
 #include "ctemplate.hpp"
 #include "global.hpp"
@@ -49,6 +50,8 @@ int main(int argc, char** argv)
     std::string container_name = app_config.at("containerName");
 
     bool list_template = false;
+    std::string tag;
+    CLI::Option* update_opt = app.add_option("-U,--update", tag, "Update application to new version.\n(Updates to latest if no tag is specified)")->expected(0, 1);
 
     // For "init" subcommand
     CLI::App* init = app.add_subcommand("init", "Initialize a template");
@@ -105,6 +108,11 @@ int main(int argc, char** argv)
     CLI11_PARSE(app, argc, argv);
 
     // print(init_includes);
+
+    if(update_opt->count() > 0) {
+        updater::updateApp(global::github_url, "v1.0.0-beta.1", "ctemplate.exe");
+        return 0;
+    }
 
     if(*init) { // "init" subcommand
         std::string init_to = path::joinPath(path::currentPath(), init_path);

@@ -6,6 +6,7 @@ namespace path = os::path;
 
 namespace global {
 
+    std::string github_url = "https://github.com/Scrappyz/Ctemplate";
     std::string app_version = "v1.0.0-beta.3";
 
     json app_config = {
