@@ -17,6 +17,44 @@ void print(const std::vector<std::string>& v)
     }
 }
 
+int update(const std::string& current_version, std::string tag, const std::string& asset_name, bool allow_pre_release)
+{
+    if(current_version == tag) {
+        std::cout << "[SUCCESS] Software is up to date." << std::endl;
+        return 0;
+    }
+    
+    if(!updater::isCurlInstalled()) {
+        std::cout << "[ERROR] Curl not found." << std::endl;
+        return 1;
+    }
+
+    std::cout << "[INFO] Checking for updates..." << std::endl;
+    json release_info = tag.empty() ? updater::getLatestReleaseJson(global::github_url, allow_pre_release)
+                                    : updater::getReleaseJson(global::github_url, tag);
+
+    if(release_info.empty()) {
+        std::cout << "[ERROR] Could not get release info." << std::endl;
+        return 1;
+    }
+
+    tag = release_info.at("tag_name");
+
+    if(current_version == tag) {
+        std::cout << "[SUCCESS] Software is up to date." << std::endl;
+        return 0;
+    }
+
+    if(updater::updateApp(release_info, asset_name)) {
+        std::cout << "[SUCCESS] Updated to " << tag << std::endl;
+    } else {
+        std::cout << "[ERROR] Update not found." << std::endl;
+        return 1;
+    }
+
+    return 0;
+}
+
 int main(int argc, char** argv)
 {
     CLI::App app("Ctemplate");
@@ -54,7 +92,7 @@ int main(int argc, char** argv)
     std::string tag;
     bool allow_pre_release = false;
     CLI::Option* update_opt = app.add_option("-U,--update", tag, "Update application to new version.\n(Updates to latest if no tag is specified)")->expected(0, 1);
-    app.add_flag("-p,--allow-pre-release", allow_pre_release, "Allow pre-release versions to be installed.")->needs(update_opt);
+    app.add_flag("-p", allow_pre_release, "Allow pre-release versions to be installed.")->needs(update_opt);
 
     // For "init" subcommand
     CLI::App* init = app.add_subcommand("init", "Initialize a template");
@@ -113,24 +151,7 @@ int main(int argc, char** argv)
     // print(init_includes);
 
     if(update_opt->count() > 0) {
-        if(!updater::isCurlInstalled()) {
-            std::cout << "[ERROR] Curl not found." << std::endl;
-            return 1;
-        }
-
-        json release_info = tag.empty() ? updater::getLatestReleaseJson(global::github_url, allow_pre_release)
-                                        : updater::getReleaseJson(global::github_url, tag);
-
-        tag = release_info.at("tag_name");
-
-        std::cout << "[INFO] Checking for updates..." << std::endl;
-        if(updater::updateApp(release_info, "ctemplate.exe")) {
-            std::cout << "[SUCCESS] Updated to " << tag << std::endl;
-        } else {
-            std::cout << "[ERROR] Update not found." << std::endl;
-            return 1;
-        }
-        return 0;
+        return update(global::app_version, tag, "ctemplate.exe", allow_pre_release);
     }
 
     if(*init) { // "init" subcommand
