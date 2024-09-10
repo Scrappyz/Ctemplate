@@ -211,7 +211,7 @@ TEST(initTemplate, cache_rewrite)
     json vars = helper::readJsonFromFile(vars_path);
     json paths_cache = helper::readJsonFromFile(paths_cache_path);
 
-    EXPECT_EQ(paths_cache.at("files"), vars.at("searchPaths").at("files").at("include"));
+    EXPECT_EQ(paths_cache.at("files")[0], path::normalizePath(vars.at("searchPaths").at("files").at("include")[0]));
 
     vars.at("searchPaths").at("files")["include"] = {};
     helper::writeJsonToFile(vars, vars_path, 4);
