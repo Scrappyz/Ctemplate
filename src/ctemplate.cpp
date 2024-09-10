@@ -102,19 +102,18 @@ void initTemplate(const std::string& template_to_init, const std::set<std::strin
         } else {
             included_files = helper::matchPaths(paths, files_include_cache, files_exclude_cache);
             included_filenames = helper::matchPaths(paths, filenames_include_cache, filenames_exclude_cache);
+            helper::makeCacheForSearchPaths(cache_path, vars.at("searchPaths"), included_files, included_filenames);
         }
         
     } else {
         included_files = helper::matchPaths(paths, files_include, files_exclude);
         included_filenames = helper::matchPaths(paths, filenames_include, filenames_exclude);
+        helper::makeCacheForSearchPaths(cache_path, vars.at("searchPaths"), included_files, included_filenames);
     }
 
     helper::replaceVariablesInAllFiles(path_to_init_template_to, included_files, keyval, var_prefix, var_suffix);
 
     helper::replaceVariablesInAllFilenames(path_to_init_template_to, included_filenames, keyval, var_prefix, var_suffix);
-
-    // Make cache for for quicker initialization next time
-    helper::makeCacheForSearchPaths(cache_path, vars.at("searchPaths"), included_files, included_filenames);
 
     std::cout << "[SUCCESS] Template \"" << path::filename(template_to_init) << "\" has been initialized." << std::endl;
 }

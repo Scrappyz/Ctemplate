@@ -1,26 +1,22 @@
 {
     "searchPaths": {
-        "files": {
-            "include": [
-                "!project!/!project!.py"
-            ],
-            "exclude": [
-                
-            ]
-        },
         "filenames": {
+            "exclude": [],
             "include": [
                 "**/*!*!*"
-            ],
-            "exclude": [
-                
+            ]
+        },
+        "files": {
+            "exclude": [],
+            "include": [
+                "!project!/!project!.py"
             ]
         }
     },
     "variablePrefix": "!",
     "variableSuffix": "!",
     "variables": {
-        "project": "The project name",
-        "name": "The name of user"
+        "name": "The name of user",
+        "project": "The project name"
     }
 }
