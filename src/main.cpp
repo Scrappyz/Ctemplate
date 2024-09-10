@@ -152,7 +152,7 @@ int main(int argc, char** argv)
     // print(init_includes);
 
     if(update_opt->count() > 0) {
-        return update(global::app_version, tag, "ctemplate.exe", allow_pre_release);
+        return update(global::app_version, tag, global::asset_name, allow_pre_release);
     }
 
     if(*init) { // "init" subcommand

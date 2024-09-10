@@ -9,6 +9,12 @@ namespace global {
     std::string github_url = "https://github.com/Scrappyz/Ctemplate";
     std::string app_version = "v1.0.0-beta.3";
 
+    #ifdef _WIN32
+        std::string asset_name = "ctemplate.exe";
+    #else
+        std::string asset_name = "ctemplate";
+    #endif
+
     json app_config = {
         {"templateDirectory", path::joinPath(path::sourcePath(), "templates")},
         {"containerName", ".ctemplate"}
