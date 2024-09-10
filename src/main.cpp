@@ -49,9 +49,12 @@ int main(int argc, char** argv)
 
     std::string container_name = app_config.at("containerName");
 
+    // For main command
     bool list_template = false;
     std::string tag;
+    bool allow_pre_release = false;
     CLI::Option* update_opt = app.add_option("-U,--update", tag, "Update application to new version.\n(Updates to latest if no tag is specified)")->expected(0, 1);
+    app.add_flag("-p,--allow-pre-release", allow_pre_release, "Allow pre-release versions to be installed.")->needs(update_opt);
 
     // For "init" subcommand
     CLI::App* init = app.add_subcommand("init", "Initialize a template");
@@ -110,7 +113,23 @@ int main(int argc, char** argv)
     // print(init_includes);
 
     if(update_opt->count() > 0) {
-        updater::updateApp(global::github_url, "v1.0.0-beta.1", "ctemplate.exe");
+        if(!updater::isCurlInstalled()) {
+            std::cout << "[ERROR] Curl not found." << std::endl;
+            return 1;
+        }
+
+        json release_info = tag.empty() ? updater::getLatestReleaseJson(global::github_url, allow_pre_release)
+                                        : updater::getReleaseJson(global::github_url, tag);
+
+        tag = release_info.at("tag_name");
+
+        std::cout << "[INFO] Checking for updates..." << std::endl;
+        if(updater::updateApp(release_info, "ctemplate.exe")) {
+            std::cout << "[SUCCESS] Updated to " << tag << std::endl;
+        } else {
+            std::cout << "[ERROR] Update not found." << std::endl;
+            return 1;
+        }
         return 0;
     }
 
