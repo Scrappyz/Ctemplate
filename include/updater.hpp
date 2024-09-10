@@ -249,12 +249,12 @@ namespace updater {
         Notes:
         - Only works if the program is terminated after 2 seconds so it would be best to run this right before program exit.
     */
-    inline bool updateApp(const std::string& repo_url, const std::string& tag, const std::string& asset_name)
+    inline bool updateApp(const std::string& repo_url, const std::string& tag, const std::string& asset_name, bool pre_release = false)
     {
         nlohmann::json release_info;
 
         if(tag.empty()) {
-            release_info = getLatestReleaseJson(repo_url);
+            release_info = getLatestReleaseJson(repo_url, pre_release);
         } else {
             release_info = getReleaseJson(repo_url, tag);
         }
@@ -272,9 +272,9 @@ namespace updater {
         Notes:
         - Only works if the program is terminated after 2 seconds so it would be best to run this right before program exit.
     */
-    inline bool updateApp(const std::string& repo_url, const std::string& asset_name)
+    inline bool updateApp(const std::string& repo_url, const std::string& asset_name, bool pre_release = false)
     {
-        return updateApp(repo_url, "", asset_name);
+        return updateApp(repo_url, "", asset_name, pre_release);
     }
 
     /*
