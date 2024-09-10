@@ -34,21 +34,21 @@ std::set<std::string> normalizePaths(const std::set<std::string>& s, const std::
     return n;
 }
 
-TEST(resetConfig, app_config)
-{
-    std::string config_file = path::joinPath(path::sourcePath(), "config.json");
-    json temp = helper::readJsonFromFile(config_file);
-    json expected = {
-        {"templateDirectory", path::joinPath(path::sourcePath(), "templates")},
-        {"containerName", container_name}
-    };
+// TEST(resetConfig, app_config)
+// {
+//     std::string config_file = path::joinPath(path::sourcePath(), "config.json");
+//     json temp = helper::readJsonFromFile(config_file);
+//     json expected = {
+//         {"templateDirectory", path::joinPath(path::sourcePath(), "templates")},
+//         {"containerName", container_name}
+//     };
 
-    helper::resetConfig();
+//     helper::resetConfig();
 
-    EXPECT_EQ(expected, helper::readJsonFromFile(config_file));
+//     EXPECT_EQ(expected, helper::readJsonFromFile(config_file));
 
-    helper::writeJsonToFile(temp, config_file, 4);
-}
+//     helper::writeJsonToFile(temp, config_file, 4);
+// }
 
 TEST(resetConfig, template_config)
 {

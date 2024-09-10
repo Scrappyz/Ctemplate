@@ -6,9 +6,8 @@
 !src/** 
 !test/
 !test/**
-!test/bin/
+test/bin/
 test/bin/**
-!test/bin/config.json
 !docs/
 !docs/**
 !.github/
