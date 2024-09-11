@@ -12,7 +12,7 @@ All notable changes to `Project-Template` will be documented here.
 
 ## [1.0.0] - 2024/09/11
 
-First release candidate.
+First release version.
 
 ## [1.0.0-beta.3] - 2024/09/10
 
