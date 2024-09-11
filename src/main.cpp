@@ -50,7 +50,7 @@ int update(const std::string& current_version, std::string tag, const std::strin
     std::cout << "       Updating software..." << std::endl;
 
     if(gitupdate::updateApp(release_info, asset_name)) {
-        std::cout << "[SUCCESS] Updated to " << tag << std::endl;
+        std::cout << "[SUCCESS] Updated to \"" << tag << "\"" << std::endl;
     } else {
         std::cout << "[ERROR] Something went wrong." << std::endl;
         return 1;
