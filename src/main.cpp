@@ -1,6 +1,6 @@
 #include "os.hpp"
 #include "CLI11.hpp"
-#include "updater.hpp"
+#include "gitupdate.hpp"
 #include "helper.hpp"
 #include "ctemplate.hpp"
 #include "global.hpp"
@@ -24,15 +24,15 @@ int update(const std::string& current_version, std::string tag, const std::strin
         return 0;
     }
     
-    if(!updater::isCurlInstalled()) {
+    if(!gitupdate::isCurlInstalled()) {
         std::cout << "[ERROR] cURL not found." << std::endl;
         std::cout << "        Install cURL or update manually in " << global::github_url << std::endl;
         return 1;
     }
 
     std::cout << "[INFO] Checking for updates..." << std::endl;
-    json release_info = tag.empty() ? updater::getLatestReleaseJson(global::github_url, allow_pre_release)
-                                    : updater::getReleaseJson(global::github_url, tag);
+    json release_info = tag.empty() ? gitupdate::getLatestReleaseJson(global::github_url, allow_pre_release)
+                                    : gitupdate::getReleaseJson(global::github_url, tag);
 
     if(release_info.empty()) {
         std::cout << "[ERROR] Could not get release info." << std::endl;
@@ -46,7 +46,7 @@ int update(const std::string& current_version, std::string tag, const std::strin
         return 0;
     }
 
-    if(updater::updateApp(release_info, asset_name)) {
+    if(gitupdate::updateApp(release_info, asset_name)) {
         std::cout << "[SUCCESS] Updated to " << tag << std::endl;
     } else {
         std::cout << "[ERROR] Update not found." << std::endl;

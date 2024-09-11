@@ -13,32 +13,96 @@
     #include <libgen.h>
 #endif
 
-namespace updater {
-
-    #if defined(_WIN32)
-        // Path to cURL. (Defaults "curl.exe")
-        inline std::string curl_path = "curl.exe";
-    #else
-        // Path to cURL. (Defaults "curl")
-        inline std::string curl_path = "curl";
-    #endif
-
-    // URL to Github.
-    inline const std::string github_url = "https://github.com/";
-
-    // URL to Github API.
-    inline const std::string github_api_url = "https://api.github.com/repos/";
+namespace gitupdate {
 
     namespace _private_ {
+        #if defined(_WIN32)
+            // Path to cURL. (Defaults "curl.exe")
+            inline const std::string curl_path = "curl.exe";
+        #else
+            // Path to cURL. (Defaults "curl")
+            inline const std::string curl_path = "curl";
+        #endif
+
+        // URL to Github.
+        inline const std::string github_url = "https://github.com/";
+
+        // URL to Github API.
+        inline const std::string github_api_url = "https://api.github.com/";
+
         bool execute(const std::string& command, std::string& output, const std::string& mode = "r");
         bool execute(const std::string& command, const std::string& mode = "r");
         nlohmann::json getReleaseJson(const std::string& api_url, const std::string& tag);
         nlohmann::json getLatestReleaseJson(const std::string& api_url, bool pre_release = false);
         nlohmann::json getTagListJson(const std::string& api_url);
         bool downloadAsset(const std::string& download_url, const std::filesystem::path& output_path);
-        bool updateApp(const nlohmann::json& release_info, const std::string& asset_name);
     }
 
+    inline const std::string& getCurlPath()
+    {
+        return _private_::curl_path;
+    }
+
+    /*
+        Returns the github url
+    */
+    inline const std::string& getGithubUrl()
+    {
+        return _private_::github_url;
+    }
+
+    /*
+        Returns the github url of the given username and repo.
+
+        Parameters:
+        `user_name`: Username of the owner of the repo.
+        `repo_name`: Name of the repo.
+    */
+    inline std::string getGithubUrl(const std::string& user_name, const std::string& repo_name)
+    {
+        std::string result = _private_::github_url + user_name + "/" + repo_name;
+        return result;
+    }
+
+    /*
+        Returns the github api url.
+    */
+    inline const std::string& getGithubAPIUrl()
+    {
+        return _private_::github_api_url;
+    }
+
+    /*
+        Converts the given github repo url to an API url.
+
+        Parameters:
+        `repo_url`: URL to the github repository. (E.g. `https://github.com/{USER}/{REPO}`)
+    */
+    inline std::string getGithubAPIUrl(const std::string& repo_url)
+    {
+        std::string result = _private_::github_api_url + "repos/" + repo_url.substr(19, repo_url.size() - 19);
+        return result;
+    }
+
+    /*
+        Returns the API url of the given username and repo.
+
+        Parameters:
+        `user_name`: Username of the owner of the repo.
+        `repo_name`: Name of the repo.
+    */
+    inline std::string getGithubAPIUrl(const std::string& user_name, const std::string& repo_name)
+    {
+        std::string result = _private_::github_api_url + "repos/" + user_name + "/" + repo_name;
+        return result;
+    }
+    
+    /*
+        Returns the path to the source or executable.
+
+        Parameters:
+        `parent_path`: When `true`, returns the path to the parent directory of the source. (Default `true`)
+    */
     inline std::string sourcePath(bool parent_path = true) 
     {
         std::filesystem::path source_path;
@@ -103,7 +167,7 @@ namespace updater {
             std::string path_to_remove = source_path.empty() ? sourcePath(false) : source_path.string();
             char command[2 * 1024];
 
-            snprintf(command, sizeof(command), "sleep 3 && rm -f \"%s\"", path_to_remove.c_str());
+            snprintf(command, sizeof(command), "sleep 2 && rm -f \"%s\"", path_to_remove.c_str());
 
             if(fork() == 0) {
                 execl("/bin/sh", "sh", "-c", command, (char *)NULL);
@@ -111,44 +175,6 @@ namespace updater {
             }
         }
     #endif
-
-    /*
-        Returns the github url of the given username and repo.
-
-        Parameters:
-        `user_name`: Username of the owner of the repo.
-        `repo_name`: Name of the repo.
-    */
-    inline std::string getUrl(const std::string& user_name, const std::string& repo_name)
-    {
-        std::string result = github_url + user_name + "/" + repo_name;
-        return result;
-    }
-
-    /*
-        Converts the given github repo url to an API url.
-
-        Parameters:
-        `repo_url`: URL to the github repository. (E.g. `https://github.com/{USER}/{REPO}`)
-    */
-    inline std::string getAPIUrl(const std::string& repo_url)
-    {
-        std::string result = github_api_url + repo_url.substr(19, repo_url.size() - 19);
-        return result;
-    }
-
-    /*
-        Returns the API url of the given username and repo.
-
-        Parameters:
-        `user_name`: Username of the owner of the repo.
-        `repo_name`: Name of the repo.
-    */
-    inline std::string getAPIUrl(const std::string& user_name, const std::string& repo_name)
-    {
-        std::string result = github_api_url + user_name + "/" + repo_name;
-        return result;
-    }
 
     /*
         Gets the release information from github of the given tag.
@@ -159,7 +185,7 @@ namespace updater {
     */
     inline nlohmann::json getReleaseJson(const std::string& repo_url, const std::string& tag)
     {
-        std::string api_url = getAPIUrl(repo_url);
+        std::string api_url = getGithubAPIUrl(repo_url);
         return _private_::getReleaseJson(api_url, tag);
     }
 
@@ -172,7 +198,7 @@ namespace updater {
     */
     inline nlohmann::json getLatestReleaseJson(const std::string& repo_url, bool pre_release = false)
     {
-        std::string api_url = getAPIUrl(repo_url);
+        std::string api_url = getGithubAPIUrl(repo_url);
         return _private_::getLatestReleaseJson(api_url, pre_release);
     }
 
@@ -184,7 +210,7 @@ namespace updater {
     */
     inline nlohmann::json getTagListJson(const std::string& repo_url)
     {
-        std::string api_url = getAPIUrl(repo_url);
+        std::string api_url = getGithubAPIUrl(repo_url);
         return _private_::getTagListJson(api_url);
     }
 
@@ -259,7 +285,7 @@ namespace updater {
             release_info = getReleaseJson(repo_url, tag);
         }
         
-        return _private_::updateApp(release_info, asset_name);
+        return updateApp(release_info, asset_name);
     }
 
     /*
@@ -282,7 +308,7 @@ namespace updater {
     */
     inline bool isCurlInstalled()
     {
-        return _private_::execute(curl_path + " --help");
+        return _private_::execute(getCurlPath() + " --help");
     }
 
     /*
@@ -349,7 +375,7 @@ namespace updater {
         {
             std::string output;
 
-            _private_::execute(curl_path + " -s " + api_url + "/releases/tags/" + tag, output);
+            _private_::execute(getCurlPath() + " -s " + api_url + "/releases/tags/" + tag, output);
 
             nlohmann::json result = nlohmann::json::parse(output);
 
@@ -366,10 +392,10 @@ namespace updater {
             nlohmann::json result;
 
             if(!pre_release) {
-                _private_::execute(curl_path + " -s " + api_url + "/releases/latest", output);
+                _private_::execute(getCurlPath() + " -s " + api_url + "/releases/latest", output);
                 result = nlohmann::json::parse(output);
             } else {
-                _private_::execute(curl_path + " -s " + api_url + "/releases", output);
+                _private_::execute(getCurlPath() + " -s " + api_url + "/releases", output);
                 result = nlohmann::json::parse(output)[0];
             }
 
@@ -385,7 +411,7 @@ namespace updater {
         {
             std::string output;
 
-            _private_::execute(curl_path + " -s " + api_url + "/tags", output);
+            _private_::execute(getCurlPath() + " -s " + api_url + "/tags", output);
 
             nlohmann::json result = nlohmann::json::parse(output);
 
@@ -398,7 +424,7 @@ namespace updater {
 
         inline bool downloadAsset(const std::string& download_url, const std::filesystem::path& output_path)
         {
-            std::string command = curl_path + " -s -L " + download_url + " -o " + "\"" + output_path.string() + "\"";
+            std::string command = getCurlPath() + " -s -L " + download_url + " -o " + "\"" + output_path.string() + "\"";
             return _private_::execute(command);
         }
 
