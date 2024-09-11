@@ -10,7 +10,11 @@ All notable changes to `Project-Template` will be documented here.
 - Multi-line values for variables.
 - Proper indentation for multi-line variable values.
 
-## [1.0.0-beta.3] - Unreleased
+## [1.0.0] - 2024/09/11
+
+First release candidate.
+
+## [1.0.0-beta.3] - 2024/09/10
 
 ### Added
 - Added update option with `-U,--update`.
