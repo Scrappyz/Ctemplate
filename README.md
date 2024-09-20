@@ -1,6 +1,11 @@
 ## Ctemplate
 Create projects quickly and easily with this command-line utility.
 
+<!-- Shields -->
+[![GitHub Release](https://img.shields.io/github/v/release/Scrappyz/Ctemplate?logo=GitHub&logoColor=FFFFFF&style=flat-square)](https://github.com/Scrappyz/Ctemplate/releases/latest)
+[![MIT License](https://img.shields.io/badge/License-MIT-green)](LICENSE.md)
+![Build](https://img.shields.io/badge/Tests-passing-green)
+
 <details>
    <summary>Table Of Contents</summary>
    <ol>
