@@ -12,3 +12,4 @@ test/bin/**
 !docs/**
 !.github/
 !.github/**
+!LICENSE.md
